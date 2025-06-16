@@ -1,7 +1,6 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NavigationContainer, useNavigationState } from '@react-navigation/native';
+import { useNavigationState } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import HomeScreen from './HomeScreen';
 import PlayScreen from './PlayScreen';
@@ -29,16 +28,16 @@ export default function App() {
           const allowLogout = activeTabName === "Home screen";
 
           if (route.name === 'Home') iconName = focused ? 'home' : 'home-outline';
-          else if (route.name === 'Play') iconName = focused ? 'stats-chart' : 'stats-chart-outline';
+          else if (route.name === 'Play') iconName = focused ? 'play' : 'play-outline';
           else if (route.name === 'Learn')iconName = focused ? 'book' : 'book-outline';
         
           return <Icon name={iconName} size={size} color={color} />;
         },
       })}
     >
-      <Tab.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
-      <Tab.Screen name="Play" component={PlayScreen} options={{ headerShown: false }} />
-      <Tab.Screen name="Learn" component={LearningScreen} options={{ headerShown: false }} />
+      <Tab.Screen name="Home" component={HomeScreen} options={{ headerShown: false, tabBarShowLabel: false }} />
+      <Tab.Screen name="Play" component={PlayScreen} options={{ headerShown: false, tabBarShowLabel: false }} />
+      <Tab.Screen name="Learn" component={LearningScreen} options={{ headerShown: false, tabBarShowLabel: false }} />
     </Tab.Navigator>
   );
 }

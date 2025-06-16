@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import HomeScreen from './HomeScreen';
-import LearningScreen from './LearningScreen';
-import PlayScreen from './PlayScreen';
 import WelcomeScreen from './WelcomeScreen';
 import MainTabNavigator from './MainTabNavigator';
 
