@@ -28,19 +28,15 @@ export default function App() {
           const activeTabName = state.routes[activeTabIndex].name;
           const allowLogout = activeTabName === "Home screen";
 
-          if (route.name === 'Home screen') {
-            iconName = focused ? 'home' : 'home-outline';
-          } else if (route.name === 'Play') {
-            iconName = focused ? 'stats-chart' : 'stats-chart-outline';
-          } else if (route.name === 'Learn') {
-            iconName = focused ? 'book' : 'book-outline';
-          }
-
+          if (route.name === 'Home') iconName = focused ? 'home' : 'home-outline';
+          else if (route.name === 'Play') iconName = focused ? 'stats-chart' : 'stats-chart-outline';
+          else if (route.name === 'Learn')iconName = focused ? 'book' : 'book-outline';
+        
           return <Icon name={iconName} size={size} color={color} />;
         },
       })}
     >
-      <Tab.Screen name="Home screen" component={HomeScreen} options={{ headerShown: false }} />
+      <Tab.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
       <Tab.Screen name="Play" component={PlayScreen} options={{ headerShown: false }} />
       <Tab.Screen name="Learn" component={LearningScreen} options={{ headerShown: false }} />
     </Tab.Navigator>

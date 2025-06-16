@@ -4,6 +4,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from './HomeScreen';
 import LearningScreen from './LearningScreen';
 import PlayScreen from './PlayScreen';
+import WelcomeScreen from './WelcomeScreen';
+import MainTabNavigator from './MainTabNavigator';
 
 const Stack = createStackNavigator();
 
@@ -11,7 +13,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Home"
+        initialRouteName="Welcome"
         screenOptions={{
           headerStyle: {
             backgroundColor: 'black',
@@ -24,9 +26,8 @@ export default function App() {
           },
         }}
       >
-        <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="Learn" component={LearningScreen} options={{ title: 'Logowanie' }} />
-        <Stack.Screen name="Play" component={PlayScreen} options={{ title: 'Rejestracja' }} />
+        <Stack.Screen name="Welcome" component={WelcomeScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Main tabs" component={MainTabNavigator} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
   );
