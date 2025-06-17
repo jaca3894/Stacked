@@ -3,6 +3,9 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import WelcomeScreen from './WelcomeScreen';
 import MainTabNavigator from './MainTabNavigator';
+import PokerScreen from './screens/PokerScreen';
+import BlackjackScreen from './screens/BlackjackScreen';
+import RouletteScreen from './screens/RouletteScreen';
 
 const Stack = createStackNavigator();
 
@@ -25,6 +28,9 @@ export default function App() {
       >
         <Stack.Screen name="Welcome" component={WelcomeScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Main tabs" component={MainTabNavigator} options={{ headerShown: false }} />
+        <Stack.Screen name="Poker Screen" component={PokerScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Blackjack Screen" component={BlackjackScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Roulette Screen" component={RouletteScreen} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
   );
