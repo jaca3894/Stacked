@@ -35,9 +35,9 @@ export default function App() {
         },
       })}
     >
-      <Tab.Screen name="Home" component={HomeScreen} options={{ headerShown: false, tabBarShowLabel: false }} />
-      <Tab.Screen name="Play" component={PlayScreen} options={{ headerShown: false, tabBarShowLabel: false }} />
-      <Tab.Screen name="Learn" component={LearningScreen} options={{ headerShown: false, tabBarShowLabel: false }} />
+      <Tab.Screen name="Home" component={HomeScreen} options={{ headerShown: false, tabBarShowLabel: true }} />
+      <Tab.Screen name="Play" component={PlayScreen} options={{ headerShown: false, tabBarShowLabel: true }} />
+      <Tab.Screen name="Learn" component={LearningScreen} options={{ headerShown: false, tabBarShowLabel: true }} />
     </Tab.Navigator>
   );
 }
