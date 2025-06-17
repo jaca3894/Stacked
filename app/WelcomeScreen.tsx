@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, TouchableHighlight, Image, Dimensions, StyleSheet, FlatList, SafeAreaView } from 'react-native';
 import type { StackNavigationProp } from '@react-navigation/stack';
+import { useNavigation } from '@react-navigation/core';
 
 type WelcomeScreenProps = {
   navigation: StackNavigationProp<any>;
@@ -75,7 +76,7 @@ const WelcomeScreen = ({ navigation }: WelcomeScreenProps) => {
             />
           ))}
         </View>
-        <TouchableHighlight style={styles.proceedButton}>
+        <TouchableHighlight style={styles.proceedButton} onPress={() => navigation.navigate('Main tabs')}>
           <Text style={{ color: 'white', textAlign: 'center', lineHeight: 50 }}>Przejdź dalej</Text>
         </TouchableHighlight>
       </View>
