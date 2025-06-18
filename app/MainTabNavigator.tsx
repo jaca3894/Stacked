@@ -1,12 +1,9 @@
 import { StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { useNavigationState } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import HomeScreen from './HomeScreen';
 import PlayScreen from './PlayScreen';
 import LearningScreen from './LearningScreen';
-
-
 
 export default function App() {
 
@@ -21,11 +18,6 @@ export default function App() {
         tabBarActiveTintColor: 'white',
         tabBarIcon: ({ focused, color, size }) => {
           let iconName = "";
-
-          const state = useNavigationState(state => state);
-          const activeTabIndex = state.index;
-          const activeTabName = state.routes[activeTabIndex].name;
-          const allowLogout = activeTabName === "Home screen";
 
           if (route.name === 'Home') iconName = focused ? 'home' : 'home-outline';
           else if (route.name === 'Play') iconName = focused ? 'play' : 'play-outline';

@@ -1,15 +1,18 @@
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Text, TextInput, StyleSheet, TouchableHighlight, Dimensions } from "react-native";
+import { Text, TextInput, StyleSheet, TouchableOpacity } from "react-native";
 import { useState } from "react";
-
-const screenWidth = Math.round(Dimensions.get('window').width);
+import { useNavigation } from "@react-navigation/core";
 
 const PokerScreen = () => {
   const [value, setValue] = useState('');
+  const navigation = useNavigation<any>(); // lub dokładne typowanie
+
+  const finalValue = value === '' ? 2 : parseInt(value, 10);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#1c1c1c', alignItems: 'center', justifyContent: 'center' }}>
-      <Text style={{ color: '#fff', fontSize: 32, fontWeight: 'bold' }}>Players</Text>
+    <SafeAreaView style={styles.container}>
+      <Text style={styles.title}>Players</Text>
+      
       <TextInput
         style={styles.input}
         value={value}
@@ -19,24 +22,26 @@ const PokerScreen = () => {
           if (numeric === '') return setValue('');
 
           let number = parseInt(numeric, 10);
-
-          // Ogranicz zakres
           if (number < 1) number = 1;
           if (number > 12) number = 12;
 
           setValue(number.toString());
         }}
         keyboardType="numeric"
-        placeholder="(1-12)"
+        placeholder="(2-12)"
         placeholderTextColor="#888"
         maxLength={2}
         autoFocus
       />
-      <TouchableHighlight>
-        <Text style={styles.button}>Start Game</Text>
-      </TouchableHighlight>
+
+      <TouchableOpacity
+        onPress={() => {if(+value != 1) navigation.navigate('Poker Game', { playersCount: finalValue })}}
+        style={styles.button}
+      >
+        <Text style={styles.buttonText}>Start Game</Text>
+      </TouchableOpacity>
     </SafeAreaView>
-  )
+  );
 };
 
 const styles = StyleSheet.create({
@@ -45,6 +50,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#1c1c1c',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  title: {
+    color: '#fff',
+    fontSize: 32,
+    fontWeight: 'bold',
   },
   input: {
     color: 'white',
@@ -66,12 +76,13 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginVertical: 8,
     alignItems: 'center',
-    position: 'relative',
+  },
+  buttonText: {
     color: 'white',
     fontSize: 24,
     fontWeight: '600',
     textAlign: 'center',
-  }
-})
+  },
+});
 
 export default PokerScreen;
