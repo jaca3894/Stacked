@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, TouchableHighlight, Image, Dimensions, StyleSheet, FlatList, SafeAreaView } from 'react-native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/core';
+import { rgbaColor } from 'react-native-reanimated/lib/typescript/Colors';
 
 type WelcomeScreenProps = {
   navigation: StackNavigationProp<any>;
@@ -12,13 +13,13 @@ const WelcomeScreen = ({ navigation }: WelcomeScreenProps) => {
   // czas co ile ma sie zmieniac karta
   const autoRotateInterval = 5500;
   const [currentIndex, setCurrentIndex] = useState(0);
-  const flatListRef = useRef<FlatList<{ title: string }> | null>(null);
+  const flatListRef = useRef<FlatList<{ title: string, description: string, photoPath: string }> | null>(null);
 
 
   const data = [
-    { title: 'Strona 1' },
-    { title: 'Strona 2' },
-    { title: 'Strona 3' }
+    { title: 'Host games', description: "You've got only deck of cards? Simulate game's board by playing with virtual money.", photoPath: require("../assets/logo.png") },
+    { title: 'Learn basics and more', description: "We've got tutorials for everything: from game rules to card flourishes.", photoPath: require("../assets/logo.png") },
+    { title: 'Check your poker hand', description: "Not sure if your cards line up into something? Use our tool to find out.", photoPath: require("../assets/logo.png") }
   ];
 
   const autoRotate = () => {
@@ -33,17 +34,15 @@ const WelcomeScreen = ({ navigation }: WelcomeScreenProps) => {
     return () => clearInterval(interval);
   }, [currentIndex]);
 
-  const renderItems = ({ item }: { item: { title: string } }) => (
+  const renderItems = ({ item }: { item: { title: string, description: string, photoPath: any } }) => (
     <View style={styles.carouselItem}>
-      <Text style={styles.cardTitle}>{item.title}</Text>
-      <TouchableHighlight style={styles.cardButton} onPress={() => console.log(`Kliknięto: ${item.title}`)}>
-        <Text style={styles.cardButtonText}>Więcej</Text>
-      </TouchableHighlight>
+      <Image source={item.photoPath} style={styles.cardImage}/>
+      <Text style={styles.cardButtonText}><Text style={styles.cardTitle}>{item.title}</Text>{'\n\n'}{item.description}</Text>
     </View>
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <View style={styles.header}>
         <Image source={require('../assets/logo.png')} style={{ width: 200, height: 200 }} />
       </View>
@@ -76,14 +75,14 @@ const WelcomeScreen = ({ navigation }: WelcomeScreenProps) => {
             />
           ))}
         </View>
-        <TouchableHighlight style={styles.proceedButton} onPress={() => navigation.navigate('Main tabs')}>
-          <Text style={{ color: 'white', textAlign: 'center', lineHeight: 50 }}>Przejdź dalej</Text>
+        <TouchableHighlight underlayColor={"gray"} style={styles.proceedButton} onPress={() => navigation.navigate('Main tabs')}>
+          <Text style={{ color: 'black', fontWeight: "bold", textAlign: 'center', lineHeight: 50 }}>Continue</Text>
         </TouchableHighlight>
       </View>
       <View style={styles.footer}>
         <Text style={styles.footerText}>2025 Stacked.</Text>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -100,7 +99,7 @@ const styles = StyleSheet.create({
   },
   main: {
     marginVertical: 10,
-    height: '55%',
+    height: '60%',
     backgroundColor: '#1c1c1c',
   },
   flatList: {
@@ -108,7 +107,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   footer: {
-    height: '20%',
+    height: '15%',
     backgroundColor: '#1c1c1c',
     justifyContent: 'center',
     alignItems: 'center',
@@ -122,27 +121,40 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width * 0.75,
     height: "100%",
     marginHorizontal: Dimensions.get('window').width * 0.125,
-    padding: 10,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#1c1c1c',
+    borderColor: '#cbbb9c',
+    borderWidth: 2,
     borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
-  cardTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
+  cardImage: {
+    width: '100%',
+    height: "100%",
+    opacity: 0.1,
+    backgroundColor: 'black',
+    borderRadius: 10, 
+    borderBottomRightRadius: 0,
+    borderBottomLeftRadius: 0,
   },
   cardButton: {
     marginTop: 10,
-    backgroundColor: 'green',
+    backgroundColor: '#cbbb9c',
     paddingVertical: 8,
     paddingHorizontal: 15,
     borderRadius: 5,
   },
-  cardButtonText: {
-    color: '#fff',
+  cardTitle: {
+    paddingBottom: 0,
+    textAlign: 'left',
+    fontSize: 18,
     fontWeight: 'bold',
+    color: '#cbbb9c',
+  },
+  cardButtonText: {
+    position: 'absolute',
+    bottom: "0%",
+    color: 'white',
+    padding: 20,
+    textAlign: 'left',
   },
   pagination: {
     alignSelf: 'center',
@@ -157,7 +169,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   proceedButton: {
-    backgroundColor: 'green',
+    backgroundColor: '#cbbb9c',
     justifyContent: 'center',
     alignItems: 'center',
     alignSelf: 'center',
