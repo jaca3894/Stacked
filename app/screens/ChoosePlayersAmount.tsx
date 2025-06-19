@@ -1,11 +1,23 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Text, TextInput, StyleSheet, TouchableOpacity } from "react-native";
 import { useState } from "react";
-import { useNavigation } from "@react-navigation/core";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/core";
 
-const PokerScreen = () => {
+type RootStackParamList = {
+  ChoosePlayersAmount: { gameType: string };
+  PokerGame: { playersCount: number };
+  BlackjackGame: { playersCount: number };
+  RouletteGame: { playersCount: number };
+};
+
+type PokerGameRouteProp = RouteProp<RootStackParamList, "ChoosePlayersAmount">;
+
+const ChoosePlayersAmount = () => {
   const [value, setValue] = useState('');
   const navigation = useNavigation<any>(); // lub dokładne typowanie
+
+  const route = useRoute<PokerGameRouteProp>();
+  const { gameType } = route.params;
 
   const finalValue = value === '' ? 2 : parseInt(value, 10);
 
@@ -35,7 +47,7 @@ const PokerScreen = () => {
       />
 
       <TouchableOpacity
-        onPress={() => {if(+value != 1) navigation.navigate('Poker Game', { playersCount: finalValue })}}
+        onPress={() => {if(+value != 1) navigation.navigate(gameType, { playersCount: finalValue })}}
         style={styles.button}
       >
         <Text style={styles.buttonText}>Start Game</Text>
@@ -85,4 +97,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PokerScreen;
+export default ChoosePlayersAmount;

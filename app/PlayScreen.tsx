@@ -20,21 +20,21 @@ const PlayScreen = () => {
         <View style={styles.mainContainer}>
           <Text style={styles.title}>What do you want to{'\n'}track today?</Text>
 
-          <TouchableHighlight style={styles.button} onPress={() => (navigation as any).navigate('Poker Screen')}>
+          <TouchableHighlight style={styles.button} onPress={() => (navigation as any).navigate('ChoosePlayersAmount', { gameType: 'PokerGame' })}>
             <View style={styles.buttonView}>
               <Text style={styles.buttonText}>Poker</Text>
               <Image style={styles.arrow} source={require('../assets/arrowRight.png')} resizeMode="cover"></Image>
             </View>
           </TouchableHighlight>
 
-          <TouchableHighlight style={styles.button} onPress={() => (navigation as any).navigate('Blackjack Screen')}>
+          <TouchableHighlight style={styles.button} onPress={() => (navigation as any).navigate('ChoosePlayersAmount', { gameType: 'BlackjackGame' })}>
             <View style={styles.buttonView}>
               <Text style={styles.buttonText}>Blackjack</Text>
               <Image style={styles.arrow} source={require('../assets/arrowRight.png')} resizeMode="cover"></Image>
             </View>
           </TouchableHighlight>
 
-          <TouchableHighlight style={styles.button} onPress={() => (navigation as any).navigate('Roulette Screen')}>
+          <TouchableHighlight style={styles.button} onPress={() => (navigation as any).navigate('ChoosePlayersAmount', { gameType: 'RouletteGame' })}>
             <View style={styles.buttonView}>
               <Text style={styles.buttonText}>Roulette</Text>
               <Image style={styles.arrow} source={require('../assets/arrowRight.png')} resizeMode="cover"></Image>

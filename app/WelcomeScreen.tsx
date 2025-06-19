@@ -1,8 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, TouchableHighlight, Image, Dimensions, StyleSheet, FlatList, SafeAreaView } from 'react-native';
+import { View, Text, TouchableHighlight, Image, Dimensions, StyleSheet, FlatList } from 'react-native';
 import type { StackNavigationProp } from '@react-navigation/stack';
-import { useNavigation } from '@react-navigation/core';
-import { rgbaColor } from 'react-native-reanimated/lib/typescript/Colors';
 
 type WelcomeScreenProps = {
   navigation: StackNavigationProp<any>;
@@ -67,7 +65,7 @@ const WelcomeScreen = ({ navigation }: WelcomeScreenProps) => {
         <View style={styles.pagination}>
           {data.map((_, index) => (
             <View
-              key={index}
+              key={index+1}
               style={[
                 styles.dot,
                 { backgroundColor: index === currentIndex ? 'green' : '#ccc' }
@@ -75,7 +73,7 @@ const WelcomeScreen = ({ navigation }: WelcomeScreenProps) => {
             />
           ))}
         </View>
-        <TouchableHighlight underlayColor={"gray"} style={styles.proceedButton} onPress={() => navigation.navigate('Main tabs')}>
+        <TouchableHighlight underlayColor={"gray"} style={styles.proceedButton} onPress={() => navigation.navigate('MainTabs')}>
           <Text style={{ color: 'black', fontWeight: "bold", textAlign: 'center', lineHeight: 50 }}>Continue</Text>
         </TouchableHighlight>
       </View>

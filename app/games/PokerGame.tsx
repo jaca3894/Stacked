@@ -1,13 +1,9 @@
 import React, { useState } from "react";
 import { ImageBackground, Text, StyleSheet, View, LayoutChangeEvent } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { RouteProp, useRoute } from "@react-navigation/native";
+import { useRoute } from "@react-navigation/native";
 
-type RootStackParamList = {
-  PokerGame: { playersCount: number };
-};
-
-type PokerGameRouteProp = RouteProp<RootStackParamList, "PokerGame">;
+import GameRouteProp from "./GameProps";
 
 const seatingPlan: Record<number, [number, number, number, number]> = {
   2: [0, 1, 0, 1],
@@ -24,7 +20,7 @@ const seatingPlan: Record<number, [number, number, number, number]> = {
 };
 
 const PokerGame = () => {
-  const route = useRoute<PokerGameRouteProp>();
+  const route = useRoute<GameRouteProp>();
   const { playersCount } = route.params;
   const [top, right, bottom, left] = seatingPlan[playersCount] ?? [0, 0, 0, 0];
 
@@ -48,28 +44,28 @@ const PokerGame = () => {
             {/* TOP */}
             <View style={[styles.row, { top: 0, width: layout.width }]}>
               {Array.from({ length: top }).map((_, i) => (
-                <Text style={styles.text} key={`T${i}`}>T: {i + 1}</Text>
+                <Text style={styles.text} key={`T${i+1}`}>T: {i + 1}</Text>
               ))}
             </View>
 
             {/* BOTTOM */}
             <View style={[styles.row, { bottom: 0, width: layout.width }]}>
               {Array.from({ length: bottom }).map((_, i) => (
-                <Text style={styles.text} key={`B${i}`}>B: {i + 1}</Text>
+                <Text style={styles.text} key={`B${i+1}`}>B: {i + 1}</Text>
               ))}
             </View>
 
             {/* LEFT */}
             <View style={[styles.column, { left: 0, height: layout.height }]}>
               {Array.from({ length: left }).map((_, i) => (
-                <Text style={styles.text} key={`L${i}`}>L: {i + 1}</Text>
+                <Text style={styles.text} key={`L${i+1}`}>L: {i + 1}</Text>
               ))}
             </View>
 
             {/* RIGHT */}
             <View style={[styles.column, { right: 0, height: layout.height }]}>
               {Array.from({ length: right }).map((_, i) => (
-                <Text style={styles.text} key={`R${i}`}>R: {i + 1}</Text>
+                <Text style={styles.text} key={`R${i+1}`}>R: {i + 1}</Text>
               ))}
             </View>
           </View>
