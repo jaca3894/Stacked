@@ -1,4 +1,5 @@
 import React from 'react';
+import { View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import WelcomeScreen from './WelcomeScreen';
@@ -12,28 +13,34 @@ const Stack = createStackNavigator();
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="Welcome"
-        screenOptions={{
-          headerStyle: {
-            backgroundColor: 'black',
-            height: 70,
-          },
-          headerTintColor: '#fff',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-            fontSize: 18,
-          },
-        }}
-      >
-        <Stack.Screen name="Welcome" component={WelcomeScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="Main tabs" component={MainTabNavigator} options={{ headerShown: false }} />
-        <Stack.Screen name="Poker Screen" component={PokerScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="Poker Game" component={PokerGame} options={{ headerShown: false }} />
-        <Stack.Screen name="Blackjack Screen" component={BlackjackScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="Roulette Screen" component={RouletteScreen} options={{ headerShown: false }} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <View style={{ flex: 1, backgroundColor: 'black' }}>
+      <NavigationContainer>
+        <Stack.Navigator
+
+          initialRouteName="Welcome"
+          screenOptions={{
+            headerStyle: {
+              backgroundColor: 'black',
+              height: 70,
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+              fontWeight: 'bold',
+              fontSize: 18,
+            },
+            cardStyle: {
+              backgroundColor: 'black', // <-- to dodaj
+            },
+          }}
+        >
+          <Stack.Screen name="Welcome" component={WelcomeScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="Main tabs" component={MainTabNavigator} options={{ headerShown: false }} />
+          <Stack.Screen name="Poker Screen" component={PokerScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="Poker Game" component={PokerGame} options={{ headerShown: false }} />
+          <Stack.Screen name="Blackjack Screen" component={BlackjackScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="Roulette Screen" component={RouletteScreen} options={{ headerShown: false }} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </View>
   );
 }

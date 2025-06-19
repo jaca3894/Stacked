@@ -59,10 +59,9 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   mainContainer: {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: [{ translateX: -screenWidth * .35 }, { translateY: -screenHeight * .05 }],
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
   },
   title: {
     color: 'white',
