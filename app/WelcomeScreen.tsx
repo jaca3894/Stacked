@@ -73,7 +73,7 @@ const WelcomeScreen = ({ navigation }: WelcomeScreenProps) => {
             />
           ))}
         </View>
-        <TouchableHighlight underlayColor={"gray"} style={styles.proceedButton} onPress={() => navigation.navigate('MainTabs')}>
+        <TouchableHighlight underlayColor={"#948870"} style={styles.proceedButton} onPress={() => navigation.navigate('MainTabs')}>
           <Text style={{ color: 'black', fontWeight: "bold", textAlign: 'center', lineHeight: 50 }}>Continue</Text>
         </TouchableHighlight>
       </View>

@@ -14,7 +14,7 @@ type PokerGameRouteProp = RouteProp<RootStackParamList, "ChoosePlayersAmount">;
 
 const ChoosePlayersAmount = () => {
   const [value, setValue] = useState('');
-  const navigation = useNavigation<any>(); // lub dokładne typowanie
+  const navigation = useNavigation<any>();
 
   const route = useRoute<PokerGameRouteProp>();
   const { gameType } = route.params;
