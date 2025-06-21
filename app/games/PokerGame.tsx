@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ImageBackground, Text, StyleSheet, View, LayoutChangeEvent, TouchableHighlight, Dimensions, TextInput, Modal } from "react-native";
+import { ImageBackground, Text, StyleSheet, View, TouchableHighlight, Dimensions, TextInput, Modal } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRoute } from "@react-navigation/native";
 
@@ -57,7 +57,7 @@ const PokerGame = () => {
         resizeMode="contain"
       >
         <View style={[styles.content]}>
-          {edges.map(({ pos, dir, len, prefix, addStyle }, i) => (
+          {edges.map(({ pos, dir, len, prefix, addStyle }) => (
             <View key={prefix} style={[styles[dir], pos, addStyle]}>
               {Array.from({ length: len }).map((_, j) => {
                 const currentIndex = globalIndex++;
