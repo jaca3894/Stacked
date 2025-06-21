@@ -27,7 +27,7 @@ const PlayScreen = () => {
             >
               <View style={styles.buttonView}>
                 <Text style={styles.buttonText}>Poker</Text>
-                <Image style={styles.arrow} source={require('../assets/arrowRight.png')} resizeMode="cover" />
+                <Image style={styles.arrow} source={require('../assets/kremowaArrowRight.png')} resizeMode="cover" />
               </View>
             </TouchableHighlight>
 
@@ -37,7 +37,7 @@ const PlayScreen = () => {
             >
               <View style={styles.buttonView}>
                 <Text style={styles.buttonText}>Blackjack</Text>
-                <Image style={styles.arrow} source={require('../assets/arrowRight.png')} resizeMode="cover" />
+                <Image style={styles.arrow} source={require('../assets/kremowaArrowRight.png')} resizeMode="cover" />
               </View>
             </TouchableHighlight>
 
@@ -47,7 +47,7 @@ const PlayScreen = () => {
             >
               <View style={styles.buttonView}>
                 <Text style={styles.buttonText}>Roulette</Text>
-                <Image style={styles.arrow} source={require('../assets/arrowRight.png')} resizeMode="cover" />
+                <Image style={styles.arrow} source={require('../assets/kremowaArrowRight.png')} resizeMode="cover" />
               </View>
             </TouchableHighlight>
           </View>
@@ -109,12 +109,12 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: '600',
   },
   arrow: {
-    height: 20,
-    width: 20,
+    height: 25,
+    width: 25,
   },
   footerText: {
     color: 'gray',
