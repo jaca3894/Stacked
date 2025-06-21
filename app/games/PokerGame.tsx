@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { ImageBackground, Text, StyleSheet, View, TouchableHighlight, Dimensions, TextInput, Modal } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRoute } from "@react-navigation/native";
+import Player from "../../classes/Player";
 
 import GameRouteProp from "../../props/GameProps";
 
@@ -35,7 +36,7 @@ const PokerGame = () => {
   const [top, right, bottom, left] = seatingPlan[playersCount] ?? [0, 0, 0, 0];
   const maxPlayers = top + right + bottom + left;
 
-  const [players, setPlayers] = useState<string[]>(Array(maxPlayers).fill(''));
+  const [players, setPlayers] = useState<Player[]>(Array(maxPlayers).fill(new Player()));
 
   const [showInput, setShowInput] = useState([false, -1]);
   const [inputValue, setInputValue] = useState("");
@@ -63,7 +64,7 @@ const PokerGame = () => {
                 const currentIndex = globalIndex++;
                 return (
                 <TouchableHighlight key={j+1} style={styles.button} underlayColor="#948870" onPress={() => {setShowInput([true, currentIndex])}}>
-                  <Text style={styles.buttonText} numberOfLines={1} ellipsizeMode="tail">{players[currentIndex] != '' ? players[currentIndex] : '+' + currentIndex}</Text>
+                  <Text style={styles.buttonText} numberOfLines={1} ellipsizeMode="tail">{players[currentIndex].name != '' ? players[currentIndex].name : '+' + currentIndex}</Text>
                 </TouchableHighlight>
               )})}
             </View>
@@ -92,7 +93,7 @@ const PokerGame = () => {
                   }}
                   />
                 <TouchableHighlight style={styles.dodajButton} underlayColor="#948870"
-                  onPress={() => {setPlayers(players => players.map((player, index) => index === showInput[1] ? inputValue : player)); setShowInput([false, -1])}}>
+                  onPress={() => {setPlayers(players => players.map((player, index) => index === showInput[1] ? new Player(inputValue) : player)); setShowInput([false, -1])}}>
                   <Text>Dodaj</Text>
                 </TouchableHighlight>
               </View>
