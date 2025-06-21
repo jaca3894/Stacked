@@ -29,7 +29,7 @@ const MoreScreen = () => {
       <View style={styles.flexContainer}>
         {data.map((item, index) => (
             <TouchableOpacity key={index} style={styles.block}>
-                <Ionicons name={item.iconName} size={Math.round(screenHeight / 20)} color="white" />
+                <Ionicons name={item.iconName} size={Math.round(screenHeight / 20)} color="gray" />
                 <Text style={styles.blockText}>{item.title}</Text>
             </TouchableOpacity>
         ))}
@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
     marginTop: '10%',
   },
   blockText: {
-    color: 'gray',
+    color: '#1c1c1c',
     fontSize: 16,
     fontWeight: 'bold',
     marginTop: 10,
