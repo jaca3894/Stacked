@@ -1,4 +1,5 @@
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';import Icon from 'react-native-vector-icons/Ionicons';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import Icon from 'react-native-vector-icons/Ionicons';
 import HomeScreen from './HomeScreen';
 import PlayScreen from './PlayScreen';
 import LearningScreen from './LearningScreen';
@@ -11,12 +12,13 @@ export default function App() {
   return (
     <Tab.Navigator
       tabBarPosition="bottom"
-      screenOptions={({ route }) => ({
+      screenOptions={({ route }: { route: { name: string } }) => ({
       headerStyle: { backgroundColor: '#1c1c1c' },
       headerTintColor: '#fff',
       tabBarStyle: { backgroundColor: '#1c1c1c' },
       tabBarActiveTintColor: 'white',
       tabBarIndicatorStyle: { backgroundColor: '#cbbb9c' },
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       tabBarIcon: ({ focused, color }) => {
         let iconName = "";
 

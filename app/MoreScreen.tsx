@@ -1,6 +1,6 @@
 import React from 'react';
-import { TouchableOpacity } from 'react-native';
-import { View, Text, StyleSheet, Dimensions, Image, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, Image, SafeAreaView, TouchableHighlight } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const screenWidth = Math.round(Dimensions.get('window').width);
@@ -18,26 +18,30 @@ const data = [
 
 const MoreScreen = () => {
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Image
-          source={require('../assets/logo.png')}
-          style={styles.logo}
-          resizeMode="contain"
-        />
-      </View>
-      <View style={styles.flexContainer}>
-        {data.map((item, index) => (
-            <TouchableOpacity key={index} style={styles.block}>
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <Image
+            source={require('../assets/logo.png')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+        </View>
+        <View style={styles.flexContainer}>
+          {data.map((item, index) => (
+            <TouchableHighlight key={index+1} style={styles.block} underlayColor="#948870" onPress={() => {}}>
+              <View style={styles.buttonView}>
                 <Ionicons name={item.iconName} size={Math.round(screenHeight / 20)} color="gray" />
                 <Text style={styles.blockText}>{item.title}</Text>
-            </TouchableOpacity>
-        ))}
-      </View>
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>2025 Stacked.</Text>
-      </View>
-    </SafeAreaView>
+              </View>
+            </TouchableHighlight>
+          ))}
+        </View>
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>2025 Stacked.</Text>
+        </View>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 };
 
@@ -67,6 +71,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderColor: 'white',
     borderWidth: 2,
+  },
+  buttonView: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    height: '100%',
   },
   footer: {
     height: '10%',

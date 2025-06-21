@@ -1,7 +1,7 @@
 import { useRoute } from "@react-navigation/core";
 import { View, Text } from "react-native";
 
-import GameRouteProp from "./GameProps";
+import GameRouteProp from "../../props/GameProps";
 
 const RouletteGame = () => {
   const route = useRoute<GameRouteProp>();

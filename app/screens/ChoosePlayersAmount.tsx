@@ -40,7 +40,7 @@ const ChoosePlayersAmount = () => {
           setValue(number.toString());
         }}
         keyboardType="numeric"
-        placeholder="(2-12)"
+        placeholder="2-12"
         placeholderTextColor="#888"
         maxLength={2}
         autoFocus
