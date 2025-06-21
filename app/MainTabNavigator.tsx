@@ -1,34 +1,38 @@
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Icon from 'react-native-vector-icons/Ionicons';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';import Icon from 'react-native-vector-icons/Ionicons';
 import HomeScreen from './HomeScreen';
 import PlayScreen from './PlayScreen';
 import LearningScreen from './LearningScreen';
+import MoreScreen from './MoreScreen';
 
 export default function App() {
 
-  const Tab = createBottomTabNavigator();
+  const Tab = createMaterialTopTabNavigator();
 
   return (
     <Tab.Navigator
+      tabBarPosition="bottom"
       screenOptions={({ route }) => ({
-        headerStyle: { backgroundColor: 'black' },
-        headerTintColor: '#fff',
-        tabBarStyle: { backgroundColor: 'black' },
-        tabBarActiveTintColor: 'white',
-        tabBarIcon: ({ focused, color, size }) => {
-          let iconName = "";
+      headerStyle: { backgroundColor: '#1c1c1c' },
+      headerTintColor: '#fff',
+      tabBarStyle: { backgroundColor: '#1c1c1c' },
+      tabBarActiveTintColor: 'white',
+      tabBarIndicatorStyle: { backgroundColor: '#cbbb9c' },
+      tabBarIcon: ({ focused, color }) => {
+        let iconName = "";
 
-          if (route.name === 'Home') iconName = focused ? 'home' : 'home-outline';
-          else if (route.name === 'Play') iconName = focused ? 'play' : 'play-outline';
-          else if (route.name === 'Learn')iconName = focused ? 'book' : 'book-outline';
-        
-          return <Icon name={iconName} size={size} color={color} />;
-        },
+        if (route.name === 'Home') iconName = focused ? 'home' : 'home-outline';
+        else if (route.name === 'Play') iconName = focused ? 'play' : 'play-outline';
+        else if (route.name === 'Learn') iconName = focused ? 'book' : 'book-outline';
+        else if (route.name === 'More') iconName = focused ? 'ellipsis-horizontal' : 'ellipsis-horizontal-outline';
+
+        return <Icon name={iconName} color={color} size={20}/>;
+      },
       })}
     >
-      <Tab.Screen name="Home" component={HomeScreen} options={{ headerShown: false, tabBarShowLabel: true }} />
-      <Tab.Screen name="Play" component={PlayScreen} options={{ headerShown: false, tabBarShowLabel: true }} />
-      <Tab.Screen name="Learn" component={LearningScreen} options={{ headerShown: false, tabBarShowLabel: true }} />
+      <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarShowLabel: true }} />
+      <Tab.Screen name="Play" component={PlayScreen} options={{ tabBarShowLabel: true }} />
+      <Tab.Screen name="Learn" component={LearningScreen} options={{ tabBarShowLabel: true }} />
+      <Tab.Screen name="More" component={MoreScreen} options={{ tabBarShowLabel: true }} />
     </Tab.Navigator>
   );
 }
