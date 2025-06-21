@@ -37,14 +37,8 @@ const PokerGame = () => {
 
   const [players, setPlayers] = useState<string[]>(Array(maxPlayers).fill(''));
 
-  const [layout, setLayout] = useState({ width: 0, height: 0 });
   const [showInput, setShowInput] = useState([false, -1]);
   const [inputValue, setInputValue] = useState("");
-
-  const handleLayout = (event: LayoutChangeEvent) => {
-    const { width, height } = event.nativeEvent.layout;
-    setLayout({ width, height });
-  };
 
   const edges: EdgeConfig[] = [
     { pos: { top: '5%' }, dir: 'row', len: top, prefix: 'T' },
@@ -61,23 +55,20 @@ const PokerGame = () => {
         source={require('../../assets/pokerTable.png')}
         style={styles.background}
         resizeMode="contain"
-        onLayout={handleLayout}
       >
-        {layout.width > 0 && layout.height > 0 && (
-          <View style={[styles.content, { width: layout.width, height: layout.height }]}>
-            {edges.map(({ pos, dir, len, prefix, addStyle }, i) => (
-              <View key={prefix} style={[styles[dir], pos, addStyle]}>
-                {Array.from({ length: len }).map((_, j) => {
-                  const currentIndex = globalIndex++;
-                  return (
-                  <TouchableHighlight key={j+1} style={styles.button} underlayColor="#948870" onPress={() => {setShowInput([true, currentIndex])}}>
-                    <Text style={styles.buttonText} numberOfLines={1} ellipsizeMode="tail">{players[currentIndex] != '' ? players[currentIndex] : '+' + currentIndex}</Text>
-                  </TouchableHighlight>
-                )})}
-              </View>
-            ))}
-          </View>
-        )}
+        <View style={[styles.content]}>
+          {edges.map(({ pos, dir, len, prefix, addStyle }, i) => (
+            <View key={prefix} style={[styles[dir], pos, addStyle]}>
+              {Array.from({ length: len }).map((_, j) => {
+                const currentIndex = globalIndex++;
+                return (
+                <TouchableHighlight key={j+1} style={styles.button} underlayColor="#948870" onPress={() => {setShowInput([true, currentIndex])}}>
+                  <Text style={styles.buttonText} numberOfLines={1} ellipsizeMode="tail">{players[currentIndex] != '' ? players[currentIndex] : '+' + currentIndex}</Text>
+                </TouchableHighlight>
+              )})}
+            </View>
+          ))}
+        </View>
         {showInput[0] && (
           <Modal onRequestClose={() => setShowInput([false, -1]) } transparent={true} animationType="fade">
             <View style={styles.popUp}>
