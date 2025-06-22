@@ -12,3 +12,33 @@ export const morePanelsData = [
   { title: 'Credits', iconName: 'people-outline' },
   { title: 'Settings', iconName: 'settings-outline' },
 ];
+
+export const skillsData = [
+  {
+    category: 'Basic rules',
+    description: 'Get to know the essentials.',
+    items: [
+      { name: 'Poker', imagePath: require('../assets/logo.png') },
+      { name: 'Blackjack', imagePath: require('../assets/logo.png') },
+      { name: 'Roulette', imagePath: require('../assets/logo.png') }
+    ]
+  },
+  {
+    category: 'Shuffles and cuts',
+    description: 'Easy, effective and useful.',
+    items: [
+      { name: 'Riffle shuffle', imagePath: require('../assets/riffleShuffle.gif') },
+      { name: 'Faro shuffle', imagePath: require('../assets/faroShuffle.gif') },
+      { name: 'Chartier Cut', imagePath: require('../assets/logo.png') },
+    ]
+  },
+  {
+    category: 'Flourishes',
+    description: 'Step up your game with style.',
+    items: [
+      { name: 'Card spring', imagePath: require('../assets/logo.png') },
+      { name: 'Card pirouette', imagePath: require('../assets/logo.png') },
+      { name: 'Deck spread', imagePath: require('../assets/logo.png') }
+    ]
+  }
+];

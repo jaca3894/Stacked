@@ -1,5 +1,10 @@
 import { View, Text, StyleSheet, ScrollView, Dimensions, SafeAreaView, Image } from 'react-native';
+import { skillsData as data } from '../../classes/Database';
+import { Image as GIF} from 'expo-image';
+const LearningScreen = () => {
+}
 
+/*
 const screenHeight = Math.round(Dimensions.get('window').height);
 
 const LearningScreen = () => {
@@ -13,17 +18,28 @@ const LearningScreen = () => {
           />
       </View>
       <ScrollView style={ styles.container } showsVerticalScrollIndicator={false}>
-        <View style={styles.categoryBlock}>
-          <Text style={styles.categoryTitle}></Text>
-          <Text style={styles.categoryDescription}></Text>
-          <ScrollView style={styles.categoryScroll} horizontal={true} showsHorizontalScrollIndicator={false}>
-
-          </ScrollView>
-        </View>
-        <View style={styles.categoryBlock}></View>
-        <View style={styles.categoryBlock}></View>
-        <View style={styles.categoryBlock}></View>
-        <View style={styles.categoryBlock}></View>
+        {data.map((category, index) => (
+          <View key={index} style={styles.categoryBlock}>
+            <Text style={styles.categoryTitle}>{category.category}</Text>
+            <Text style={styles.categoryDescription}>{category.description}</Text>
+            <ScrollView style={styles.categoryScroll} horizontal={true} showsHorizontalScrollIndicator={false}>
+              {category.items.map((item, itemIndex) => (
+                <View key={itemIndex} style={styles.skillItem}>
+                  <GIF
+                    source={item.imagePath}
+                    style={styles.skillImage}
+                    contentFit='cover'
+                    transition={300}
+                    cachePolicy="memory-disk"
+                 />
+                  <View style={styles.skillName}>
+                    <Text style={styles.skillNameText}>{item.name}</Text>
+                  </View>
+                </View>
+              ))}
+            </ScrollView>
+          </View>
+        ))}
       </ScrollView>
     </SafeAreaView>
   );
@@ -35,14 +51,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     backgroundColor: '#1c1c1c',
   },
-  categoryBlock: {
-    height: screenHeight * 0.3,
-    width: '100%',
-    margin: "auto",
-    borderWidth: 2,
-    borderColor: 'white',
-    backgroundColor: 'green',
-  },
   header: {
     height: screenHeight * 0.2,
     width: '100%',
@@ -51,35 +59,70 @@ const styles = StyleSheet.create({
     backgroundColor: '#1c1c1c',
     alignItems: 'center',  
   },
-  headerText: {
-    width: "50%",
-    height: '100%',
-    color: '#f8e2bd',
-    fontSize: 24,
-    fontWeight: 'bold',
-    lineHeight: screenHeight * 0.15,
-    textAlign: 'center',
-  },
   logo: {
     marginTop: "10%",
     width: '50%',
     height: '100%',  
   },
+  categoryBlock: {
+    padding: 20,
+    height: 350,
+    width: '100%',
+    margin: "auto",
+    // borderWidth: 2,
+    // borderColor: 'white',
+    backgroundColor: '#1c1c1c',
+  },
   categoryTitle: {
-    color: '#f8e2bd',
-    fontSize: 24,
+    color: 'white',
+    fontSize: 23,
     fontWeight: 'bold',
     marginBottom: 10,
   },
   categoryDescription: {
-    color: '#f8e2bd',
-    fontSize: 16,
+    color: 'lightgrey',
+    fontSize: 12,
     marginBottom: 20,
   },
   categoryScroll: {
     flexDirection: 'row',
     paddingHorizontal: 10,
   },
-})
+  skillItem: {
+    width: 250,
+    height: 200,
+    backgroundColor: 'transparent',
+    marginRight: 10,
+    textAlign: 'left',
+    flexDirection: 'column',
+    justifyContent: 'space-around',
+    borderRadius: 10,
+  },
+  skillImage: {
+    width: "100%",
+    height: 150,
+    backgroundColor: 'lightgrey',
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+  },
+  skillName: {
+    height: 50,
+    width: "100%",
+    borderWidth: 1,
+    borderColor: 'white',
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
+    borderTopWidth: 0,
 
+  },
+  skillNameText: {
+    color: 'white',
+    fontSize: 16,
+    lineHeight: 50,
+    fontWeight: 'bold',
+    textAlign: 'left', 
+    paddingLeft: 10, 
+  },
+})
+*/
 export default LearningScreen;
