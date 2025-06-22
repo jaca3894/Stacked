@@ -2,19 +2,10 @@ import React from 'react';
 import { View, Text, StyleSheet, Dimensions, Image, SafeAreaView, TouchableHighlight } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { morePanelsData as data } from "../../classes/Database";
 
 const screenWidth = Math.round(Dimensions.get('window').width);
 const screenHeight = Math.round(Dimensions.get('window').height);
-
-const data = [
-  { title: 'Check hand', iconName: 'layers-outline' },
-  { title: 'Glossary', iconName: 'help-outline' },
-  { title: 'Report a bug', iconName: 'bug-outline' },
-  { title: 'Patch notes', iconName: 'document-text-outline' },
-  { title: 'Our social media', iconName: 'logo-instagram' }, // lub logo-twitter / logo-facebook
-  { title: 'Settings', iconName: 'settings-outline' },
-];
-
 
 const MoreScreen = () => {
   return (
@@ -22,7 +13,7 @@ const MoreScreen = () => {
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
           <Image
-            source={require('../assets/logo.png')}
+            source={require('../../assets/logo.png')}
             style={styles.logo}
             resizeMode="contain"
           />

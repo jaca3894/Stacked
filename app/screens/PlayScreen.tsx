@@ -14,7 +14,7 @@ const PlayScreen = () => {
       <SafeAreaView style={styles.container}>
         <View style={styles.content}>
           <Image
-            source={require('../assets/logo.png')}
+            source={require('../../assets/logo.png')}
             style={styles.logo}
             resizeMode="contain"
           />
@@ -27,7 +27,7 @@ const PlayScreen = () => {
             >
               <View style={styles.buttonView}>
                 <Text style={styles.buttonText}>Poker</Text>
-                <Image style={styles.arrow} source={require('../assets/kremowaArrowRight.png')} resizeMode="cover" />
+                <Image style={styles.arrow} source={require('../../assets/arrowRight.png')} resizeMode="cover" />
               </View>
             </TouchableHighlight>
 
@@ -37,7 +37,7 @@ const PlayScreen = () => {
             >
               <View style={styles.buttonView}>
                 <Text style={styles.buttonText}>Blackjack</Text>
-                <Image style={styles.arrow} source={require('../assets/kremowaArrowRight.png')} resizeMode="cover" />
+                <Image style={styles.arrow} source={require('../../assets/arrowRight.png')} resizeMode="cover" />
               </View>
             </TouchableHighlight>
 
@@ -47,7 +47,7 @@ const PlayScreen = () => {
             >
               <View style={styles.buttonView}>
                 <Text style={styles.buttonText}>Roulette</Text>
-                <Image style={styles.arrow} source={require('../assets/kremowaArrowRight.png')} resizeMode="cover" />
+                <Image style={styles.arrow} source={require('../../assets/arrowRight.png')} resizeMode="cover" />
               </View>
             </TouchableHighlight>
           </View>

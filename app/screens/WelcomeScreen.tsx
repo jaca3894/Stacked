@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, TouchableHighlight, Image, Dimensions, StyleSheet, FlatList } from 'react-native';
 import type { StackNavigationProp } from '@react-navigation/stack';
+import { welcomeCardsData as data } from '../../classes/Database';
 
 type WelcomeScreenProps = {
   navigation: StackNavigationProp<any>;
@@ -12,13 +13,6 @@ const WelcomeScreen = ({ navigation }: WelcomeScreenProps) => {
   const autoRotateInterval = 5500;
   const [currentIndex, setCurrentIndex] = useState(0);
   const flatListRef = useRef<FlatList<{ title: string, description: string, photoPath: string }> | null>(null);
-
-
-  const data = [
-    { title: 'Host games', description: "You've got only deck of cards? Simulate game's board by playing with virtual money.", photoPath: require("../assets/logo.png") },
-    { title: 'Learn basics and more', description: "We've got tutorials for everything: from game rules to card flourishes.", photoPath: require("../assets/logo.png") },
-    { title: 'Check your poker hand', description: "Not sure if your cards line up into something? Use our tool to find out.", photoPath: require("../assets/logo.png") }
-  ];
 
   const autoRotate = () => {
     const nextIndex = (currentIndex + 1) % data.length;
@@ -42,7 +36,7 @@ const WelcomeScreen = ({ navigation }: WelcomeScreenProps) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Image source={require('../assets/logo.png')} style={{ width: 200, height: 200 }} />
+        <Image source={require('../../assets/logo.png')} style={{ width: 200, height: 200 }} />
       </View>
       <View style={styles.main}>
         <FlatList style={ styles.flatList}
@@ -68,7 +62,7 @@ const WelcomeScreen = ({ navigation }: WelcomeScreenProps) => {
               key={index+1}
               style={[
                 styles.dot,
-                { backgroundColor: index === currentIndex ? 'green' : '#ccc' }
+                { backgroundColor: index === currentIndex ? 'red' : '#ccc' }
               ]}
             />
           ))}

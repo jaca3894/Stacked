@@ -24,7 +24,7 @@ export default function App() {
 
         if (route.name === 'Home') iconName = focused ? 'home' : 'home-outline';
         else if (route.name === 'Play') iconName = focused ? 'play' : 'play-outline';
-        else if (route.name === 'Learn') iconName = focused ? 'book' : 'book-outline';
+        else if (route.name === 'Academy') iconName = focused ? 'book' : 'book-outline';
         else if (route.name === 'More') iconName = focused ? 'ellipsis-horizontal' : 'ellipsis-horizontal-outline';
 
         return <Icon name={iconName} color={color} size={20}/>;
@@ -33,7 +33,7 @@ export default function App() {
     >
       <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarShowLabel: true }} />
       <Tab.Screen name="Play" component={PlayScreen} options={{ tabBarShowLabel: true }} />
-      <Tab.Screen name="Learn" component={LearningScreen} options={{ tabBarShowLabel: true }} />
+      <Tab.Screen name="Academy" component={LearningScreen} options={{ tabBarShowLabel: true }} />
       <Tab.Screen name="More" component={MoreScreen} options={{ tabBarShowLabel: true }} />
     </Tab.Navigator>
   );

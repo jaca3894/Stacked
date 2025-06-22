@@ -21,6 +21,7 @@ const ChoosePlayersAmount = () => {
 
   const finalValue = value === '' ? 2 : parseInt(value, 10);
 
+
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Players</Text>

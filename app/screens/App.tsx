@@ -4,10 +4,10 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import WelcomeScreen from './WelcomeScreen';
 import MainTabNavigator from './MainTabNavigator';
-import ChoosePlayersAmount from './screens/ChoosePlayersAmount';
-import PokerGame from './games/PokerGame';
-import BlackjackGame from './games/BlackjackGame';
-import RouletteGame from './games/RouletteGame';
+import ChoosePlayersAmount from '../panels/ChoosePlayersAmount';
+import PokerGame from '../games/PokerGame';
+import BlackjackGame from '../games/BlackjackGame';
+import RouletteGame from '../games/RouletteGame';
 
 const Stack = createStackNavigator();
 
