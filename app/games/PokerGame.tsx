@@ -7,6 +7,9 @@ import Pot from "../../classes/Pot";
 
 import GameRouteProp from "../../props/GameProps";
 
+import CustomSlider from "../../components/Slider";
+import Card from "../../components/Card";
+
 const seatingPlan: Record<number, [number, number, number, number]> = {
   2: [0, 1, 0, 1],
   3: [1, 1, 0, 1],
@@ -38,13 +41,19 @@ const PokerGame = () => {
 
   const [players, setPlayers] = useState<Player[]>(Array.from({ length: maxPlayers }, () => new Player()));
   const [pots, setPots] = useState<Pot[]>();
-  const [blinds, setBlinds] = useState<{ smallBlindIndex: number; bigBlindIndex: number }>({ smallBlindIndex: -1, bigBlindIndex: -1 });
+  const [minAmount, setMinAmount] = useState(0);
   const [smallBlindAmount, bigBlindAmount] = [5, 10];
-  const [currentId, setCurrentId] = useState(-1);
+  const [shownCards, setShownCards] = useState(0);
+  const [currentPlayerIndex, setCurrentPlayerIndex] = useState(-1);
+  const [biggestBetPlayerIndex, setBiggestBetPlayerIndex] = useState(-1);
+
+  const [canRaise, setCanRaise] = useState(true);
 
   const [showInput, setShowInput] = useState([false, -1]);
   const [inputValue, setInputValue] = useState("");
   const [gameStarted, setGameStarted] = useState(false);
+  const [sliderValue, setSliderValue] = useState(0);
+  const [isSliderShown, setIsSliderShown] = useState(false);
 
   const edges: EdgeConfig[] = [
     { pos: { top: '5%' }, dir: 'row', len: top },
@@ -57,16 +66,123 @@ const PokerGame = () => {
 
   function startGame() {
     const newPot = new Pot("Main Pot", smallBlindAmount + bigBlindAmount);
-    const dealerIndex = Math.floor(Math.random()*maxPlayers);
+    const dealerIndex = Math.floor(Math.random() * maxPlayers);
+
+    const smallBlindIndex = (dealerIndex + 1) % maxPlayers;
+    const bigBlindIndex = (dealerIndex + 2) % maxPlayers;
+
     players.forEach((player, i) => {
-      if(player.name == '') player.name = `Player${i+1}`
-      if(i == dealerIndex) player.isDealer = true;
-      else if (i == dealerIndex + 1) player.take(smallBlindAmount);
-      else if (i == dealerIndex + 2) player.take(bigBlindAmount);
+      if (player.name == '') player.name = `Player${i + 1}`;
+      player.isDealer = i === dealerIndex;
+      if (i === smallBlindIndex) {player.take(smallBlindAmount); player.setLastAction("SB")}
+      if (i === bigBlindIndex) {player.take(bigBlindAmount); player.setLastAction("BB")}
     });
-    setBlinds({ smallBlindIndex: dealerIndex+1, bigBlindIndex: dealerIndex+2 });
+
+    setBiggestBetPlayerIndex(bigBlindIndex);
     setPots([newPot]);
-    setCurrentId(dealerIndex + 3);
+    setMinAmount(bigBlindAmount);
+    setCurrentPlayerIndex((dealerIndex + 3) % maxPlayers);
+  }
+
+  function endGame() {
+    setCurrentPlayerIndex(-1);
+  }
+
+  function nextPlayer() {
+    let newPlayerIndex = (currentPlayerIndex + 1) % maxPlayers;
+    while (players[newPlayerIndex].didFold) {
+      if (newPlayerIndex == currentPlayerIndex) return; // If looped back to current player, stop game
+      if (newPlayerIndex >= maxPlayers-1) newPlayerIndex = 0;
+      newPlayerIndex++;
+    }
+    setCurrentPlayerIndex(newPlayerIndex);
+    if(players[newPlayerIndex].balance == 0) setCanRaise(false);
+    else setCanRaise(true);
+  }
+
+  function call() {
+    if (currentPlayerIndex === -1) return; // No current player
+    const player = players[currentPlayerIndex];
+    if(player.lastAction == "SB")
+      players[currentPlayerIndex].take(bigBlindAmount-smallBlindAmount);
+    else
+      players[currentPlayerIndex].take(minAmount);
+    if(!pots) return;
+    pots[0].add(minAmount);
+    player.setLastAction("call");
+    nextPlayer();
+
+    if (currentPlayerIndex == biggestBetPlayerIndex) {
+      if (shownCards < 5) {
+        showCards();
+        players.forEach(p => p.lastAction = '');
+        setMinAmount(0);
+        setCurrentPlayerIndex((players.findIndex(p => !p.didFold) + 1) % maxPlayers);
+      }
+      else
+        endGame();
+    }
+    else
+      nextPlayer();
+  }
+
+  function check() {
+    players[currentPlayerIndex].lastAction = "check";
+    if (currentPlayerIndex == biggestBetPlayerIndex) {
+      if (shownCards < 5) {
+        showCards();
+        players.forEach(p => p.lastAction = '');
+        const dealerIndex = players.findIndex(p => p.isDealer);
+        let foundNext = false;
+        let newPlayerIndex = (dealerIndex+1) % maxPlayers;
+        while(!foundNext) {
+          if(!players[newPlayerIndex].didFold) foundNext = true;
+          else newPlayerIndex = (newPlayerIndex + 1) % maxPlayers;
+        }
+        setCurrentPlayerIndex(newPlayerIndex);
+        setBiggestBetPlayerIndex(newPlayerIndex-1);
+      }
+      else
+        endGame();
+    }
+    else
+      nextPlayer();
+  }
+
+  function raise(amount: number) {
+    if(amount > minAmount) setBiggestBetPlayerIndex(currentPlayerIndex);
+    setMinAmount(amount);
+    const player = players[currentPlayerIndex];
+    const raiseAmount = amount - player.currentBet;
+    player.take(raiseAmount)
+    if(!pots) return;
+    pots[0].add(amount);
+    player.lastAction = "raise";
+    setIsSliderShown(false)
+    nextPlayer();
+  }
+
+  function fold() {
+    let playersLeft = 0;
+    players[currentPlayerIndex].fold();
+    players.forEach(player => player.didFold ? null : playersLeft++);
+    players[currentPlayerIndex].lastAction = "fold";
+    if(playersLeft == 1) {
+      // If only one player left, they win the pot
+      const winnerIndex = players.findIndex(player => !player.didFold);
+      if (pots) {
+        players[winnerIndex].give(pots[0].balance);
+        setPots([]);
+      }
+      endGame();
+    }
+    else
+      nextPlayer();
+  }
+
+  function showCards() {
+    const amount = shownCards == 0 ? 3 : 1;
+    setShownCards(prev => prev + amount);
   }
 
   return (
@@ -83,22 +199,35 @@ const PokerGame = () => {
                 <View key={index+1} style={[styles[dir], pos, addStyle]}>
                   {Array.from({ length: len }).map((_, j) => {
                     const currentIndex = globalIndex++;
-                    const isCurrentPlayer = currentId != -1 && currentIndex == currentId % maxPlayers;
+                    const player = players[currentIndex]
+                    const isCurrentPlayer = currentPlayerIndex != -1 && currentIndex == currentPlayerIndex;
                     return (
-                    <TouchableHighlight key={j+1} style={[styles.button, {borderColor: isCurrentPlayer ? 'yellow' : 'white', borderWidth: isCurrentPlayer ? 4 : 2}]} underlayColor="#948870" onPress={() => {if (players[currentIndex].name === '') {setShowInput([true, currentIndex])}}}>
-                      <View style={{width: '100%'}}>
-                        {players[currentIndex].isDealer && (
+                    <TouchableHighlight key={j+1} disabled={gameStarted} style={[styles.button, {borderColor: isCurrentPlayer ? 'yellow' : 'white', borderWidth: isCurrentPlayer ? 4 : 2, opacity: player.didFold ? 0.5 : 1}]} underlayColor="#948870" onPress={() => {if (player.name === '') {setShowInput([true, currentIndex])}}}>
+                      <View style={styles.buttonView}>
+                        {player.isDealer && (
                           <View style={{position: 'absolute', top: -20, left: -20, backgroundColor: 'white', borderRadius: '50%', width: 30, height: 30, justifyContent: 'center', alignContent: 'center'}}>
                             <Text style={{ color: 'black', fontWeight: 'bold', fontSize: 20, textAlign: 'center'}}>D</Text>
                           </View>
                         )}
-                        <Text style={styles.buttonText} numberOfLines={2} ellipsizeMode="tail">{players[currentIndex].name != '' ? players[currentIndex].name + '\n' + players[currentIndex].balance : '+'}</Text>
-                        {(currentIndex == blinds.smallBlindIndex || currentIndex == blinds.bigBlindIndex) && (<Text style={styles.blindText}>{currentIndex == blinds.smallBlindIndex ? "SB" : "BB"}</Text>)}
+                        <Text style={styles.buttonText} numberOfLines={2} ellipsizeMode="tail">{player.name != '' ? player.name + '\n' + player.balance : '+'}</Text>
+                        {gameStarted && <Text style={styles.blindText}>
+                          {player.lastAction}
+                        </Text>}
                       </View>
                     </TouchableHighlight>
                   )})}
                 </View>
               ))}
+              {pots && (
+                <View style={{position: 'absolute', left: '50%', top: '50%', transform: [{translateX: '-50%'}, {translateY: '-50%'}], alignItems: 'center', display: 'flex', flexDirection: 'column'}}>
+                  <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 10}}>
+                    {Array.from({ length: shownCards }).map((_, index) => (
+                      <Card key={index+1}></Card>
+                    ))}
+                  </View>
+                  <Text style={{color: '#000', fontSize: 24}}>{pots[0].balance}</Text>
+                </View>
+              )}
             </View>
             {showInput[0] && (
               <Modal onRequestClose={() => setShowInput([false, -1]) } transparent={true} animationType="fade">
@@ -138,19 +267,24 @@ const PokerGame = () => {
           }
           {gameStarted &&
             <View style={styles.buttonsRow}>
-              <TouchableHighlight style={[styles.circleButton, {backgroundColor: 'orange'}]} underlayColor="#b47400" onPress={() => {}}>
-                <Text style={styles.circleButtonText}>Call</Text>
+              <TouchableHighlight style={[styles.circleButton, {backgroundColor: biggestBetPlayerIndex != currentPlayerIndex && players[currentPlayerIndex]?.currentBet != minAmount ? 'orange' : 'green'}]} underlayColor={biggestBetPlayerIndex != currentPlayerIndex && players[currentPlayerIndex]?.currentBet != minAmount ? "#b47400" : "#005700"} onPress={() => {biggestBetPlayerIndex != currentPlayerIndex && players[currentPlayerIndex]?.currentBet != minAmount ? call() : check()}}>
+                <Text style={styles.circleButtonText}>{biggestBetPlayerIndex != currentPlayerIndex && players[currentPlayerIndex]?.currentBet != minAmount ? "Call" : "Check"}</Text>
               </TouchableHighlight>
-              <TouchableHighlight style={[styles.circleButton, {backgroundColor: 'red'}]} underlayColor="#a20000" onPress={() => {}}>
+              <TouchableHighlight style={[styles.circleButton, {backgroundColor: 'red', opacity: canRaise ? 1 : .5}]} underlayColor="#a20000" onPress={() => {setIsSliderShown(true)}} disabled={!canRaise}>
                 <Text style={styles.circleButtonText}>Raise</Text>
               </TouchableHighlight>
-              <TouchableHighlight style={[styles.circleButton, {backgroundColor: 'blue'}]} underlayColor="#0000a9" onPress={() => {}}>
+              <TouchableHighlight style={[styles.circleButton, {backgroundColor: 'blue'}]} underlayColor="#0000a9" onPress={() => {fold()}}>
                 <Text style={styles.circleButtonText}>Fold</Text>
               </TouchableHighlight>
             </View>
           }
         </View>
       </SafeAreaView>
+      { isSliderShown && 
+          (<View style={styles.popUp}>
+            <CustomSlider minimumValue={minAmount+1} maximumValue={players[currentPlayerIndex].balance} step={1} value={minAmount} onValueChange={setSliderValue} onAccept={() => {raise(sliderValue);}}/>
+          </View>)
+        }
     </SafeAreaProvider>
   );
 };
@@ -212,7 +346,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
-    height: '100%',
   },
   buttonText: {
     color: '#000',
@@ -282,12 +415,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   blindText: {
-    backgroundColor: 'purple',
+    backgroundColor: '#111',
     color: 'white',
     padding: 2,
     borderRadius: 5,
     textAlign: 'center',
     fontSize: 16,
+    textTransform: "capitalize",
+    width: '100%'
   }
 });
 

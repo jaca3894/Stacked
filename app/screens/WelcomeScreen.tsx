@@ -12,9 +12,11 @@ const WelcomeScreen = ({ navigation }: WelcomeScreenProps) => {
   // czas co ile ma sie zmieniac karta
   const autoRotateInterval = 5500;
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isRotating, setIsRotating] = useState(false);
   const flatListRef = useRef<FlatList<{ title: string, description: string, photoPath: string }> | null>(null);
 
   const autoRotate = () => {
+    setIsRotating(true);
     const nextIndex = (currentIndex + 1) % data.length;
     const nextItemOffset = (width) * nextIndex;
     flatListRef.current?.scrollToOffset({ animated: true, offset: nextItemOffset });
@@ -52,6 +54,10 @@ const WelcomeScreen = ({ navigation }: WelcomeScreenProps) => {
           onScroll={(event) => {
             const contentOffsetX = event.nativeEvent.contentOffset.x;
             const index = Math.round(contentOffsetX / width);
+            if(isRotating && index != currentIndex)
+              return;
+            if(index == currentIndex)
+              setIsRotating(false);
             setCurrentIndex(index);
           }}
           scrollEventThrottle={16}
