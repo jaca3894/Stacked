@@ -2,38 +2,45 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import Icon from 'react-native-vector-icons/Ionicons';
 import HomeScreen from './HomeScreen';
 import PlayScreen from './PlayScreen';
-import LearningScreen from './LearningScreen';
+import AcademyScreen from './AcademyScreen';
 import MoreScreen from './MoreScreen';
+import { useState } from 'react';
+import { Dimensions } from 'react-native';
 
 export default function App() {
-
   const Tab = createMaterialTopTabNavigator();
+  const [isInteracting, setIsInteracting] = useState(false);
 
   return (
     <Tab.Navigator
       tabBarPosition="bottom"
       screenOptions={({ route }: { route: { name: string } }) => ({
-      headerStyle: { backgroundColor: '#1c1c1c' },
-      headerTintColor: '#fff',
-      tabBarStyle: { backgroundColor: '#1c1c1c' },
-      tabBarActiveTintColor: 'white',
-      tabBarIndicatorStyle: { backgroundColor: '#cbbb9c' },
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      tabBarIcon: ({ focused, color }) => {
-        let iconName = "";
+        swipeEnabled: !isInteracting,
+        headerStyle: { backgroundColor: '#1c1c1c' },
+        headerTintColor: '#fff',
+        tabBarStyle: { backgroundColor: '#1c1c1c' },
+        tabBarActiveTintColor: 'white',
+        tabBarIndicatorStyle: { backgroundColor: '#cbbb9c' },
+        tabBarItemStyle: { width: Dimensions.get('window').width / 4 },
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        tabBarIcon: ({ focused, color }) => {
+          let iconName = "";
 
-        if (route.name === 'Home') iconName = focused ? 'home' : 'home-outline';
-        else if (route.name === 'Play') iconName = focused ? 'play' : 'play-outline';
-        else if (route.name === 'Academy') iconName = focused ? 'book' : 'book-outline';
-        else if (route.name === 'More') iconName = focused ? 'ellipsis-horizontal' : 'ellipsis-horizontal-outline';
+          if (route.name === 'Academy') iconName = 'book';
+          else if(route.name === 'More') iconName = 'ellipsis-horizontal'
+          else iconName = route.name.toLowerCase();
 
-        return <Icon name={iconName} color={color} size={20}/>;
-      },
+          if (!focused) iconName += '-outline';
+
+          return <Icon name={iconName} color={color} size={20}/>;
+        },
       })}
     >
       <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarShowLabel: true }} />
       <Tab.Screen name="Play" component={PlayScreen} options={{ tabBarShowLabel: true }} />
-      <Tab.Screen name="Academy" component={LearningScreen} options={{ tabBarShowLabel: true }} />
+      <Tab.Screen name="Academy" options={{ tabBarShowLabel: true }}>
+        {() => <AcademyScreen setIsInteracting={setIsInteracting}/>}
+      </Tab.Screen>
       <Tab.Screen name="More" component={MoreScreen} options={{ tabBarShowLabel: true }} />
     </Tab.Navigator>
   );
