@@ -5,12 +5,12 @@ export const welcomeCardsData = [
   ];
 
 export const morePanelsData = [
-  { title: 'Check hand', iconName: 'layers-outline' },
-  { title: 'Glossary', iconName: 'help-outline' },
-  { title: 'Report a bug', iconName: 'bug-outline' },
-  { title: 'Patch notes', iconName: 'document-text-outline' },
-  { title: 'Credits', iconName: 'people-outline' },
-  { title: 'Settings', iconName: 'settings-outline' },
+  { title: 'Check hand', imagePath: require('../assets/pokerHand.jpg') },
+  { title: 'Glossary', imagePath:  require('../assets/dictionary.jpg') },
+  { title: 'Report a bug', imagePath: require('../assets/reportBug.jpg') },
+  { title: 'Patch notes', imagePath: require('../assets/patchNotes.jpg') },
+  { title: 'Credits', imagePath:  require('../assets/credits.jpg') },
+  { title: 'Settings', imagePath: require('../assets/settings.jpg') },
 ];
 
 export const skillsData = [
@@ -18,9 +18,9 @@ export const skillsData = [
     category: 'Basic rules',
     description: 'Get to know the essentials.',
     items: [
-      { name: 'Poker', imagePath: require('../assets/logo.png') },
-      { name: 'Blackjack', imagePath: require('../assets/logo.png') },
-      { name: 'Roulette', imagePath: require('../assets/logo.png') }
+      { name: 'Poker', imagePath: require('../assets/poker.png') },
+      { name: 'Blackjack', imagePath: require('../assets/blackjack.jpg') },
+      { name: 'Roulette', imagePath: require('../assets/roulette.png') }
     ]
   },
   {
@@ -29,16 +29,16 @@ export const skillsData = [
     items: [
       { name: 'Riffle shuffle', imagePath: require('../assets/riffleShuffle.gif') },
       { name: 'Faro shuffle', imagePath: require('../assets/faroShuffle.gif') },
-      { name: 'Chartier Cut', imagePath: require('../assets/logo.png') },
+      { name: 'Charlier Cut', imagePath: require('../assets/charlierCut.gif') },
     ]
   },
   {
     category: 'Flourishes',
     description: 'Step up your game with style.',
     items: [
-      { name: 'Card spring', imagePath: require('../assets/logo.png') },
-      { name: 'Card pirouette', imagePath: require('../assets/logo.png') },
-      { name: 'Deck spread', imagePath: require('../assets/logo.png') }
+      { name: 'Card spring', imagePath: require('../assets/cardSpring.gif') },
+      { name: 'Card fan', imagePath: require('../assets/cardFan.gif') },
+      { name: 'Ribbon spread', imagePath: require('../assets/ribbonSpread.gif') }
     ]
   }
 ];

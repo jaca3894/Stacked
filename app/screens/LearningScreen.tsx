@@ -1,10 +1,7 @@
-import { View, Text, StyleSheet, ScrollView, Dimensions, SafeAreaView, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Dimensions, SafeAreaView, Image, FlatList, Touchable, TouchableHighlight } from 'react-native';
 import { skillsData as data } from '../../classes/Database';
 import { Image as GIF} from 'expo-image';
-const LearningScreen = () => {
-}
 
-/*
 const screenHeight = Math.round(Dimensions.get('window').height);
 
 const LearningScreen = () => {
@@ -18,28 +15,49 @@ const LearningScreen = () => {
           />
       </View>
       <ScrollView style={ styles.container } showsVerticalScrollIndicator={false}>
+        <View style={{ width: '100%', padding: 20, alignItems: 'center' }}>
+          <Text style={{color: "#cbbb9c", fontSize: 24, fontWeight: "bold"}}>I want to learn more about...</Text>
+        </View>
         {data.map((category, index) => (
           <View key={index} style={styles.categoryBlock}>
             <Text style={styles.categoryTitle}>{category.category}</Text>
             <Text style={styles.categoryDescription}>{category.description}</Text>
-            <ScrollView style={styles.categoryScroll} horizontal={true} showsHorizontalScrollIndicator={false}>
-              {category.items.map((item, itemIndex) => (
-                <View key={itemIndex} style={styles.skillItem}>
-                  <GIF
-                    source={item.imagePath}
-                    style={styles.skillImage}
-                    contentFit='cover'
-                    transition={300}
-                    cachePolicy="memory-disk"
-                 />
-                  <View style={styles.skillName}>
-                    <Text style={styles.skillNameText}>{item.name}</Text>
+            <FlatList
+              data={category.items}
+              initialNumToRender={3}
+              maxToRenderPerBatch={5}
+              windowSize={5}
+              horizontal
+              keyExtractor={(item, idx) => `${item.name}-${idx}`}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.categoryScroll}
+              renderItem={({ item }) => (
+                <TouchableHighlight onPress={() => console.log(item.name)} underlayColor={'transparent'}>
+                  <View style={styles.skillItem}>
+                    <GIF
+                      source={item.imagePath}
+                      style={styles.skillImage}
+                      contentFit='cover'
+                      transition={300}
+                      cachePolicy="memory-disk"
+                    />
+                    <View style={styles.skillName}>
+                      <Text style={styles.skillNameText}>{item.name}</Text>
+                      <Image
+                        source={require('../../assets/arrowRight.png')}
+                        style={{ width: 20, height: 20, position: 'absolute', right: 10, top: 15 }}
+                        resizeMode="contain"
+                      />
+                    </View>
                   </View>
-                </View>
-              ))}
-            </ScrollView>
+                </TouchableHighlight>
+            )}
+            />
           </View>
         ))}
+      <View style={styles.footer}>
+        <Text style={styles.footerText}>2025 Stacked.</Text>
+      </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -49,6 +67,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'column',
+    // borderWidth: 1,
+    // borderColor: 'white',
     backgroundColor: '#1c1c1c',
   },
   header: {
@@ -68,7 +88,7 @@ const styles = StyleSheet.create({
     padding: 20,
     height: 350,
     width: '100%',
-    margin: "auto",
+    // margin: "auto",
     // borderWidth: 2,
     // borderColor: 'white',
     backgroundColor: '#1c1c1c',
@@ -85,6 +105,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   categoryScroll: {
+    backgroundColor: 'transparent',
     flexDirection: 'row',
     paddingHorizontal: 10,
   },
@@ -109,7 +130,7 @@ const styles = StyleSheet.create({
     height: 50,
     width: "100%",
     borderWidth: 1,
-    borderColor: 'white',
+    borderColor: '#cbbb9c',
     borderBottomLeftRadius: 10,
     borderBottomRightRadius: 10,
     borderTopWidth: 0,
@@ -123,6 +144,16 @@ const styles = StyleSheet.create({
     textAlign: 'left', 
     paddingLeft: 10, 
   },
+  footer: {
+    height: screenHeight * 0.1,
+    backgroundColor: '#1c1c1c',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  footerText: {
+    color: 'gray',
+    fontSize: 16,
+    textAlign: 'center',
+  },
 })
-*/
 export default LearningScreen;
