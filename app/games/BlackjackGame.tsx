@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { ImageBackground, Text, StyleSheet, View, TouchableHighlight, Dimensions, TextInput, Modal } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useRoute } from "@react-navigation/native";
+import { RouteProp, useRoute } from "@react-navigation/native";
 
-import GameRouteProp from "../../props/RootStackParamList";
+import RootStackParamList from "../../props/RootStackParamList";
+
+type GameRouteProp = RouteProp<RootStackParamList, "Game">;
 
 const seatingPlan: Record<number, [number, number, number, number]> = {
   2: [0, 1, 0, 1],

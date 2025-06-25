@@ -1,7 +1,8 @@
-import { useRoute } from "@react-navigation/core";
+import { RouteProp, useRoute } from "@react-navigation/core";
 import { View, Text } from "react-native";
+import RootStackParamList from "../../props/RootStackParamList";
 
-import GameRouteProp from "../../props/RootStackParamList";
+type GameRouteProp = RouteProp<RootStackParamList, "Game">;
 
 const RouletteGame = () => {
   const route = useRoute<GameRouteProp>();

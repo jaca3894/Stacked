@@ -70,18 +70,33 @@ const PokerGame = () => {
   let globalIndex = 0;
 
   function startGame() {
-    const playersNames = players.map(player => player.name);
-    const mainPot = new Pot(playersNames, "Main Pot", smallBlindAmount + bigBlindAmount);
+    console.log(players)
+    const playersIndexes = players.map((player, i) => {return i});
+    console.log(playersIndexes)
+    const mainPot = new Pot(playersIndexes, "Main Pot", smallBlindAmount + bigBlindAmount);
+    console.log(mainPot.playersIndexes)
     const dealerIndex = Math.floor(Math.random() * maxPlayers);
 
     const smallBlindIndex = (dealerIndex + 1) % maxPlayers;
     const bigBlindIndex = (dealerIndex + 2) % maxPlayers;
 
     players.forEach((player, i) => {
+      player.currentBet = 0;
+      player.isDealer = false;
+      player.didFold = false;
+      player.lastAmount = 0;
+      player.lastAction = "";
+
       if (player.name == '') player.name = `Player${i + 1}`;
       player.isDealer = i === dealerIndex;
-      if (i === smallBlindIndex) {player.take(smallBlindAmount); player.setLastAction("SB")}
-      if (i === bigBlindIndex) {player.take(bigBlindAmount); player.setLastAction("BB")}
+      if (i === smallBlindIndex) {
+        player.take(smallBlindAmount);
+        player.setLastAction("SB");
+      }
+      if (i === bigBlindIndex) {
+        player.take(bigBlindAmount);
+        player.setLastAction("BB");
+      }
     });
 
     setBiggestBetPlayerIndex(bigBlindIndex);
@@ -98,10 +113,9 @@ const PokerGame = () => {
 
   function nextPlayer() {
     let newPlayerIndex = (currentPlayerIndex + 1) % maxPlayers;
-    while (players[newPlayerIndex].didFold) {
+    while (players[newPlayerIndex]?.didFold) {
       if (newPlayerIndex == currentPlayerIndex) return; // If looped back to current player, stop game
-      if (newPlayerIndex >= maxPlayers-1) newPlayerIndex = 0;
-      newPlayerIndex++;
+      newPlayerIndex = (newPlayerIndex + 1) % maxPlayers;
     }
     setCurrentPlayerIndex(newPlayerIndex);
     if(players[newPlayerIndex].balance == 0) setCanRaise(false);
@@ -112,14 +126,14 @@ const PokerGame = () => {
     if (currentPlayerIndex === -1) return; // No current player
     const player = players[currentPlayerIndex];
     if(player.lastAction == "SB")
-      players[currentPlayerIndex].take(bigBlindAmount-smallBlindAmount);
+      players[currentPlayerIndex].take(minAmount-smallBlindAmount);
     else
       players[currentPlayerIndex].take(minAmount);
     if(!pots) return;
     pots[0].add(minAmount);
     player.setLastAction("call");
 
-    if(players.every(player => player.balance == 0)) {
+    if(players.every(player => player.balance == 0 || player.didFold)) {
       setIsGameEnded(true);
     }
 
@@ -172,6 +186,9 @@ const PokerGame = () => {
     pots[0].add(amount);
     player.lastAction = "raise";
     setIsSliderShown(false)
+    if(players.every(player => player.balance == 0 || player.didFold)) {
+      setIsGameEnded(true);
+    }
     nextPlayer();
   }
 
@@ -184,13 +201,16 @@ const PokerGame = () => {
       // If only one player left, they win the pot
       const winnerIndex = players.findIndex(player => !player.didFold);
       if (pots) {
-        players[winnerIndex].give(pots[0].balance);
-        setPots([]);
+        pots.forEach(pot => {
+          if(pot.playersIndexes.includes(winnerIndex)) players[winnerIndex].give(pot.balance);
+        })
       }
-      endGame();
+      startGame();
     }
-    else
+    else {
+      pots?.forEach(pot => pot.playersIndexes = pot.playersIndexes.filter(index => index != currentPlayerIndex))
       nextPlayer();
+    }
   }
 
   function showCards() {
@@ -213,20 +233,25 @@ const PokerGame = () => {
                   {Array.from({ length: len }).map((_, j) => {
                     const currentIndex = globalIndex++;
                     const player = players[currentIndex]
-                    const isCurrentPlayer = currentPlayerIndex != -1 && currentIndex == currentPlayerIndex;
-                    return (
-                    <TouchableHighlight key={j+1} disabled={isGameStarted} style={[styles.button, {borderColor: isCurrentPlayer ? 'yellow' : 'white', borderWidth: isCurrentPlayer ? 4 : 2, opacity: player.didFold ? 0.5 : 1}]} underlayColor="#948870" onPress={() => {if (player.name === '') {setShowInput([true, currentIndex])}}}>
-                      <View style={styles.buttonView}>
-                        {player.isDealer && (
-                          <View style={{position: 'absolute', top: -20, left: -20, backgroundColor: 'white', borderRadius: '50%', width: 30, height: 30, justifyContent: 'center', alignContent: 'center'}}>
-                            <Text style={{ color: 'black', fontWeight: 'bold', fontSize: 20, textAlign: 'center'}}>D</Text>
-                          </View>
-                        )}
-                        <Text style={styles.buttonText} numberOfLines={2} ellipsizeMode="tail">{player.name != '' ? player.name + '\n' + player.balance : '+'}</Text>
-                        {(isGameStarted && player.lastAction != '') && <Text style={styles.blindText}>{player.lastAction}</Text>}
-                      </View>
-                    </TouchableHighlight>
-                  )})}
+                    try {
+                      const isCurrentPlayer = currentPlayerIndex != -1 && currentIndex == currentPlayerIndex;
+                      return (
+                      <TouchableHighlight key={j+1} disabled={isGameStarted} style={[styles.button, {borderColor: isCurrentPlayer ? 'yellow' : 'white', borderWidth: isCurrentPlayer ? 4 : 2, opacity: player.didFold ? 0.5 : 1}]} underlayColor="#948870" onPress={() => {if (player.name === '') {setShowInput([true, currentIndex])}}}>
+                        <View style={styles.buttonView}>
+                          {player.isDealer && (
+                            <View style={{position: 'absolute', top: -20, left: -20, backgroundColor: 'white', borderRadius: '50%', width: 30, height: 30, justifyContent: 'center', alignContent: 'center'}}>
+                              <Text style={{ color: 'black', fontWeight: 'bold', fontSize: 20, textAlign: 'center'}}>D</Text>
+                            </View>
+                          )}
+                          <Text style={styles.buttonText} numberOfLines={2} ellipsizeMode="tail">{player.name != '' ? player.name + '\n' + player.balance : '+'}</Text>
+                          {(isGameStarted && player.lastAction != '') && <Text style={styles.blindText}>{player.lastAction}</Text>}
+                        </View>
+                      </TouchableHighlight>)
+                    }
+                    catch {
+                      return;
+                    }
+                  })}
                 </View>
               ))}
               {pots && (
@@ -259,7 +284,7 @@ const PokerGame = () => {
             )}
           </ImageBackground>
           {!isGameStarted && 
-            <TouchableHighlight style={styles.button} underlayColor="#948870" onPress={() => {startGame(); ; setIsGameStarted(true);}}>
+            <TouchableHighlight style={styles.button} underlayColor="#948870" onPress={() => {startGame(); setIsGameStarted(true);}}>
               <Text style={styles.buttonText}>Start Game</Text>
             </TouchableHighlight>
           }
@@ -282,7 +307,7 @@ const PokerGame = () => {
           <CustomSlider minimumValue={minAmount+1} maximumValue={players[currentPlayerIndex].balance} step={1} value={minAmount} onValueChange={setSliderValue} onAccept={() => {raise(sliderValue);}}/>
         </View>)
       }
-      { isGameEnded && <PotsShowdown pots={pots} players={players}/>}
+      { isGameEnded && <PotsShowdown pots={pots} players={players} onClose={() => {setPlayers(prev => prev.filter(player => player.balance > 0)); setTimeout(() => startGame(), 200); setIsGameEnded(false);}}/>}
     </SafeAreaProvider>
   );
 };
