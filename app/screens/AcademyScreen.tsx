@@ -1,10 +1,15 @@
 import { View, Text, StyleSheet, ScrollView, Dimensions, SafeAreaView, Image, FlatList, TouchableHighlight } from 'react-native';
 import { skillsData as data } from '../../classes/Database';
 import { Image as Gif} from 'expo-image';
-
+import { useNavigation } from '@react-navigation/native';
+import { useRef } from 'react';
 const screenHeight = Math.round(Dimensions.get('window').height);
 
 const AcademyScreen = () => {
+  
+  const navigation = useNavigation<any>();
+  let globalIndex = useRef(0).current;
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#1c1c1c' }}>
       <View style={styles.header}>
@@ -18,43 +23,46 @@ const AcademyScreen = () => {
         <View style={{ width: '100%', padding: 20, alignItems: 'center' }}>
           <Text style={{color: "#cbbb9c", fontSize: 24, fontWeight: "bold"}}>I want to learn more about...</Text>
         </View>
-        {data.map((category, index) => (
-          <View key={index+1} style={styles.categoryBlock}>
-            <Text style={styles.categoryTitle}>{category.category}</Text>
-            <Text style={styles.categoryDescription}>{category.description}</Text>
-            <FlatList
-              data={category.items}
-              initialNumToRender={3}
-              maxToRenderPerBatch={5}
-              windowSize={5}
-              horizontal
-              keyExtractor={(item, idx) => `${item.name}-${idx}`}
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.categoryScroll}
-              renderItem={({ item }) => (
-                <TouchableHighlight onPress={() => console.log(item.name)} underlayColor={'transparent'}>
-                  <View style={styles.skillItem}>
-                    <Gif
-                      source={item.imagePath}
-                      style={styles.skillImage}
-                      contentFit='cover'
-                      transition={300}
-                      cachePolicy="memory-disk"
-                    />
-                    <View style={styles.skillName}>
-                      <Text style={styles.skillNameText}>{item.name}</Text>
-                      <Image
-                        source={require('../../assets/arrowRight.png')}
-                        style={{ width: 20, height: 20, position: 'absolute', right: 10, top: 15 }}
-                        resizeMode="contain"
-                      />
-                    </View>
-                  </View>
-                </TouchableHighlight>
-            )}
-            />
-          </View>
-        ))}
+          {data.map((category, categoryIdx) => (
+            <View key={categoryIdx} style={styles.categoryBlock}>
+              <Text style={styles.categoryTitle}>{category.category}</Text>
+
+              <FlatList
+                data={category.items}
+                keyExtractor={(item, idx) => `${item.name}-${idx}`}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                renderItem={({ item }) => {
+                  const currentIndex = globalIndex++;
+                  return (
+                    <TouchableHighlight
+                      onPress={() => navigation.navigate("Article", { articleId: currentIndex })}
+                      underlayColor={'transparent'}
+                    >
+                      <View style={styles.skillItem}>
+                        <Gif
+                          source={item.imagePath}
+                          style={styles.skillImage}
+                          contentFit='cover'
+                          transition={300}
+                          cachePolicy="memory-disk"
+                        />
+                        <View style={styles.skillName}>
+                          <Text style={styles.skillNameText}>{item.name}</Text>
+                          <Image
+                            source={require('../../assets/arrowRight.png')}
+                            style={{ width: 20, height: 20, position: 'absolute', right: 10, top: 15 }}
+                            resizeMode="contain"
+                          />
+                        </View>
+                      </View>
+                    </TouchableHighlight>
+                  );
+                }}
+    />
+  </View>
+))}
+
       <View style={styles.footer}>
         <Text style={styles.footerText}>2025 Stacked.</Text>
       </View>
