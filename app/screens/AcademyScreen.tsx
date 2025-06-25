@@ -4,11 +4,7 @@ import { Image as Gif} from 'expo-image';
 
 const screenHeight = Math.round(Dimensions.get('window').height);
 
-<<<<<<< Updated upstream
 const AcademyScreen = () => {
-=======
-const LearningScreen = () => {
->>>>>>> Stashed changes
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#1c1c1c' }}>
       <View style={styles.header}>
