@@ -8,7 +8,7 @@ import ChoosePlayersAmount from '../panels/ChoosePlayersAmount';
 import PokerGame from '../games/PokerGame';
 import BlackjackGame from '../games/BlackjackGame';
 import RouletteGame from '../games/RouletteGame';
-
+import ArticleScreen from './ArticleScreen';
 const Stack = createStackNavigator();
 
 export default function App() {
@@ -39,6 +39,7 @@ export default function App() {
           <Stack.Screen name="PokerGame" component={PokerGame} options={{ headerShown: false }} />
           <Stack.Screen name="BlackjackGame" component={BlackjackGame} options={{ headerShown: false }} />
           <Stack.Screen name="RouletteGame" component={RouletteGame} options={{ headerShown: false }} />
+          <Stack.Screen name="Article" component={ArticleScreen} options={{ headerShown: false }} />
         </Stack.Navigator>
       </NavigationContainer>
     </View>
