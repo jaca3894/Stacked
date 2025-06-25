@@ -9,13 +9,11 @@ import { Dimensions } from 'react-native';
 
 export default function App() {
   const Tab = createMaterialTopTabNavigator();
-  const [isInteracting, setIsInteracting] = useState(false);
 
   return (
     <Tab.Navigator
       tabBarPosition="bottom"
       screenOptions={({ route }: { route: { name: string } }) => ({
-        swipeEnabled: !isInteracting,
         headerStyle: { backgroundColor: '#1c1c1c' },
         headerTintColor: '#fff',
         tabBarStyle: { backgroundColor: '#1c1c1c' },

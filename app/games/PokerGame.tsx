@@ -8,7 +8,9 @@ import Pot from "../../classes/Pot";
 import GameRouteProp from "../../props/GameProps";
 
 import CustomSlider from "../../components/Slider";
+import RoundButton from "../../components/RoundButton";
 import Card from "../../components/Card";
+import PotsShowdown from "../../components/PotsShowdown";
 
 const seatingPlan: Record<number, [number, number, number, number]> = {
   2: [0, 1, 0, 1],
@@ -51,7 +53,8 @@ const PokerGame = () => {
 
   const [showInput, setShowInput] = useState([false, -1]);
   const [inputValue, setInputValue] = useState("");
-  const [gameStarted, setGameStarted] = useState(false);
+  const [isGameStarted, setIsGameStarted] = useState(false);
+  const [isGameEnded, setIsGameEnded] = useState(false);
   const [sliderValue, setSliderValue] = useState(0);
   const [isSliderShown, setIsSliderShown] = useState(false);
 
@@ -65,7 +68,8 @@ const PokerGame = () => {
   let globalIndex = 0;
 
   function startGame() {
-    const newPot = new Pot("Main Pot", smallBlindAmount + bigBlindAmount);
+    const playersNames = players.map(player => player.name);
+    const mainPot = new Pot(playersNames, "Main Pot", smallBlindAmount + bigBlindAmount);
     const dealerIndex = Math.floor(Math.random() * maxPlayers);
 
     const smallBlindIndex = (dealerIndex + 1) % maxPlayers;
@@ -79,13 +83,15 @@ const PokerGame = () => {
     });
 
     setBiggestBetPlayerIndex(bigBlindIndex);
-    setPots([newPot]);
+    setPots([mainPot]);
     setMinAmount(bigBlindAmount);
     setCurrentPlayerIndex((dealerIndex + 3) % maxPlayers);
+    setIsGameEnded(false);
   }
 
   function endGame() {
     setCurrentPlayerIndex(-1);
+    setIsGameEnded(true);
   }
 
   function nextPlayer() {
@@ -110,6 +116,11 @@ const PokerGame = () => {
     if(!pots) return;
     pots[0].add(minAmount);
     player.setLastAction("call");
+
+    if(players.every(player => player.balance == 0)) {
+      setIsGameEnded(true);
+    }
+
     nextPlayer();
 
     if (currentPlayerIndex == biggestBetPlayerIndex) {
@@ -202,7 +213,7 @@ const PokerGame = () => {
                     const player = players[currentIndex]
                     const isCurrentPlayer = currentPlayerIndex != -1 && currentIndex == currentPlayerIndex;
                     return (
-                    <TouchableHighlight key={j+1} disabled={gameStarted} style={[styles.button, {borderColor: isCurrentPlayer ? 'yellow' : 'white', borderWidth: isCurrentPlayer ? 4 : 2, opacity: player.didFold ? 0.5 : 1}]} underlayColor="#948870" onPress={() => {if (player.name === '') {setShowInput([true, currentIndex])}}}>
+                    <TouchableHighlight key={j+1} disabled={isGameStarted} style={[styles.button, {borderColor: isCurrentPlayer ? 'yellow' : 'white', borderWidth: isCurrentPlayer ? 4 : 2, opacity: player.didFold ? 0.5 : 1}]} underlayColor="#948870" onPress={() => {if (player.name === '') {setShowInput([true, currentIndex])}}}>
                       <View style={styles.buttonView}>
                         {player.isDealer && (
                           <View style={{position: 'absolute', top: -20, left: -20, backgroundColor: 'white', borderRadius: '50%', width: 30, height: 30, justifyContent: 'center', alignContent: 'center'}}>
@@ -210,22 +221,20 @@ const PokerGame = () => {
                           </View>
                         )}
                         <Text style={styles.buttonText} numberOfLines={2} ellipsizeMode="tail">{player.name != '' ? player.name + '\n' + player.balance : '+'}</Text>
-                        {gameStarted && <Text style={styles.blindText}>
-                          {player.lastAction}
-                        </Text>}
+                        {(isGameStarted && player.lastAction != '') && <Text style={styles.blindText}>{player.lastAction}</Text>}
                       </View>
                     </TouchableHighlight>
                   )})}
                 </View>
               ))}
               {pots && (
-                <View style={{position: 'absolute', left: '50%', top: '50%', transform: [{translateX: '-50%'}, {translateY: '-50%'}], alignItems: 'center', display: 'flex', flexDirection: 'column'}}>
-                  <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 10}}>
+                <View style={styles.potsView}>
+                  <View style={styles.cards}>
                     {Array.from({ length: shownCards }).map((_, index) => (
-                      <Card key={index+1}></Card>
+                      <Card key={index+1}/>
                     ))}
                   </View>
-                  <Text style={{color: '#000', fontSize: 24}}>{pots[0].balance}</Text>
+                  <Text style={{color: '#000', fontSize: 24}}>{pots.reduce((sum, pot) => sum + pot.balance, 0)}</Text>
                 </View>
               )}
             </View>
@@ -233,24 +242,11 @@ const PokerGame = () => {
               <Modal onRequestClose={() => setShowInput([false, -1]) } transparent={true} animationType="fade">
                 <View style={styles.popUp}>
                   <View style={styles.popUpInside}>
-                    <TouchableHighlight
-                      style={styles.closeButton}
-                      underlayColor="transparent"
-                      onPress={() => setShowInput([false, -1])}
-                      >
+                    <TouchableHighlight style={styles.closeButton} underlayColor="transparent" onPress={() => setShowInput([false, -1])}>
                       <Text style={styles.buttonText}>x</Text>
                     </TouchableHighlight>
-
                     <Text style={{ marginBottom: 10 }}>Podaj coś:</Text>
-                    <TextInput
-                      placeholder="Podaj nazwę gracza"
-                      style={styles.input}
-                      placeholderTextColor="#999"
-                      onChange={(e) => {
-                        const value = e.nativeEvent.text;
-                        setInputValue(value);
-                      }}
-                      />
+                    <TextInput placeholder="Podaj nazwę gracza" style={styles.input} placeholderTextColor="#999" onChange={(e) => {const value = e.nativeEvent.text; setInputValue(value);}}/>
                     <TouchableHighlight style={styles.dodajButton} underlayColor="#948870"
                       onPress={() => {if(inputValue.trim() !== '') { setPlayers(players => players.map((player, index) => index === showInput[1] ? new Player(inputValue) : player)); setShowInput([false, -1]); setInputValue('')}}}>
                       <Text>Dodaj</Text>
@@ -260,31 +256,31 @@ const PokerGame = () => {
               </Modal>
             )}
           </ImageBackground>
-          {!gameStarted && 
-            <TouchableHighlight style={styles.button} underlayColor="#948870" onPress={() => {startGame(); ; setGameStarted(true);}}>
+          {!isGameStarted && 
+            <TouchableHighlight style={styles.button} underlayColor="#948870" onPress={() => {startGame(); ; setIsGameStarted(true);}}>
               <Text style={styles.buttonText}>Start Game</Text>
             </TouchableHighlight>
           }
-          {gameStarted &&
+          {isGameStarted &&
             <View style={styles.buttonsRow}>
-              <TouchableHighlight style={[styles.circleButton, {backgroundColor: biggestBetPlayerIndex != currentPlayerIndex && players[currentPlayerIndex]?.currentBet != minAmount ? 'orange' : 'green'}]} underlayColor={biggestBetPlayerIndex != currentPlayerIndex && players[currentPlayerIndex]?.currentBet != minAmount ? "#b47400" : "#005700"} onPress={() => {biggestBetPlayerIndex != currentPlayerIndex && players[currentPlayerIndex]?.currentBet != minAmount ? call() : check()}}>
-                <Text style={styles.circleButtonText}>{biggestBetPlayerIndex != currentPlayerIndex && players[currentPlayerIndex]?.currentBet != minAmount ? "Call" : "Check"}</Text>
-              </TouchableHighlight>
-              <TouchableHighlight style={[styles.circleButton, {backgroundColor: 'red', opacity: canRaise ? 1 : .5}]} underlayColor="#a20000" onPress={() => {setIsSliderShown(true)}} disabled={!canRaise}>
-                <Text style={styles.circleButtonText}>Raise</Text>
-              </TouchableHighlight>
-              <TouchableHighlight style={[styles.circleButton, {backgroundColor: 'blue'}]} underlayColor="#0000a9" onPress={() => {fold()}}>
-                <Text style={styles.circleButtonText}>Fold</Text>
-              </TouchableHighlight>
+              {(biggestBetPlayerIndex != currentPlayerIndex && players[currentPlayerIndex]?.currentBet != minAmount) && (
+                <RoundButton text="Call" func={() => call()} mainColor="orange" secondColor="#b47400"/>
+              )}
+              {(biggestBetPlayerIndex == currentPlayerIndex || players[currentPlayerIndex]?.currentBet == minAmount) && (
+                <RoundButton text="Check" func={() => check()} mainColor="green" secondColor="#005700"/>
+              )}
+              <RoundButton text="Raise" func={() => setIsSliderShown(true)} mainColor="red" secondColor="#a20000" opacity={canRaise ? 1 : .5}/>
+              <RoundButton text="Fold" func={() => fold()} mainColor="blue" secondColor="#0000a9"/>
             </View>
           }
         </View>
       </SafeAreaView>
       { isSliderShown && 
-          (<View style={styles.popUp}>
-            <CustomSlider minimumValue={minAmount+1} maximumValue={players[currentPlayerIndex].balance} step={1} value={minAmount} onValueChange={setSliderValue} onAccept={() => {raise(sliderValue);}}/>
-          </View>)
-        }
+        (<View style={styles.popUp}>
+          <CustomSlider minimumValue={minAmount+1} maximumValue={players[currentPlayerIndex].balance} step={1} value={minAmount} onValueChange={setSliderValue} onAccept={() => {raise(sliderValue);}}/>
+        </View>)
+      }
+      { isGameEnded && <PotsShowdown pots={pots} players={players}/>}
     </SafeAreaProvider>
   );
 };
@@ -399,21 +395,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 15,
   },
-  circleButton: {
-    borderRadius: '50%',
-    width: 80,
-    height: 80,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderColor: 'white',
-    borderWidth: 3,
-  },
-  circleButtonText: {
-    color: '#fff',
-    fontSize: 18,
-    textAlign: 'center',
-    fontWeight: 'bold',
-  },
   blindText: {
     backgroundColor: '#111',
     color: 'white',
@@ -423,6 +404,22 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textTransform: "capitalize",
     width: '100%'
+  },
+  potsView: {
+    position: 'absolute',
+    left: '50%',
+    top: '50%',
+    transform: [{translateX: '-50%'}, {translateY: '-50%'}],
+    alignItems: 'center',
+    display: 'flex',
+    flexDirection: 'column'
+  },
+  cards: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 10
   }
 });
 
