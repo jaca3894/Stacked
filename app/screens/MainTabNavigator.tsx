@@ -4,7 +4,6 @@ import HomeScreen from './HomeScreen';
 import PlayScreen from './PlayScreen';
 import AcademyScreen from './AcademyScreen';
 import MoreScreen from './MoreScreen';
-import { useState } from 'react';
 import { Dimensions } from 'react-native';
 
 export default function App() {
@@ -20,20 +19,19 @@ export default function App() {
         tabBarActiveTintColor: 'white',
         tabBarIndicatorStyle: { backgroundColor: '#cbbb9c' },
         tabBarItemStyle: { width: Dimensions.get('window').width / 4 },
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         tabBarIcon: ({ focused, color }) => {
           let iconName = "";
-
+          
           if (route.name === 'Academy') iconName = 'book';
           else if(route.name === 'More') iconName = 'ellipsis-horizontal'
           else iconName = route.name.toLowerCase();
-
+          
           if (!focused) iconName += '-outline';
-
+          
           return <Icon name={iconName} color={color} size={20}/>;
         },
       })}
-    >
+      >
       <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarShowLabel: true }} />
       <Tab.Screen name="Play" component={PlayScreen} options={{ tabBarShowLabel: true }} />
       <Tab.Screen name="Academy" component={AcademyScreen} options={{ tabBarShowLabel: true }} />

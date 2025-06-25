@@ -4,18 +4,21 @@ import LoadingPanel from '../panels/LoadingPanel'; // Zakładamy, że masz ten k
 
 const HomeScreen = () => {
   const [loading, setLoading] = useState(true);
+  const loaderTime = 1000;
 
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 3000);
+    const timer = setTimeout(() => setLoading(false), loaderTime);
     return () => clearTimeout(timer);
   }, []);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Home screen</Text>
-
+    <>
       {loading && <LoadingPanel visible={loading} />}
-    </View>
+      <View style={styles.container}>
+        <Text style={styles.text}>Home screen</Text>
+
+      </View>
+    </>
   );
 };
 

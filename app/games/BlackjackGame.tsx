@@ -3,7 +3,7 @@ import { ImageBackground, Text, StyleSheet, View, TouchableHighlight, Dimensions
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRoute } from "@react-navigation/native";
 
-import GameRouteProp from "../../props/GameProps";
+import GameRouteProp from "../../props/RootStackParamList";
 
 const seatingPlan: Record<number, [number, number, number, number]> = {
   2: [0, 1, 0, 1],

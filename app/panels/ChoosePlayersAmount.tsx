@@ -2,21 +2,16 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Text, TextInput, StyleSheet, TouchableOpacity } from "react-native";
 import { useState } from "react";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/core";
+import RootStackParamList from "../../props/RootStackParamList";
 
-type RootStackParamList = {
-  ChoosePlayersAmount: { gameType: string };
-  PokerGame: { playersCount: number };
-  BlackjackGame: { playersCount: number };
-  RouletteGame: { playersCount: number };
-};
 
-type PokerGameRouteProp = RouteProp<RootStackParamList, "ChoosePlayersAmount">;
+type ChoosePlayersAmountProp = RouteProp<RootStackParamList, "ChoosePlayersAmount">;
 
 const ChoosePlayersAmount = () => {
   const [value, setValue] = useState('');
   const navigation = useNavigation<any>();
 
-  const route = useRoute<PokerGameRouteProp>();
+  const route = useRoute<ChoosePlayersAmountProp>();
   const { gameType } = route.params;
 
   const finalValue = value === '' ? 2 : parseInt(value, 10);

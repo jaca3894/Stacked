@@ -52,7 +52,7 @@ const LoadingPanel = ({ visible }: LoadingPanelProps) => {
   }, [visible]);
 
   return (
-    <Modal animationType="fade" transparent visible={visible}>
+    <Modal animationType="fade" transparent visible={visible} statusBarTranslucent>
       <View style={styles.overlay}>
         <Image
           source={require('../../assets/logo.png')} // 🖼️ Upewnij się, że ta ścieżka prowadzi do Twojego logo
@@ -83,9 +83,12 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   message: {
-    color: '#cbbb9c',
+    color: 'white',
     fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
     marginBottom: 16,
+    paddingBottom: 20,
   },
   dotRow: {
     flexDirection: 'row',
@@ -95,7 +98,7 @@ const styles = StyleSheet.create({
     width: 12,
     height: 12,
     borderRadius: 6,
-    backgroundColor: '#cbbb9c',
+    backgroundColor: '#ccbb9c',
   },
 });
 

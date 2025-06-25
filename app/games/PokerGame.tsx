@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { ImageBackground, Text, StyleSheet, View, TouchableHighlight, Dimensions, TextInput, Modal } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { useRoute } from "@react-navigation/native";
+import { RouteProp, useRoute } from "@react-navigation/native";
 import Player from "../../classes/Player";
 import Pot from "../../classes/Pot";
 
-import GameRouteProp from "../../props/GameProps";
+import RootStackParamList from "../../props/RootStackParamList";
 
 import CustomSlider from "../../components/Slider";
 import RoundButton from "../../components/RoundButton";
@@ -34,6 +34,8 @@ type EdgeConfig = {
 };
 
 const screenWidth = Dimensions.get('window').width;
+type GameRouteProp = RouteProp<RootStackParamList, "Game">;
+
 
 const PokerGame = () => {
   const route = useRoute<GameRouteProp>();
@@ -102,15 +104,14 @@ const PokerGame = () => {
       newPlayerIndex++;
     }
     setCurrentPlayerIndex(newPlayerIndex);
-    if(players[newPlayerIndex].balance == 0) setCanRaise(false);
-    else setCanRaise(true);
+    setCanRaise(players[newPlayerIndex].balance == 0)
   }
 
   function call() {
     if (currentPlayerIndex === -1) return; // No current player
     const player = players[currentPlayerIndex];
     if(player.lastAction == "SB")
-      players[currentPlayerIndex].take(bigBlindAmount-smallBlindAmount);
+      players[currentPlayerIndex].take(minAmount-smallBlindAmount);
     else
       players[currentPlayerIndex].take(minAmount);
     if(!pots) return;
@@ -280,7 +281,11 @@ const PokerGame = () => {
           <CustomSlider minimumValue={minAmount+1} maximumValue={players[currentPlayerIndex].balance} step={1} value={minAmount} onValueChange={setSliderValue} onAccept={() => {raise(sliderValue);}}/>
         </View>)
       }
+<<<<<<< Updated upstream
+      { isGameEnded && <PotsShowdown pots={pots} players={players} visible={isGameEnded} onClose={() => {startGame(); setIsGameEnded(false)}}/>}
+=======
       { isGameEnded && <PotsShowdown pots={pots} players={players}/>}
+>>>>>>> Stashed changes
     </SafeAreaProvider>
   );
 };

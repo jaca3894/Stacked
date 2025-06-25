@@ -1,10 +1,14 @@
-import { View, Text, StyleSheet, ScrollView, Dimensions, SafeAreaView, Image, FlatList, Touchable, TouchableHighlight } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Dimensions, SafeAreaView, Image, FlatList, TouchableHighlight } from 'react-native';
 import { skillsData as data } from '../../classes/Database';
-import { Image as GIF} from 'expo-image';
+import { Image as Gif} from 'expo-image';
 
 const screenHeight = Math.round(Dimensions.get('window').height);
 
+<<<<<<< Updated upstream
 const AcademyScreen = () => {
+=======
+const LearningScreen = () => {
+>>>>>>> Stashed changes
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#1c1c1c' }}>
       <View style={styles.header}>
@@ -19,11 +23,10 @@ const AcademyScreen = () => {
           <Text style={{color: "#cbbb9c", fontSize: 24, fontWeight: "bold"}}>I want to learn more about...</Text>
         </View>
         {data.map((category, index) => (
-          <View key={index} style={styles.categoryBlock}>
+          <View key={index+1} style={styles.categoryBlock}>
             <Text style={styles.categoryTitle}>{category.category}</Text>
             <Text style={styles.categoryDescription}>{category.description}</Text>
             <FlatList
-            scrollEnabled={true}
               data={category.items}
               initialNumToRender={3}
               maxToRenderPerBatch={5}
@@ -35,7 +38,7 @@ const AcademyScreen = () => {
               renderItem={({ item }) => (
                 <TouchableHighlight onPress={() => console.log(item.name)} underlayColor={'transparent'}>
                   <View style={styles.skillItem}>
-                    <GIF
+                    <Gif
                       source={item.imagePath}
                       style={styles.skillImage}
                       contentFit='cover'
