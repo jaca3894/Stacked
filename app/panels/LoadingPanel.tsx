@@ -1,0 +1,102 @@
+import React, { useEffect, useState } from 'react';
+import { Modal, StyleSheet, View, Text, Image } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSequence,
+  withTiming,
+  withRepeat,
+  withDelay,
+} from 'react-native-reanimated';
+
+const Dot = ({ delay }: { delay: number }) => {
+  const scale = useSharedValue(1);
+
+  useEffect(() => {
+    scale.value = withDelay(
+      delay,
+      withRepeat(
+        withSequence(
+          withTiming(1.4, { duration: 300 }),
+          withTiming(1, { duration: 300 })
+        ),
+        -1
+      )
+    );
+  }, []);
+
+  const style = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
+  return <Animated.View style={[styles.dot, style]} />;
+};
+
+type LoadingPanelProps = {
+  visible: boolean;
+};
+
+const LoadingPanel = ({ visible }: LoadingPanelProps) => {
+  const [messageIndex, setMessageIndex] = useState(0);
+  const messages = ['You are nearly there...', 'One more sec..'];
+
+  useEffect(() => {
+    if (visible) {
+      const timer = setTimeout(() => {
+        setMessageIndex(1);
+      }, 2000);
+      return () => clearTimeout(timer);
+    } else {
+      setMessageIndex(0);
+    }
+  }, [visible]);
+
+  return (
+    <Modal animationType="fade" transparent visible={visible}>
+      <View style={styles.overlay}>
+        <Image
+          source={require('../../assets/logo.png')} // 🖼️ Upewnij się, że ta ścieżka prowadzi do Twojego logo
+          style={styles.logo}
+          resizeMode="contain"
+        />
+        <Text style={styles.message}>{messages[messageIndex]}</Text>
+        <View style={styles.dotRow}>
+          <Dot delay={0} />
+          <Dot delay={200} />
+          <Dot delay={400} />
+        </View>
+      </View>
+    </Modal>
+  );
+};
+
+const styles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: '#000',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  logo: {
+    width: 120,
+    height: 120,
+    marginBottom: 20,
+  },
+  message: {
+    color: '#cbbb9c',
+    fontSize: 18,
+    marginBottom: 16,
+  },
+  dotRow: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  dot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: '#cbbb9c',
+  },
+});
+
+export default LoadingPanel;

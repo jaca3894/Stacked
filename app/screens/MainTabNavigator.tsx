@@ -38,9 +38,7 @@ export default function App() {
     >
       <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarShowLabel: true }} />
       <Tab.Screen name="Play" component={PlayScreen} options={{ tabBarShowLabel: true }} />
-      <Tab.Screen name="Academy" options={{ tabBarShowLabel: true }}>
-        {() => <AcademyScreen setIsInteracting={setIsInteracting}/>}
-      </Tab.Screen>
+      <Tab.Screen name="Academy" component={AcademyScreen} options={{ tabBarShowLabel: true }} />
       <Tab.Screen name="More" component={MoreScreen} options={{ tabBarShowLabel: true }} />
     </Tab.Navigator>
   );
