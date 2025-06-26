@@ -1,7 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, TouchableHighlight, Image, Dimensions, StyleSheet, FlatList } from 'react-native';
+import { View, Text, FlatList, Image, Dimensions, StyleSheet, SafeAreaView } from 'react-native';
 import type { StackNavigationProp } from '@react-navigation/stack';
+import { LinearGradient } from 'expo-linear-gradient';
 import { welcomeCardsData as data } from '../../classes/Database';
+import { TouchableHighlight } from 'react-native';
 
 type WelcomeScreenProps = {
   navigation: StackNavigationProp<any>;
@@ -9,7 +11,6 @@ type WelcomeScreenProps = {
 
 const WelcomeScreen = ({ navigation }: WelcomeScreenProps) => {
   const width = Dimensions.get('window').width;
-  // czas co ile ma sie zmieniac karta
   const autoRotateInterval = 5500;
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isRotating, setIsRotating] = useState(false);
@@ -18,7 +19,7 @@ const WelcomeScreen = ({ navigation }: WelcomeScreenProps) => {
   const autoRotate = () => {
     setIsRotating(true);
     const nextIndex = (currentIndex + 1) % data.length;
-    const nextItemOffset = (width) * nextIndex;
+    const nextItemOffset = width * nextIndex;
     flatListRef.current?.scrollToOffset({ animated: true, offset: nextItemOffset });
     setCurrentIndex(nextIndex);
   };
@@ -30,57 +31,74 @@ const WelcomeScreen = ({ navigation }: WelcomeScreenProps) => {
 
   const renderItems = ({ item }: { item: { title: string, description: string, photoPath: any } }) => (
     <View style={styles.carouselItem}>
-      <Image source={item.photoPath} style={styles.cardImage}/>
-      <Text style={styles.cardButtonText}><Text style={styles.cardTitle}>{item.title}</Text>{'\n\n'}{item.description}</Text>
+      <Image source={item.photoPath} style={styles.cardImage} />
+      <View style={{ position: 'absolute', bottom: "15%", width: '100%', padding: 20 }}>
+        <Text style={styles.cardTitle}>{item.title}</Text>
+        <Text style={styles.cardDescription}>{item.description}</Text>
+      </View>
+        <LinearGradient
+          colors={['transparent', '#1c1c1c']}
+          style={styles.gradientOverlay}
+        >
+          
+        </LinearGradient>
     </View>
   );
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Image source={require('../../assets/logo.png')} style={{ width: 200, height: 200 }} />
-      </View>
-      <View style={styles.main}>
-        <FlatList style={ styles.flatList}
-          ref={flatListRef}
-          data={data}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={renderItems}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          pagingEnabled
-          snapToInterval={width}
-          decelerationRate="fast"
-          onScroll={(event) => {
-            const contentOffsetX = event.nativeEvent.contentOffset.x;
-            const index = Math.round(contentOffsetX / width);
-            if(isRotating && index != currentIndex)
-              return;
-            if(index == currentIndex)
-              setIsRotating(false);
-            setCurrentIndex(index);
+    <SafeAreaView style={styles.container}>
+      <FlatList
+        style={styles.flatList}
+        ref={flatListRef}
+        data={data}
+        keyExtractor={(_, index) => index.toString()}
+        renderItem={renderItems}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        pagingEnabled
+        snapToInterval={width}
+        decelerationRate="fast"
+        onScroll={(event) => {
+          const offsetX = event.nativeEvent.contentOffset.x;
+          const index = Math.round(offsetX / width);
+          if (isRotating && index !== currentIndex) return;
+          if (index === currentIndex) setIsRotating(false);
+          setCurrentIndex(index);
+        }}
+        scrollEventThrottle={16}
+      />
+      <View style={styles.bottomView}>
+        <TouchableHighlight
+          onPress={() => {
+            if (currentIndex < data.length - 1) {
+              const nextIndex = currentIndex + 1;
+              const nextOffset = width * nextIndex;
+              flatListRef.current?.scrollToOffset({ animated: true, offset: nextOffset });
+              setCurrentIndex(nextIndex);
+            } else {
+              navigation.navigate('MainTabs');
+            }
           }}
-          scrollEventThrottle={16}
-        />
-        <View style={styles.pagination}>
-          {data.map((_, index) => (
-            <View
-              key={index+1}
-              style={[
-                styles.dot,
-                { backgroundColor: index === currentIndex ? 'red' : '#ccc' }
-              ]}
-            />
-          ))}
-        </View>
-        <TouchableHighlight underlayColor={"#948870"} style={styles.proceedButton} onPress={() => navigation.navigate('MainTabs')}>
-          <Text style={{ color: 'black', fontWeight: "bold", textAlign: 'center', lineHeight: 50 }}>Continue</Text>
+          style={{
+            position: 'absolute',
+            bottom: 30,
+            backgroundColor: '#cbbb9c',
+            width: '30%',
+            height: 50,
+            borderRadius: 10,
+            justifyContent: 'center',
+            alignItems: 'center',
+            alignSelf: 'center', // to centrowanie horyzontalne
+          }}
+        >
+          <View>
+            <Text style={{ color: '#1c1c1c', fontSize: 18, textAlign: 'center' }}>
+              {currentIndex === data.length - 1 ? 'Get started' : 'Continue'}
+            </Text>
+          </View>
         </TouchableHighlight>
       </View>
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>2025 Stacked.</Text>
-      </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -89,74 +107,58 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#1c1c1c',
   },
-  header: {
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    backgroundColor: '#1c1c1c',
-    height: '25%',
-  },
-  main: {
-    marginVertical: 10,
-    height: '60%',
-    backgroundColor: '#1c1c1c',
-  },
   flatList: {
-    height: "90%",
+    height: '100%',
+    width: '100%',
     marginBottom: 10,
   },
-  footer: {
-    height: '15%',
-    backgroundColor: '#1c1c1c',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  footerText: {
-    color: 'gray',
-    textAlign: 'center',
-    fontSize: 16,
-  },
   carouselItem: {
-    width: Dimensions.get('window').width * 0.75,
-    height: "100%",
-    marginHorizontal: Dimensions.get('window').width * 0.125,
+    width: Dimensions.get('window').width,
+    height: '100%',
     backgroundColor: '#1c1c1c',
-    borderColor: '#cbbb9c',
-    borderWidth: 2,
-    borderRadius: 10,
+    // borderColor: '#cbbb9c',
+    // borderWidth: 2,
+    // borderRadius: 10,
   },
   cardImage: {
     width: '100%',
-    height: "100%",
-    opacity: 0.1,
-    backgroundColor: 'black',
-    borderRadius: 10, 
+    height: '100%',
+    resizeMode: 'cover',
+    backgroundColor: '#1c1c1c',
+    borderRadius: 10,
     borderBottomRightRadius: 0,
     borderBottomLeftRadius: 0,
   },
-  cardButton: {
-    marginTop: 10,
-    backgroundColor: '#cbbb9c',
-    paddingVertical: 8,
-    paddingHorizontal: 15,
-    borderRadius: 5,
+  gradientOverlay: {
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'transparent',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
   },
   cardTitle: {
-    paddingBottom: 0,
-    textAlign: 'left',
-    fontSize: 18,
+    fontSize: 28,
     fontWeight: 'bold',
     color: '#cbbb9c',
+    textAlign: 'center',
+    zIndex: 1,
   },
-  cardButtonText: {
-    position: 'absolute',
-    bottom: "0%",
+  cardDescription: {
+    zIndex: 1,
+    fontSize: 18,
     color: 'white',
-    padding: 20,
-    textAlign: 'left',
+    textAlign: 'center',
+    marginTop: 10,
+    paddingHorizontal: 20,
   },
   pagination: {
+    position: 'absolute',
+    bottom: "10%",
     alignSelf: 'center',
-    flexDirection: 'row', 
+    flexDirection: 'row',
     justifyContent: 'center',
     paddingVertical: 10,
   },
@@ -166,15 +168,15 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginHorizontal: 5,
   },
-  proceedButton: {
-    backgroundColor: '#cbbb9c',
+  bottomView: {
+    zIndex: 0,
+    position: 'absolute',
+    bottom: "5%",
+    width: '100%',
+    height: '10%',
     justifyContent: 'center',
     alignItems: 'center',
-    alignSelf: 'center',
-    height: "10%",
-    width: "35%",
-    marginTop: "10%",
-    borderRadius: 5,
+    backgroundColor: "transparent",
   },
 });
 

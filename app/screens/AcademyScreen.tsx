@@ -21,7 +21,7 @@ const AcademyScreen = () => {
       </View>
       <ScrollView style={ styles.container } showsVerticalScrollIndicator={false} nestedScrollEnabled={true}>
         <View style={{ width: '100%', padding: 20, alignItems: 'center' }}>
-          <Text style={{color: "#cbbb9c", fontSize: 24, fontWeight: "bold"}}>I want to learn more about...</Text>
+          <Text style={{color: "#f7e2bd", fontSize: 24, fontWeight: "bold"}}>I want to learn more about...</Text>
         </View>
           {data.map((category, categoryIdx) => (
             <View key={categoryIdx} style={styles.categoryBlock}>

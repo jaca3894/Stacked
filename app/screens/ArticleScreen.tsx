@@ -4,8 +4,7 @@ import { useState } from "react";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import Icon from 'react-native-vector-icons/Ionicons';
 import { articlesData as data } from "../../classes/Database";
-import { Image as Gif} from 'expo-image';
-
+import { Image as Gif } from 'expo-image';
 
 type ArticleScreenProp = RouteProp<RootStackParamList, "Article">;
 
@@ -15,78 +14,96 @@ const extractYouTubeId = (url: string): string => {
   return match ? match[1] : '';
 };
 
-
 const screenHeight = Dimensions.get('window').height;
 
 const ArticleScreen = () => {
-  
   const route = useRoute<ArticleScreenProp>();
   const { articleId } = route.params;
   const article = data[articleId];
   const [liked, setLiked] = useState(article.isLiked);
-  console.log("Article ID:", articleId);
 
   const toggleLike = () => {
     setLiked(!liked);
     article.isLiked = !liked;
   };
 
-
   return (
-    <View style={{ flex: 1, backgroundColor: '#1c1c1c', height: '100%' }}>
-      <Gif source={article.bannerPath} style={ styles.banner } contentFit='cover' transition={300} cachePolicy="memory-disk"/>
-      <ScrollView style={ styles.content }>
-        <View style={ styles.introFlexContainer }>
-            <Text style={[styles.categoryTab, { backgroundColor: article.categoryTabColor || '#cbbb9c' }]}>{article.category}</Text>
-            <Text style={ styles.titleText }>{article.title}</Text>
-            {article.videoLink != "null" && (<Text style={{ color: "gray", fontSize: 14, fontStyle: "italic", marginBottom: 20 }}>Thumbnail sourced from the linked video below.</Text>)}
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between'}}>
-              <Image source={require('../../assets/logo.png')} style={{ width: 50, height: 50, borderRadius: 25, alignSelf: "center" }} />
-              <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', height: 70, width: "70%" }}>
-                <Text style={ styles.authorTextTitle }>Stacked Academy</Text>
-                <Text style={ styles.dateText }>{article.date}</Text>
-              </View>
-              <Icon onPress={toggleLike} name={liked ? "heart" : "heart-outline"} color={!liked ? "#cbbb9c" : "red"} size={35} style={{ alignSelf: "center"}}/>
-            </View>
-        </View>
-        <View style={{ flex: 1, padding: 20 }}>
-          <Text style={{ color: 'white', fontSize: 16, lineHeight: 24 }}>
-            {article.content}
-          </Text>
-          {article.videoLink != "null" && (
-            <TouchableOpacity
-              style={{ marginTop: 20 }}
-              onPress={() => Linking.openURL(article.videoLink)}
-            >
-              <Image
-                source={{ uri: `https://img.youtube.com/vi/${extractYouTubeId(article.videoLink)}/hqdefault.jpg` }}
-                style={{ height: 200, borderRadius: 10 }}
-              />
-              <Text style={{ color: '#cbbb9c', marginTop: 20, textAlign: 'center', fontStyle: 'italic' }}>
-                Watch the video tutorial — created by {article.videoAuthor}, shared on YouTube under the CC BY 3.0 license.             
+    <View style={{ flex: 1, backgroundColor: '#1c1c1c' }}>
+      <ScrollView>
+        <Gif
+          source={article.bannerPath}
+          style={styles.banner}
+          contentFit="cover"
+          transition={300}
+          cachePolicy="memory-disk"
+        />
+
+        <View style={styles.content}>
+          <View style={styles.introFlexContainer}>
+            <Text style={[styles.categoryTab, { backgroundColor: article.categoryTabColor || '#cbbb9c' }]}>
+              {article.category}
+            </Text>
+            <Text style={styles.titleText}>{article.title}</Text>
+            {article.videoLink !== "null" && (
+              <Text style={styles.videoNote}>
+                Thumbnail sourced from the linked video below.
               </Text>
-            </TouchableOpacity>
-          )}
-          <View style={styles.footer}>
-            <Text style={styles.footerText}>2025 Stacked.</Text>
+            )}
+
+            <View style={styles.authorRow}>
+              <Image
+                source={require('../../assets/logo.png')}
+                style={styles.authorAvatar}
+              />
+              <View style={styles.authorDetails}>
+                <Text style={styles.authorTextTitle}>Stacked Academy</Text>
+                <Text style={styles.dateText}>{article.date}</Text>
+              </View>
+              <Icon
+                onPress={toggleLike}
+                name={liked ? "heart" : "heart-outline"}
+                color={liked ? "red" : "#cbbb9c"}
+                size={35}
+                style={{ alignSelf: "center" }}
+              />
+            </View>
+          </View>
+
+          <View style={{ flex: 1, padding: 20 }}>
+            <Text style={styles.contentText}>{article.content}</Text>
+
+            {article.videoLink !== "null" && (
+              <TouchableOpacity
+                style={{ marginTop: 20 }}
+                onPress={() => Linking.openURL(article.videoLink)}
+              >
+                <Image
+                  source={{ uri: `https://img.youtube.com/vi/${extractYouTubeId(article.videoLink)}/hqdefault.jpg` }}
+                  style={styles.videoThumbnail}
+                />
+                <Text style={styles.videoCaption}>
+                  Watch the video tutorial — created by {article.videoAuthor}, shared on YouTube under the CC BY 3.0 license.
+                </Text>
+              </TouchableOpacity>
+            )}
+
+            <View style={styles.footer}>
+              <Text style={styles.footerText}>2025 Stacked.</Text>
+            </View>
           </View>
         </View>
       </ScrollView>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   banner: {
     width: '100%',
-    height: '40%',
+    height: screenHeight * 0.35,
   },
   content: {
-    position: 'absolute',
-    top: '35%',
-    left: 0,
-    right: 0,
-    bottom: 0,
+    marginTop: -screenHeight * 0.05,
     borderTopLeftRadius: 35,
     borderTopRightRadius: 35,
     padding: 20,
@@ -122,6 +139,29 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     marginBottom: 10,
   },
+  videoNote: {
+    color: "gray",
+    fontSize: 14,
+    fontStyle: "italic",
+    marginBottom: 20,
+  },
+  authorRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  authorAvatar: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    alignSelf: "center",
+  },
+  authorDetails: {
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+    height: 70,
+    width: "70%",
+  },
   authorTextTitle: {
     fontSize: 16,
     color: '#cbbb9c',
@@ -133,6 +173,21 @@ const styles = StyleSheet.create({
   dateText: {
     fontSize: 14,
     color: 'gray',
+    fontStyle: 'italic',
+  },
+  contentText: {
+    color: 'white',
+    fontSize: 16,
+    lineHeight: 24,
+  },
+  videoThumbnail: {
+    height: 200,
+    borderRadius: 10,
+  },
+  videoCaption: {
+    color: '#cbbb9c',
+    marginTop: 20,
+    textAlign: 'center',
     fontStyle: 'italic',
   },
   footer: {
@@ -147,6 +202,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
-
 
 export default ArticleScreen;
