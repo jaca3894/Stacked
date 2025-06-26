@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { View, Text, FlatList, Image, Dimensions, StyleSheet, SafeAreaView } from 'react-native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -11,23 +11,8 @@ type WelcomeScreenProps = {
 
 const WelcomeScreen = ({ navigation }: WelcomeScreenProps) => {
   const width = Dimensions.get('window').width;
-  const autoRotateInterval = 5500;
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isRotating, setIsRotating] = useState(false);
   const flatListRef = useRef<FlatList<{ title: string, description: string, photoPath: string }> | null>(null);
-
-  const autoRotate = () => {
-    setIsRotating(true);
-    const nextIndex = (currentIndex + 1) % data.length;
-    const nextItemOffset = width * nextIndex;
-    flatListRef.current?.scrollToOffset({ animated: true, offset: nextItemOffset });
-    setCurrentIndex(nextIndex);
-  };
-
-  useEffect(() => {
-    const interval = setInterval(autoRotate, autoRotateInterval);
-    return () => clearInterval(interval);
-  }, [currentIndex]);
 
   const renderItems = ({ item }: { item: { title: string, description: string, photoPath: any } }) => (
     <View style={styles.carouselItem}>
@@ -36,12 +21,10 @@ const WelcomeScreen = ({ navigation }: WelcomeScreenProps) => {
         <Text style={styles.cardTitle}>{item.title}</Text>
         <Text style={styles.cardDescription}>{item.description}</Text>
       </View>
-        <LinearGradient
-          colors={['transparent', '#1c1c1c']}
-          style={styles.gradientOverlay}
-        >
-          
-        </LinearGradient>
+      <LinearGradient
+        colors={['transparent', '#1c1c1c']}
+        style={styles.gradientOverlay}
+      />
     </View>
   );
 
@@ -61,8 +44,6 @@ const WelcomeScreen = ({ navigation }: WelcomeScreenProps) => {
         onScroll={(event) => {
           const offsetX = event.nativeEvent.contentOffset.x;
           const index = Math.round(offsetX / width);
-          if (isRotating && index !== currentIndex) return;
-          if (index === currentIndex) setIsRotating(false);
           setCurrentIndex(index);
         }}
         scrollEventThrottle={16}
@@ -88,7 +69,7 @@ const WelcomeScreen = ({ navigation }: WelcomeScreenProps) => {
             borderRadius: 10,
             justifyContent: 'center',
             alignItems: 'center',
-            alignSelf: 'center', // to centrowanie horyzontalne
+            alignSelf: 'center',
           }}
         >
           <View>
@@ -116,9 +97,6 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width,
     height: '100%',
     backgroundColor: '#1c1c1c',
-    // borderColor: '#cbbb9c',
-    // borderWidth: 2,
-    // borderRadius: 10,
   },
   cardImage: {
     width: '100%',
