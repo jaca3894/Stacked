@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ImageBackground, Text, StyleSheet, View, TouchableHighlight, Dimensions, TextInput, Modal } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { RouteProp, useRoute } from "@react-navigation/native";
@@ -57,6 +57,7 @@ const PokerGame = () => {
   const [inputValue, setInputValue] = useState("");
   const [isGameStarted, setIsGameStarted] = useState(false);
   const [isGameEnded, setIsGameEnded] = useState(false);
+  const [startNewGame, setStartNewGame] = useState(false);
   const [sliderValue, setSliderValue] = useState(0);
   const [isSliderShown, setIsSliderShown] = useState(false);
 
@@ -69,16 +70,22 @@ const PokerGame = () => {
 
   let globalIndex = 0;
 
-  function startGame() {
-    console.log(players)
-    const playersIndexes = players.map((player, i) => {return i});
-    console.log(playersIndexes)
-    const mainPot = new Pot(playersIndexes, "Main Pot", smallBlindAmount + bigBlindAmount);
-    console.log(mainPot.playersIndexes)
-    const dealerIndex = Math.floor(Math.random() * maxPlayers);
+  useEffect(() => {
+    if(startNewGame) {
+      console.log('Start game')
+      startGame();
+    }
+  }, [players.length, startNewGame])
 
-    const smallBlindIndex = (dealerIndex + 1) % maxPlayers;
-    const bigBlindIndex = (dealerIndex + 2) % maxPlayers;
+  function startGame() {
+    if (players.length < 2) {
+      console.warn("Za mało graczy do rozpoczęcia gry");
+      return;
+    }
+
+    const dealerIndex = Math.floor(Math.random() * players.length);
+    const smallBlindIndex = (dealerIndex + 1) % players.length;
+    const bigBlindIndex = (dealerIndex + 2) % players.length;
 
     players.forEach((player, i) => {
       player.currentBet = 0;
@@ -99,11 +106,23 @@ const PokerGame = () => {
       }
     });
 
+    
+    const playersNames = players.filter(p => p.name.trim() !== '').map(p => p.name);
+    const mainPot = new Pot(playersNames, "Main Pot", smallBlindAmount + bigBlindAmount);
+    console.log('Main pot players: ' + mainPot.playersNames)
+    console.log('Players length: ' + players.length)
+    console.log('Current player index' + (dealerIndex + 3) % players.length)
+    
+    setShownCards(0);
+    setPlayers(prevPlayers => prevPlayers.filter(player => player.balance > 0));
+    setCanRaise(true);
     setBiggestBetPlayerIndex(bigBlindIndex);
     setPots([mainPot]);
     setMinAmount(bigBlindAmount);
-    setCurrentPlayerIndex((dealerIndex + 3) % maxPlayers);
+    setCurrentPlayerIndex((dealerIndex + 3) % players.length);
+    setIsGameStarted(true);
     setIsGameEnded(false);
+    setStartNewGame(false);
   }
 
   function endGame() {
@@ -112,10 +131,10 @@ const PokerGame = () => {
   }
 
   function nextPlayer() {
-    let newPlayerIndex = (currentPlayerIndex + 1) % maxPlayers;
+    let newPlayerIndex = (currentPlayerIndex + 1) % players.length;
     while (players[newPlayerIndex]?.didFold) {
-      if (newPlayerIndex == currentPlayerIndex) return; // If looped back to current player, stop game
-      newPlayerIndex = (newPlayerIndex + 1) % maxPlayers;
+      if (newPlayerIndex == currentPlayerIndex) {pots?.forEach(pot => players[currentPlayerIndex].balance += pot.balance); startGame();}; // If looped back to current player, stop game
+      newPlayerIndex = (newPlayerIndex + 1) % players.length;
     }
     setCurrentPlayerIndex(newPlayerIndex);
     if(players[newPlayerIndex].balance == 0) setCanRaise(false);
@@ -144,13 +163,26 @@ const PokerGame = () => {
         showCards();
         players.forEach(p => p.lastAction = '');
         setMinAmount(0);
-        setCurrentPlayerIndex((players.findIndex(p => !p.didFold) + 1) % maxPlayers);
+        setCurrentPlayerIndex((players.findIndex(p => !p.didFold) + 1) % players.length);
       }
       else
         endGame();
     }
     else
       nextPlayer();
+  }
+
+  function getNextNonFoldedPlayerIndex(startIndex: number) {
+    let newPlayerIndex = (startIndex + 1) % players.length;
+    while (players[newPlayerIndex].didFold) {
+      newPlayerIndex = (newPlayerIndex + 1) % players.length;
+    }
+    return newPlayerIndex;
+  }
+
+  function revealAllCards() {
+    setShownCards(5);
+    endGame();
   }
 
   function check() {
@@ -160,20 +192,20 @@ const PokerGame = () => {
         showCards();
         players.forEach(p => p.lastAction = '');
         const dealerIndex = players.findIndex(p => p.isDealer);
-        let foundNext = false;
-        let newPlayerIndex = (dealerIndex+1) % maxPlayers;
-        while(!foundNext) {
-          if(!players[newPlayerIndex].didFold) foundNext = true;
-          else newPlayerIndex = (newPlayerIndex + 1) % maxPlayers;
-        }
+        const newPlayerIndex = getNextNonFoldedPlayerIndex(dealerIndex);
         setCurrentPlayerIndex(newPlayerIndex);
-        setBiggestBetPlayerIndex(newPlayerIndex-1);
+        setBiggestBetPlayerIndex(newPlayerIndex - 1);
       }
-      else
+      else {
         endGame();
-    }
-    else
+      }
+    } 
+    else {
+      const playersNotFolded = players.filter(player => !player.didFold);
+      if (playersNotFolded.every(player => player.balance == 0))
+        revealAllCards();
       nextPlayer();
+    }
   }
 
   function raise(amount: number) {
@@ -199,16 +231,18 @@ const PokerGame = () => {
     players[currentPlayerIndex].lastAction = "fold";
     if(playersLeft == 1) {
       // If only one player left, they win the pot
-      const winnerIndex = players.findIndex(player => !player.didFold);
+      const winner = players.find(player => !player.didFold);
+      if(!winner) return;
+      const winnerIndex = players.indexOf(winner);
       if (pots) {
         pots.forEach(pot => {
-          if(pot.playersIndexes.includes(winnerIndex)) players[winnerIndex].give(pot.balance);
+          if(pot.playersNames.includes(winner.name)) players[winnerIndex].give(pot.balance);
         })
       }
       startGame();
     }
     else {
-      pots?.forEach(pot => pot.playersIndexes = pot.playersIndexes.filter(index => index != currentPlayerIndex))
+      pots?.forEach(pot => pot.playersNames = pot.playersNames.filter(name => name != players[currentPlayerIndex].name))
       nextPlayer();
     }
   }
@@ -307,7 +341,7 @@ const PokerGame = () => {
           <CustomSlider minimumValue={minAmount+1} maximumValue={players[currentPlayerIndex].balance} step={1} value={minAmount} onValueChange={setSliderValue} onAccept={() => {raise(sliderValue);}}/>
         </View>)
       }
-      { isGameEnded && <PotsShowdown pots={pots} players={players} onClose={() => {setPlayers(prev => prev.filter(player => player.balance > 0)); setTimeout(() => startGame(), 200); setIsGameEnded(false);}}/>}
+      { isGameEnded && <PotsShowdown pots={pots} players={players} onClose={() => {setPlayers(prev => prev.filter(player => player.balance > 0)); setStartNewGame(true);}}/>}
     </SafeAreaProvider>
   );
 };

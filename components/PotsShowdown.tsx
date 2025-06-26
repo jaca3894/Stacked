@@ -1,13 +1,4 @@
-import {
-  Modal,
-  Text,
-  View,
-  StyleSheet,
-  Dimensions,
-  TouchableOpacity,
-  TouchableHighlight,
-  StatusBar,
-} from 'react-native';
+import {Modal, Text, View, StyleSheet, Dimensions, TouchableOpacity, TouchableHighlight, StatusBar } from 'react-native';
 import Pot from '../classes/Pot';
 import Player from '../classes/Player';
 import { useState } from 'react';
@@ -17,15 +8,9 @@ const [screenWidth, screenHeight] = [
   Dimensions.get('window').height,
 ];
 
-const PotsShowdown = ({
-  pots,
-  players,
-  onClose
-}: {
-  pots?: Pot[];
-  players: Player[];
-  onClose: () => void;
-}) => {
+const PotsShowdown = ({pots, players, onClose}: {pots?: Pot[]; players: Player[]; onClose: () => void;}) => {
+  if(pots) console.log(pots[0].playersNames)
+  if(pots) console.log(pots[0])
   const [selectedPotWinners, setSelectedPotWinners] = useState<Map<string, Player>>(new Map());
 
   const handleSelectWinner = (pot: Pot, player: Player) => {
@@ -41,7 +26,7 @@ const PotsShowdown = ({
       }
     });
     onClose();
-  };
+  }
 
   return (
     <Modal transparent animationType="fade" statusBarTranslucent>
@@ -59,7 +44,7 @@ const PotsShowdown = ({
               <View style={styles.playersView}>
                 {players
                   .map((player, playerIndex) => ({ player, playerIndex }))
-                  .filter(({ playerIndex }) => pot.playersIndexes.includes(playerIndex))
+                  .filter(({ player }) => pot.playersNames.includes(player.name))
                   .map(({ player, playerIndex }) => (
                     <TouchableOpacity
                       key={playerIndex + 1}

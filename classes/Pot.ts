@@ -3,12 +3,12 @@ import Player from "./Player";
 export default class Pot {
   name: string;
   balance: number;
-  playersIndexes: number[];
+  playersNames: string[];
   winner?: Player;
-  constructor(playersIndexes: number[], name: string = 'Main Pot', balance: number = 0) {
+  constructor(playersNames: string[], name: string = 'Main Pot', balance: number = 0) {
     this.name = name
     this.balance = balance
-    this.playersIndexes = playersIndexes;
+    this.playersNames = playersNames;
   }
   add(amount: number) {
     if (amount <= 0) return;
