@@ -1,8 +1,7 @@
-import 'react-native-reanimated';
 import React from 'react';
 import { View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createStackNavigator } from '@react-navigation/stack';
 import WelcomeScreen from './WelcomeScreen';
 import MainTabNavigator from './MainTabNavigator';
 import ChoosePlayersAmount from '../panels/ChoosePlayersAmount';
@@ -10,7 +9,7 @@ import PokerGame from '../games/PokerGame';
 import BlackjackGame from '../games/BlackjackGame';
 import RouletteGame from '../games/RouletteGame';
 import ArticleScreen from './ArticleScreen';
-const Stack = createNativeStackNavigator();
+const Stack = createStackNavigator();
 
 export default function App() {
   return (
@@ -22,19 +21,16 @@ export default function App() {
           screenOptions={{
             headerStyle: {
               backgroundColor: 'black',
-              // height: 70,
+              height: 70,
             },
             headerTintColor: '#fff',
             headerTitleStyle: {
               fontWeight: 'bold',
               fontSize: 18,
             },
-            contentStyle:
-            {
+            cardStyle: {
               backgroundColor: 'black', // <-- to dodaj
-            }
-            // cardStyle: {
-            // },
+            },
           }}
         >
           <Stack.Screen name="Welcome" component={WelcomeScreen} options={{ headerShown: false }} />

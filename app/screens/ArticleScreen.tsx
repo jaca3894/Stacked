@@ -5,9 +5,8 @@ import { RouteProp, useRoute } from "@react-navigation/native";
 import Icon from 'react-native-vector-icons/Ionicons';
 import { articlesData as data } from "../../classes/Database";
 import { Image as Gif } from 'expo-image';
-import Animated from 'react-native-reanimated';
-type ArticleScreenProp = RouteProp<RootStackParamList, "Article">;
 
+type ArticleScreenProp = RouteProp<RootStackParamList, "Article">;
 
 const extractYouTubeId = (url: string): string => {
   const regExp = /(?:youtube\.com\/.*v=|youtu\.be\/)([^&\n?#]+)/;
@@ -20,7 +19,6 @@ const screenHeight = Dimensions.get('window').height;
 const ArticleScreen = () => {
   const route = useRoute<ArticleScreenProp>();
   const { articleId } = route.params;
-  console.log(`gif-${articleId}`);
   const article = data[articleId];
   const [liked, setLiked] = useState(article.isLiked);
 
@@ -32,15 +30,14 @@ const ArticleScreen = () => {
   return (
     <View style={{ flex: 1, backgroundColor: '#1c1c1c' }}>
       <ScrollView>
-        <Animated.View sharedTransitionTag={`gif-${articleId}`} style={styles.banner}>          
-          <Gif
-            source={article.bannerPath}
-            style={{ width: '100%', height: '100%' }}
-            contentFit="cover"
-            transition={300}
-            cachePolicy="memory-disk"
-          />
-        </Animated.View>
+        <Gif
+          source={article.bannerPath}
+          style={styles.banner}
+          contentFit="cover"
+          transition={300}
+          cachePolicy="memory-disk"
+        />
+
         <View style={styles.content}>
           <View style={styles.introFlexContainer}>
             <Text style={[styles.categoryTab, { backgroundColor: article.categoryTabColor || '#cbbb9c' }]}>
@@ -205,6 +202,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
-
 
 export default ArticleScreen;

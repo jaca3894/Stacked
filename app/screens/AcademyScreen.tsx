@@ -1,79 +1,71 @@
 import { View, Text, StyleSheet, ScrollView, Dimensions, SafeAreaView, Image, FlatList, TouchableHighlight } from 'react-native';
 import { skillsData as data } from '../../classes/Database';
-import { Image as Gif } from 'expo-image';
+import { Image as Gif} from 'expo-image';
 import { useNavigation } from '@react-navigation/native';
 import { useRef } from 'react';
-import Animated from 'react-native-reanimated';
 const screenHeight = Math.round(Dimensions.get('window').height);
 
 const AcademyScreen = () => {
-
+  
   const navigation = useNavigation<any>();
   let globalIndex = useRef(0).current;
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#1c1c1c' }}>
       <View style={styles.header}>
-        <Image
-          source={require('../../assets/logoAcademy.png')}
-          style={styles.logo}
-          resizeMode="contain"
-        />
+          <Image
+            source={require('../../assets/logoAcademy.png')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
       </View>
-      <ScrollView style={styles.container} showsVerticalScrollIndicator={false} nestedScrollEnabled={true}>
+      <ScrollView style={ styles.container } showsVerticalScrollIndicator={false} nestedScrollEnabled={true}>
         <View style={{ width: '100%', padding: 20, alignItems: 'center' }}>
-          <Text style={{ color: "#f7e2bd", fontSize: 24, fontWeight: "bold" }}>I want to learn more about...</Text>
+          <Text style={{color: "#f7e2bd", fontSize: 24, fontWeight: "bold"}}>I want to learn more about...</Text>
         </View>
-        {data.map((category, categoryIdx) => (
-          <View key={categoryIdx} style={styles.categoryBlock}>
-            <Text style={styles.categoryTitle}>{category.category}</Text>
+          {data.map((category, categoryIdx) => (
+            <View key={categoryIdx} style={styles.categoryBlock}>
+              <Text style={styles.categoryTitle}>{category.category}</Text>
 
-            <FlatList
-              data={category.items}
-              removeClippedSubviews={false}
-              keyExtractor={(item, idx) => `${item.name}-${idx}`}
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              renderItem={({ item }) => {
-                const currentIndex = globalIndex++;
-                return (
-                  // console.log("Current index:", currentIndex),
-                  <TouchableHighlight
-                    onPress={() => {
-                      navigation.navigate("Article", { articleId: currentIndex });
-                      console.log(`gif-${currentIndex}`);
-                    }}
-                    underlayColor={'transparent'}
-                  >
-                    <View style={styles.skillItem}>
-                      <Animated.View sharedTransitionTag={`gif-${currentIndex}`} style={styles.skillImage}>
+              <FlatList
+                data={category.items}
+                keyExtractor={(item, idx) => `${item.name}-${idx}`}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                renderItem={({ item }) => {
+                  const currentIndex = globalIndex++;
+                  return (
+                    <TouchableHighlight
+                      onPress={() => navigation.navigate("Article", { articleId: currentIndex })}
+                      underlayColor={'transparent'}
+                    >
+                      <View style={styles.skillItem}>
                         <Gif
                           source={item.imagePath}
-                          style={{ width: '100%', height: '100%' }}
+                          style={styles.skillImage}
                           contentFit='cover'
                           transition={300}
                           cachePolicy="memory-disk"
                         />
-                      </Animated.View>                      
-                      <View style={styles.skillName}>
-                        <Text style={styles.skillNameText}>{item.name}</Text>
-                        <Image
-                          source={require('../../assets/arrowRight.png')}
-                          style={{ width: 20, height: 20, position: 'absolute', right: 10, top: 15 }}
-                          resizeMode="contain"
-                        />
+                        <View style={styles.skillName}>
+                          <Text style={styles.skillNameText}>{item.name}</Text>
+                          <Image
+                            source={require('../../assets/arrowRight.png')}
+                            style={{ width: 20, height: 20, position: 'absolute', right: 10, top: 15 }}
+                            resizeMode="contain"
+                          />
+                        </View>
                       </View>
-                    </View>
-                  </TouchableHighlight>
-                );
-              }}
-            />
-          </View>
-        ))}
+                    </TouchableHighlight>
+                  );
+                }}
+    />
+  </View>
+))}
 
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>2025 Stacked.</Text>
-        </View>
+      <View style={styles.footer}>
+        <Text style={styles.footerText}>2025 Stacked.</Text>
+      </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -93,12 +85,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     backgroundColor: '#1c1c1c',
-    alignItems: 'center',
+    alignItems: 'center',  
   },
   logo: {
     marginTop: "10%",
     width: '50%',
-    height: '100%',
+    height: '100%',  
   },
   categoryBlock: {
     padding: 20,
@@ -157,8 +149,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 50,
     fontWeight: 'bold',
-    textAlign: 'left',
-    paddingLeft: 10,
+    textAlign: 'left', 
+    paddingLeft: 10, 
   },
   footer: {
     height: screenHeight * 0.1,

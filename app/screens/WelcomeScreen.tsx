@@ -15,17 +15,25 @@ const WelcomeScreen = ({ navigation }: WelcomeScreenProps) => {
   const flatListRef = useRef<FlatList<{ title: string, description: string, photoPath: string }> | null>(null);
 
   const renderItems = ({ item }: { item: { title: string, description: string, photoPath: any } }) => (
-    <View style={styles.carouselItem}>
+    <SafeAreaView style={styles.carouselItem}>
       <Image source={item.photoPath} style={styles.cardImage} />
       <View style={{ position: 'absolute', bottom: "15%", width: '100%', padding: 20 }}>
         <Text style={styles.cardTitle}>{item.title}</Text>
         <Text style={styles.cardDescription}>{item.description}</Text>
       </View>
-      <LinearGradient
-        colors={['transparent', '#1c1c1c']}
-        style={styles.gradientOverlay}
-      />
-    </View>
+<LinearGradient
+  colors={[
+    'transparent',
+    'rgba(0, 0, 0, 0.2)',
+    'rgba(0, 0, 0, 0.4)',
+    'rgba(0, 0, 0, 0.6)',
+    'rgba(0, 0, 0, 0.8)',
+    'black'
+  ]}
+  style={styles.gradientOverlay}
+/>
+
+    </SafeAreaView>
   );
 
   return (
@@ -86,7 +94,7 @@ const WelcomeScreen = ({ navigation }: WelcomeScreenProps) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1c1c1c',
+    backgroundColor: 'black',
   },
   flatList: {
     height: '100%',
@@ -111,7 +119,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     width: '100%',
-    height: '100%',
+    height: '140%',
     backgroundColor: 'transparent',
     justifyContent: 'center',
     alignItems: 'center',
