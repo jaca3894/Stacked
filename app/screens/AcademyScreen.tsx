@@ -26,7 +26,7 @@ const AcademyScreen = () => {
           {data.map((category, categoryIdx) => (
             <View key={categoryIdx} style={styles.categoryBlock}>
               <Text style={styles.categoryTitle}>{category.category}</Text>
-
+              <Text style={styles.categoryDescription}>{category.description}</Text>
               <FlatList
                 data={category.items}
                 keyExtractor={(item, idx) => `${item.name}-${idx}`}
