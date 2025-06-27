@@ -1,3 +1,5 @@
+import SettingsPanel from "../app/panels/SettingsPanel";
+
 export const welcomeCardsData = [
     { title: 'Host games', description: "You've got only deck of cards? Simulate game's board by playing with virtual money.", photoPath: require("../assets/ss1.png") },
     { title: 'Learn basics and more', description: "We've got tutorials for everything: from game rules to card flourishes.", photoPath: require("../assets/ss2.png") },
@@ -5,12 +7,12 @@ export const welcomeCardsData = [
   ];
 
 export const morePanelsData = [
-  { title: 'Check hand', imagePath: require('../assets/pokerHand.jpg') },
-  { title: 'Glossary', imagePath:  require('../assets/dictionary.jpg') },
-  { title: 'Report a bug', imagePath: require('../assets/reportBug.jpg') },
-  { title: 'Patch notes', imagePath: require('../assets/patchNotes.jpg') },
-  { title: 'Credits', imagePath:  require('../assets/credits.jpg') },
-  { title: 'Settings', imagePath: require('../assets/settings.jpg') },
+  { title: 'Check hand', imagePath: require('../assets/pokerHand.jpg'), panel: SettingsPanel },
+  { title: 'Glossary', imagePath:  require('../assets/dictionary.jpg'), panel: SettingsPanel },
+  { title: 'Report a bug', imagePath: require('../assets/reportBug.jpg'), panel: SettingsPanel },
+  { title: 'Patch notes', imagePath: require('../assets/patchNotes.jpg'), panel: SettingsPanel },
+  { title: 'Credits', imagePath:  require('../assets/credits.jpg'), panel: SettingsPanel },
+  { title: 'Settings', imagePath: require('../assets/settings.jpg'), panel: SettingsPanel },
 ];
 
 export const skillsData = [
@@ -153,4 +155,4 @@ export const articlesData = [
     videoAuthor: "Josep Vidal",
     isLiked: false,
   },
-]
+];
