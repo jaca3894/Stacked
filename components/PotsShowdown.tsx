@@ -8,18 +8,23 @@ const [screenWidth, screenHeight] = [
   Dimensions.get('window').height,
 ];
 
-const PotsShowdown = ({pots, players, onClose}: {pots?: Pot[]; players: Player[]; onClose: () => void;}) => {
-  if(pots) console.log(pots[0].playersNames)
-  if(pots) console.log(pots[0])
-  const [selectedPotWinners, setSelectedPotWinners] = useState<Map<string, Player>>(new Map());
+const PotsShowdown = ({pots, players, onClose}: {pots: Pot[]; players: Player[]; onClose: () => void;}) => {
+  console.log(pots[0].playersNames)
+  console.log(pots[0])
+  const [selectedPotWinners, setSelectedPotWinners] = useState<Record<number, Player>>({});
 
-  const handleSelectWinner = (pot: Pot, player: Player) => {
-    setSelectedPotWinners((prev) => new Map(prev).set(pot.name, player));
+  const handleSelectWinner = (potIndex: number, player: Player) => {
+    setSelectedPotWinners(prev => ({
+      ...prev,
+      [potIndex]: player
+    }));
   };
 
   const addMoneyToWinners = () => {
-    pots?.forEach((pot) => {
-      const winner = selectedPotWinners.get(pot.name);
+    if (Object.keys(selectedPotWinners).length < pots.length) return;
+    pots.forEach((pot, potIndex) => {
+      const winner = selectedPotWinners[potIndex];
+      console.log(winner);
       if (winner) {
         winner.balance += pot.balance;
         pot.winner = winner;
@@ -36,8 +41,8 @@ const PotsShowdown = ({pots, players, onClose}: {pots?: Pot[]; players: Player[]
           <Text style={{ color: '#fff', fontSize: 35 }}>Showdown</Text>
           <Text style={{ color: 'hsl(0, 0%, 50%)' }}>Select pot winner(s)</Text>
 
-          {pots?.map((pot) => (
-            <View key={pot.name} style={{ marginBottom: 10, padding: 10 }}>
+          {pots.map((pot, potIndex) => (
+            <View key={potIndex+1} style={{ marginBottom: 10, padding: 10 }}>
               <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#fff' }}>
                 {`${pot.name}: ${pot.balance}`}
               </Text>
@@ -50,9 +55,9 @@ const PotsShowdown = ({pots, players, onClose}: {pots?: Pot[]; players: Player[]
                       key={playerIndex + 1}
                       style={[
                         styles.playerButton,
-                        selectedPotWinners.get(pot.name)?.name === player.name && styles.playerSelected,
+                        selectedPotWinners[potIndex] === player && styles.playerSelected,
                       ]}
-                      onPress={() => handleSelectWinner(pot, player)}
+                      onPress={() => handleSelectWinner(potIndex, player)}
                     >
                       <Text style={styles.text}>{player.name}</Text>
                     </TouchableOpacity>
