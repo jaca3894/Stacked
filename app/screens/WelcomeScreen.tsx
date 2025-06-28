@@ -4,6 +4,7 @@ import type { StackNavigationProp } from '@react-navigation/stack';
 import { LinearGradient } from 'expo-linear-gradient';
 import { welcomeCardsData as data } from '../../classes/Database';
 import { TouchableHighlight } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type WelcomeScreenProps = {
   navigation: StackNavigationProp<any>;
@@ -58,13 +59,20 @@ const WelcomeScreen = ({ navigation }: WelcomeScreenProps) => {
       />
       <View style={styles.bottomView}>
         <TouchableHighlight
-          onPress={() => {
+          onPress={async () => {
             if (currentIndex < data.length - 1) {
               const nextIndex = currentIndex + 1;
               const nextOffset = width * nextIndex;
               flatListRef.current?.scrollToOffset({ animated: true, offset: nextOffset });
               setCurrentIndex(nextIndex);
             } else {
+              // ⬇️ Tu ustawiamy flagę zależnie od środowiska
+              if (__DEV__) {
+                await AsyncStorage.removeItem('@hasSeenWelcome'); // traktuj jakby nie widział
+              } else {
+                await AsyncStorage.setItem('@hasSeenWelcome', 'true'); // oznacz jako widziane
+              }
+              
               navigation.navigate('MainTabs');
             }
           }}
