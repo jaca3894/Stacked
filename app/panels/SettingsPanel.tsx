@@ -1,23 +1,18 @@
-import {SafeAreaView, Text} from 'react-native'
-import { StatusBar } from 'react-native';
-
-<StatusBar
-  backgroundColor="#1c1c1c"
-  barStyle="light-content" // lub "dark-content"
-  translucent={false}
-/>
-
+import {SafeAreaView, View, Text, Platform} from 'react-native'
+import * as NavigationBar from 'expo-navigation-bar';
+import { useEffect } from 'react';
 
 const SettingsPanel = () =>
 {
+
+    useEffect(() => {
+        if (Platform.OS === 'android') {
+        NavigationBar.setVisibilityAsync('hidden');
+        }
+
+    }, []);
     return(
-        <SafeAreaView style={{flex: 1, backgroundColor: "#1c1c1c"}}>
-            <StatusBar
-                backgroundColor="#1c1c1c"
-                hidden={true}
-                barStyle="dark-content" // lub "dark-content"
-                translucent={false}
-            />
+        <SafeAreaView style={{height: "100%", backgroundColor: "white"}}>
             <Text>settings</Text>
         </SafeAreaView>
     )

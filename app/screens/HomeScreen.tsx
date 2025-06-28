@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Platform } from 'react-native';
 import LoadingPanel from '../panels/LoadingPanel'; // Zakładamy, że masz ten komponent
+import * as NavigationBar from 'expo-navigation-bar';
 
 const HomeScreen = () => {
   const [loading, setLoading] = useState(true);
   const loaderTime = 1000;
+  if (Platform.OS === 'android') {
+    NavigationBar.setVisibilityAsync('hidden');
+  }
+
 
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), loaderTime);

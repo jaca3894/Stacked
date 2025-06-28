@@ -30,7 +30,9 @@
     "react-native-screens": "^4.11.1",
     "react-native-snap-carousel": "^3.9.1",
     "react-native-tab-view": "^4.1.2",
-    "react-native-vector-icons": "^10.2.0"
+    "react-native-vector-icons": "^10.2.0",
+    "expo-updates": "~0.28.15",
+    "expo-navigation-bar": "~4.2.6"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

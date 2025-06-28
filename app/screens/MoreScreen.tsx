@@ -82,10 +82,11 @@ const MoreScreen = () => {
 
         {activePanelIndex !== null && data[activePanelIndex] && (
           <Modal
-            transparent
+            // transparent
             animationType="slide"
             visible
             onRequestClose={() => setActivePanelIndex(null)}
+            presentationStyle="fullScreen"
           >
           {React.createElement(data[activePanelIndex].panel as React.ComponentType)}
           </Modal>

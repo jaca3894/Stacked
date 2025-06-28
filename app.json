@@ -3,6 +3,7 @@
     "name": "Stacked",
     "slug": "Stacked",
     "version": "1.0.0",
+    "privacy": "unlisted",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -24,6 +25,17 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "8635e157-b89b-4dde-a905-76519f62a062"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/8635e157-b89b-4dde-a905-76519f62a062"
     }
   }
 }

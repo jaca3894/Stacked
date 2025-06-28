@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Modal, StyleSheet, View, Text, Image } from 'react-native';
+import * as NavigationBar from 'expo-navigation-bar';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
