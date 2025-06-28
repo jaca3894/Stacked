@@ -1,9 +1,10 @@
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Text, TextInput, StyleSheet, TouchableOpacity } from "react-native";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { Text, TextInput, StyleSheet, TouchableOpacity, View, Dimensions, Image } from "react-native";
 import { useState } from "react";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/core";
 import RootStackParamList from "../../props/RootStackParamList";
 
+const screenHeight = Dimensions.get("window").height;
 
 type ChoosePlayersAmountProp = RouteProp<RootStackParamList, "ChoosePlayersAmount">;
 
@@ -18,37 +19,48 @@ const ChoosePlayersAmount = () => {
 
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Players</Text>
-      
-      <TextInput
-        style={styles.input}
-        value={value}
-        onChangeText={(text) => {
-          let numeric = text.replace(/\D/g, '');
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <Image source={require("../../assets/logo.png")} style={styles.logo} />
+          <Text style={styles.headerText}>
+            Table configuration
+          </Text>
+        </View>
+        <View style={styles.content}>
+          <Text style={styles.title}>Players</Text>
+          <TextInput
+            style={styles.input}
+            value={value}
+            onChangeText={(text) => {
+              let numeric = text.replace(/\D/g, '');
 
-          if (numeric === '') return setValue('');
+              if (numeric === '') return setValue('');
 
-          let number = parseInt(numeric, 10);
-          if (number < 1) number = 1;
-          if (number > 12) number = 12;
+              let number = parseInt(numeric, 10);
+              if (number < 1) number = 1;
+              if (number > 12) number = 12;
 
-          setValue(number.toString());
-        }}
-        keyboardType="numeric"
-        placeholder="2-12"
-        placeholderTextColor="#888"
-        maxLength={2}
-        autoFocus
-      />
-
-      <TouchableOpacity
-        onPress={() => {if(+value != 1) navigation.navigate(gameType, { playersCount: finalValue })}}
-        style={styles.button}
-      >
-        <Text style={styles.buttonText}>Start Game</Text>
-      </TouchableOpacity>
-    </SafeAreaView>
+              setValue(number.toString());
+            }}
+            keyboardType="numeric"
+            placeholder="2-12"
+            placeholderTextColor="#888"
+            maxLength={2}
+            autoFocus
+          />
+          <TouchableOpacity
+            onPress={() => {if(+value != 1) navigation.navigate(gameType, { playersCount: finalValue })}}
+            style={styles.button}
+          >
+            <Text style={styles.buttonText}>Start Game</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.footer}>
+            <Text style={styles.footerText}>2025 Stacked.</Text>
+        </View>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 };
 
@@ -58,6 +70,37 @@ const styles = StyleSheet.create({
     backgroundColor: '#1c1c1c',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  header:
+  {
+    flexDirection: "row",
+    width: "100%",
+    height: "15%",
+    backgroundColor: "#1c1c1c",
+    borderBottomWidth: 1,
+    borderBottomColor: "gray"
+  },
+  headerText:
+  {
+    flex: 1,
+    color: "white",
+    fontSize: 25,
+    fontWeight: "bold",
+    textAlign: "center",
+    alignSelf: "center",
+    textTransform: "uppercase"
+  },
+  content:
+  {
+    width: "100%",
+    backgroundColor: "#!c1c1c",
+    height: "75%",
+  },
+  logo:
+  {
+    width: "30%",
+    height: "100%",
+    resizeMode: "contain"
   },
   title: {
     color: '#fff',
@@ -89,6 +132,17 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 24,
     fontWeight: '600',
+    textAlign: 'center',
+  },
+  footer: {
+    height: "10%",
+    backgroundColor: '#1c1c1c',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  footerText: {
+    color: 'gray',
+    fontSize: 16,
     textAlign: 'center',
   },
 });

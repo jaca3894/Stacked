@@ -3,7 +3,6 @@
     "name": "Stacked",
     "slug": "Stacked",
     "version": "1.0.0",
-    "privacy": "unlisted",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
