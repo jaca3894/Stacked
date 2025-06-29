@@ -28,27 +28,55 @@ const ChoosePlayersAmount = () => {
           </Text>
         </View>
         <View style={styles.content}>
-          <Text style={styles.title}>Players</Text>
-          <TextInput
-            style={styles.input}
-            value={value}
-            onChangeText={(text) => {
-              let numeric = text.replace(/\D/g, '');
+          <View style={{width: "100%"}}>
+            <Text style={styles.title}>Amount of players</Text>
+            <TextInput
+              style={styles.input}
+              value={value}
+              onChangeText={(text) => {
+                let numeric = text.replace(/\D/g, '');
+                
+                if (numeric === '') return setValue('');
+                
+                let number = parseInt(numeric, 10);
+                if (number < 1) number = 1;
+                if (number > 12) number = 12;
+                
+                setValue(number.toString());
+              }}
+              keyboardType="numeric"
+              placeholder="2-12"
+              placeholderTextColor="#888"
+              maxLength={2}
+              autoFocus
+            />
+          </View>
+          <View style={{width: "100%"}}>
+            <Text style={styles.title}>Initial balance</Text>
+            <TextInput
+              style={styles.input}
+              value={value}
+              onChangeText={(text) => {
+                let numeric = text.replace(/\D/g, '');
+                
+                if (numeric === '') return setValue('');
+                
+                let number = parseInt(numeric, 10);
+                if (number < 100) number = 100;
+                if (number > 10000) number = 10000;
+                
+                setValue(number.toString());
+              }}
+              keyboardType="numeric"
+              placeholder="100-10000"
+              placeholderTextColor="#888"
+              maxLength={5}
+              // autoFocus
+            />
+          </View>
+         
 
-              if (numeric === '') return setValue('');
 
-              let number = parseInt(numeric, 10);
-              if (number < 1) number = 1;
-              if (number > 12) number = 12;
-
-              setValue(number.toString());
-            }}
-            keyboardType="numeric"
-            placeholder="2-12"
-            placeholderTextColor="#888"
-            maxLength={2}
-            autoFocus
-          />
           <TouchableOpacity
             onPress={() => {if(+value != 1) navigation.navigate(gameType, { playersCount: finalValue })}}
             style={styles.button}
@@ -93,6 +121,8 @@ const styles = StyleSheet.create({
   content:
   {
     width: "100%",
+    justifyContent: "space-around",
+    alignItems: "center",
     backgroundColor: "#!c1c1c",
     height: "75%",
   },
@@ -103,9 +133,11 @@ const styles = StyleSheet.create({
     resizeMode: "contain"
   },
   title: {
+    width: "100%",
     color: '#fff',
     fontSize: 32,
     fontWeight: 'bold',
+    textAlign: "center",
   },
   input: {
     color: 'white',
@@ -115,8 +147,9 @@ const styles = StyleSheet.create({
     borderColor: '#888',
     borderRadius: 8,
     padding: 10,
-    width: '25%',
+    width: '35%',
     marginTop: 20,
+    alignSelf: "center",
     textAlign: 'center',
   },
   button: {
@@ -135,7 +168,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   footer: {
+    borderTopWidth: 1,
+    borderTopColor: "gray",
     height: "10%",
+    width: "100%",
     backgroundColor: '#1c1c1c',
     justifyContent: 'center',
     alignItems: 'center',

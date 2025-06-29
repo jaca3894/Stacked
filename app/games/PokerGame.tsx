@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ImageBackground, Text, StyleSheet, View, TouchableHighlight, Dimensions, TextInput, Modal } from "react-native";
+import { ImageBackground, Text, StyleSheet, View, TouchableHighlight, Dimensions, TextInput, Modal, Image } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import Player from "../../classes/Player";
@@ -273,12 +273,12 @@ const PokerGame = () => {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.safeArea}>
-        <View style={styles.container}>
-          <ImageBackground
+          <Image
             source={require('../../assets/pokerTable.png')}
             style={styles.background}
             resizeMode="contain"
-          >
+          />
+        <View style={styles.container}>
             <View style={[styles.content]}>
               {edges.map(({ pos, dir, len, addStyle }, index) => (
                 <View key={index+1} style={[styles[dir], pos, addStyle]}>
@@ -332,7 +332,7 @@ const PokerGame = () => {
                 </View>
               </Modal>
             )}
-          </ImageBackground>
+          
           {!isGameStarted && 
             <TouchableHighlight style={styles.button} underlayColor="#948870" onPress={() => {startGame(); setIsGameStarted(true);}}>
               <Text style={styles.buttonText}>Start Game</Text>
@@ -376,14 +376,21 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+    // position: "absolute",
     display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
+    // justifyContent: 'center',
+    // alignItems: 'center',
+    // alignContent: "center",
   },
   background: {
-    flex: 1,
-    width: '100%',
+    // flex: 1,
+    position: "absolute",
+    alignSelf: "center",
+    width: '80%',
     height: '100%',
+    // resizeMode: "cover",
+    // zIndex: -1
+    // marginHorizontal: "5%",
   },
   content: {
     position: 'relative',
@@ -416,6 +423,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
+    alignSelf: "center",
     borderColor: 'white',
     borderWidth: 2,
     padding: 5,
@@ -431,6 +439,8 @@ const styles = StyleSheet.create({
     color: '#000',
     fontSize: 18,
     textAlign: 'center',
+    // // alignSelf: "center"
+    // marginHorizontal: "5"
   },
   popUp: {
     position: 'absolute',
