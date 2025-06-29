@@ -9,7 +9,7 @@ const [screenWidth, screenHeight] = [
 ];
 
 const PotsShowdown = ({pots, players, onClose}: {pots: Pot[]; players: Player[]; onClose: () => void;}) => {
-  console.log(pots[0].playersNames)
+  console.log(pots[0].players)
   console.log(pots[0])
   const [selectedPotWinners, setSelectedPotWinners] = useState<Record<number, Player>>({});
 
@@ -49,7 +49,7 @@ const PotsShowdown = ({pots, players, onClose}: {pots: Pot[]; players: Player[];
               <View style={styles.playersView}>
                 {players
                   .map((player, playerIndex) => ({ player, playerIndex }))
-                  .filter(({ player }) => pot.playersNames.includes(player.name))
+                  .filter(({ player }) => pot.players.includes(player))
                   .map(({ player, playerIndex }) => (
                     <TouchableOpacity
                       key={playerIndex + 1}

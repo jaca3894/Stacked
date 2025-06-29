@@ -9,13 +9,14 @@ const screenHeight = Dimensions.get("window").height;
 type ChoosePlayersAmountProp = RouteProp<RootStackParamList, "ChoosePlayersAmount">;
 
 const ChoosePlayersAmount = () => {
-  const [value, setValue] = useState('');
+  const [playersAmount, setPlayersAmount] = useState('');
+  const [initialBalance, setInitialBalance] = useState('');
   const navigation = useNavigation<any>();
 
   const route = useRoute<ChoosePlayersAmountProp>();
   const { gameType } = route.params;
 
-  const finalValue = value === '' ? 2 : parseInt(value, 10);
+  const finalPlayersAmount = playersAmount === '' ? 2 : parseInt(playersAmount, 10);
 
 
   return (
@@ -32,17 +33,17 @@ const ChoosePlayersAmount = () => {
             <Text style={styles.title}>Amount of players</Text>
             <TextInput
               style={styles.input}
-              value={value}
+              value={playersAmount}
               onChangeText={(text) => {
                 let numeric = text.replace(/\D/g, '');
                 
-                if (numeric === '') return setValue('');
+                if (numeric === '') return setPlayersAmount('');
                 
                 let number = parseInt(numeric, 10);
                 if (number < 1) number = 1;
                 if (number > 12) number = 12;
                 
-                setValue(number.toString());
+                setPlayersAmount(number.toString());
               }}
               keyboardType="numeric"
               placeholder="2-12"
@@ -55,17 +56,17 @@ const ChoosePlayersAmount = () => {
             <Text style={styles.title}>Initial balance</Text>
             <TextInput
               style={styles.input}
-              value={value}
+              value={initialBalance}
               onChangeText={(text) => {
                 let numeric = text.replace(/\D/g, '');
                 
-                if (numeric === '') return setValue('');
+                if (numeric === '') return setInitialBalance('');
                 
                 let number = parseInt(numeric, 10);
-                if (number < 100) number = 100;
+                if (number < 1) number = 1;
                 if (number > 10000) number = 10000;
                 
-                setValue(number.toString());
+                setInitialBalance(number.toString());
               }}
               keyboardType="numeric"
               placeholder="100-10000"
@@ -78,7 +79,7 @@ const ChoosePlayersAmount = () => {
 
 
           <TouchableOpacity
-            onPress={() => {if(+value != 1) navigation.navigate(gameType, { playersCount: finalValue })}}
+            onPress={() => {if(+playersAmount >= 2 && +initialBalance >= 100) navigation.navigate(gameType, { playersCount: finalPlayersAmount, initialBalance })}}
             style={styles.button}
           >
             <Text style={styles.buttonText}>Start Game</Text>

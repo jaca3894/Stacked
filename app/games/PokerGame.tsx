@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ImageBackground, Text, StyleSheet, View, TouchableHighlight, Dimensions, TextInput, Modal, Image } from "react-native";
+import { Text, StyleSheet, View, TouchableHighlight, Dimensions, TextInput, Modal, Image } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import Player from "../../classes/Player";
@@ -39,14 +39,13 @@ type GameRouteProp = RouteProp<RootStackParamList, "Game">;
 
 const PokerGame = () => {
   const route = useRoute<GameRouteProp>();
-  const { playersCount } = route.params;
+  const { playersCount, initialBalance } = route.params;
   const [top, right, bottom, left] = seatingPlan[playersCount];
   const maxPlayers = top + right + bottom + left;
 
-  const [players, setPlayers] = useState<Player[]>(Array.from({ length: maxPlayers }, () => new Player()));
+  const [players, setPlayers] = useState<Player[]>(Array.from({ length: maxPlayers }, () => new Player('', initialBalance)));
   const [smallBlindAmount, bigBlindAmount] = [5, 10];
-  const startPlayersNames = players.filter(p => p.name.trim() !== '').map(p => p.name);
-  const [pots, setPots] = useState<Pot[]>([new Pot(startPlayersNames, "Main Pot", smallBlindAmount + bigBlindAmount)]);
+  const [pots, setPots] = useState<Pot[]>([new Pot(players, "Main Pot", smallBlindAmount + bigBlindAmount)]);
   const [minAmount, setMinAmount] = useState(0);
   const [shownCards, setShownCards] = useState(0);
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(-1);
@@ -63,10 +62,10 @@ const PokerGame = () => {
   const [isSliderShown, setIsSliderShown] = useState(false);
 
   const edges: EdgeConfig[] = [
-    { pos: { top: '5%' }, dir: 'row', len: top },
-    { pos: { right: '1%' }, dir: 'column', len: right },
-    { pos: { bottom: '5%' }, dir: 'row', len: bottom, addStyle: { flexDirection: 'row-reverse' } },
-    { pos: { left: '1%' }, dir: 'column', len: left, addStyle: { flexDirection: 'column-reverse' } },
+    { pos: { top: '11%' }, dir: 'row', len: top },
+    { pos: { right: '3%' }, dir: 'column', len: right },
+    { pos: { bottom: '11%' }, dir: 'row', len: bottom, addStyle: { flexDirection: 'row-reverse' } },
+    { pos: { left: '3%' }, dir: 'column', len: left, addStyle: { flexDirection: 'column-reverse' } },
   ];
 
   let globalIndex = 0;
@@ -108,9 +107,8 @@ const PokerGame = () => {
     });
 
     
-    const playersNames = players.filter(p => p.name.trim() !== '').map(p => p.name);
-    const mainPot = new Pot(playersNames, "Main Pot", smallBlindAmount + bigBlindAmount);
-    console.log('Main pot players: ' + mainPot.playersNames)
+    const mainPot = new Pot(players, "Main Pot", smallBlindAmount + bigBlindAmount);
+    console.log('Main pot players: ' + mainPot.players)
     console.log('Players length: ' + players.length)
     console.log('Current player index' + (dealerIndex + 3) % players.length)
     
@@ -178,13 +176,17 @@ const PokerGame = () => {
     const player = players[currentPlayerIndex];
     const playersNames = players.filter(player => !player.didFold).map(player => player.name);
     if(playersNames.length === 0) return;
-    if(pots[pots.length-1].currentBetForAPlayer === player.balance) return;
+    if(pots[pots.length-2].currentBetForAPlayer === player.balance) {
+      pots[pots.length-2].add(player.balance);
+      player.balance = 0;
+      return
+    };
     let moneyLeft = pots[pots.length-1].balance;
-    pots[pots.length-1].balance = player.balance * pots[pots.length-1].playersNames.length;
+    pots[pots.length-1].balance = player.balance * pots[pots.length-1].players.length;
+    pots[pots.length-1].currentBetForAPlayer = player.balance;
     moneyLeft -= pots[pots.length-1].balance;
-    const newSidePot = new Pot(playersNames, 'Side pot', moneyLeft);
+    const newSidePot = new Pot(players, 'Side pot', moneyLeft);
     newSidePot.add(player.balance);
-    newSidePot.currentBetForAPlayer = player.balance;
     player.balance = 0;
     player.setLastAction("All-in");
     setPots(prev => [...(prev ?? []), newSidePot]);
@@ -235,7 +237,7 @@ const PokerGame = () => {
     const raiseAmount = amount - player.currentBet;
     player.take(raiseAmount)
     pots[pots.length-1].add(amount);
-    pots[pots.length-1].currentBetForAPlayer += raiseAmount;
+    pots[pots.length-1].currentBetForAPlayer = player.currentBet;
     player.lastAction = "raise";
     setIsSliderShown(false)
     if(players.every(player => player.balance == 0 || player.didFold)) {
@@ -255,12 +257,12 @@ const PokerGame = () => {
       if(!winner) return;
       const winnerIndex = players.indexOf(winner);
       pots.forEach(pot => {
-        if(pot.playersNames.includes(winner.name)) players[winnerIndex].give(pot.balance);
+        if(pot.players.includes(winner)) players[winnerIndex].give(pot.balance);
       })
       startGame();
     }
     else {
-      pots.forEach(pot => pot.playersNames = pot.playersNames.filter(name => name != players[currentPlayerIndex].name))
+      pots.forEach(pot => pot.players = pot.players.filter(player => player != players[currentPlayerIndex]))
       nextPlayer();
     }
   }
@@ -273,66 +275,65 @@ const PokerGame = () => {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.safeArea}>
+        <View style={styles.container}>
           <Image
             source={require('../../assets/pokerTable.png')}
             style={styles.background}
             resizeMode="contain"
           />
-        <View style={styles.container}>
-            <View style={[styles.content]}>
-              {edges.map(({ pos, dir, len, addStyle }, index) => (
-                <View key={index+1} style={[styles[dir], pos, addStyle]}>
-                  {Array.from({ length: len }).map((_, j) => {
-                    const currentIndex = globalIndex++;
-                    const player = players[currentIndex]
-                    try {
-                      const isCurrentPlayer = currentPlayerIndex != -1 && currentIndex == currentPlayerIndex;
-                      return (
-                      <TouchableHighlight key={j+1} disabled={isGameStarted} style={[styles.button, {borderColor: isCurrentPlayer ? 'yellow' : 'white', borderWidth: isCurrentPlayer ? 4 : 2, opacity: player.didFold ? 0.5 : 1}]} underlayColor="#948870" onPress={() => {if (player.name === '') {setShowInput([true, currentIndex])}}}>
-                        <View style={styles.buttonView}>
-                          {player.isDealer && (
-                            <View style={{position: 'absolute', top: -20, left: -20, backgroundColor: 'white', borderRadius: '50%', width: 30, height: 30, justifyContent: 'center', alignContent: 'center'}}>
-                              <Text style={{ color: 'black', fontWeight: 'bold', fontSize: 20, textAlign: 'center'}}>D</Text>
-                            </View>
-                          )}
-                          <Text style={styles.buttonText} numberOfLines={2} ellipsizeMode="tail">{player.name != '' ? player.name + '\n' + player.balance : '+'}</Text>
-                          {(isGameStarted && player.lastAction != '') && <Text style={styles.blindText}>{player.lastAction}</Text>}
-                        </View>
-                      </TouchableHighlight>)
-                    }
-                    catch {
-                      return;
-                    }
-                  })}
-                </View>
-              ))}
-              <View style={styles.potsView}>
-                <View style={styles.cards}>
-                  {Array.from({ length: shownCards }).map((_, index) => (
-                    <Card key={index+1}/>
-                  ))}
-                </View>
-                <Text style={{color: '#000', fontSize: 24}}>{pots.reduce((sum, pot) => sum + pot.balance, 0)}</Text>
+          <View style={[styles.content]}>
+            {edges.map(({ pos, dir, len, addStyle }, index) => (
+              <View key={index+1} style={[styles[dir], pos, addStyle]}>
+                {Array.from({ length: len }).map((_, j) => {
+                  const currentIndex = globalIndex++;
+                  const player = players[currentIndex]
+                  try {
+                    const isCurrentPlayer = currentPlayerIndex != -1 && currentIndex == currentPlayerIndex;
+                    return (
+                    <TouchableHighlight key={j+1} disabled={isGameStarted} style={[styles.button, {borderColor: isCurrentPlayer ? 'yellow' : 'white', borderWidth: isCurrentPlayer ? 4 : 2, opacity: player.didFold ? 0.5 : 1}]} underlayColor="#948870" onPress={() => {if (player.name === '') {setShowInput([true, currentIndex])}}}>
+                      <View style={styles.buttonView}>
+                        {player.isDealer && (
+                          <View style={{position: 'absolute', top: -20, left: -20, backgroundColor: 'white', borderRadius: '50%', width: 30, height: 30, justifyContent: 'center', alignContent: 'center'}}>
+                            <Text style={{ color: 'black', fontWeight: 'bold', fontSize: 20, textAlign: 'center'}}>D</Text>
+                          </View>
+                        )}
+                        <Text style={styles.buttonText} numberOfLines={2} ellipsizeMode="tail">{player.name != '' ? player.name + '\n' + player.balance : '+'}</Text>
+                        {(isGameStarted && player.lastAction != '') && <Text style={styles.blindText}>{player.lastAction}</Text>}
+                      </View>
+                    </TouchableHighlight>)
+                  }
+                  catch {
+                    return;
+                  }
+                })}
               </View>
+            ))}
+            <View style={styles.potsView}>
+              <View style={styles.cards}>
+                {Array.from({ length: shownCards }).map((_, index) => (
+                  <Card key={index+1}/>
+                ))}
+              </View>
+              <Text style={{color: '#000', fontSize: 24}}>{pots.reduce((sum, pot) => sum + pot.balance, 0)}</Text>
             </View>
-            {showInput[0] && (
-              <Modal onRequestClose={() => setShowInput([false, -1]) } transparent={true} animationType="fade">
-                <View style={styles.popUp}>
-                  <View style={styles.popUpInside}>
-                    <TouchableHighlight style={styles.closeButton} underlayColor="transparent" onPress={() => setShowInput([false, -1])}>
-                      <Text style={styles.buttonText}>x</Text>
-                    </TouchableHighlight>
-                    <Text style={{ marginBottom: 10 }}>Podaj coś:</Text>
-                    <TextInput placeholder="Podaj nazwę gracza" style={styles.input} placeholderTextColor="#999" onChange={(e) => {const value = e.nativeEvent.text; setInputValue(value);}}/>
-                    <TouchableHighlight style={styles.dodajButton} underlayColor="#948870"
-                      onPress={() => {if(inputValue.trim() !== '') { setPlayers(players => players.map((player, index) => index === showInput[1] ? new Player(inputValue) : player)); setShowInput([false, -1]); setInputValue('')}}}>
-                      <Text>Dodaj</Text>
-                    </TouchableHighlight>
-                  </View>
+          </View>
+          {showInput[0] && (
+            <Modal onRequestClose={() => setShowInput([false, -1]) } transparent={true} animationType="fade">
+              <View style={styles.popUp}>
+                <View style={styles.popUpInside}>
+                  <TouchableHighlight style={styles.closeButton} underlayColor="transparent" onPress={() => setShowInput([false, -1])}>
+                    <Text style={styles.buttonText}>x</Text>
+                  </TouchableHighlight>
+                  <Text style={{ marginBottom: 10 }}>Podaj coś:</Text>
+                  <TextInput placeholder="Podaj nazwę gracza" style={styles.input} placeholderTextColor="#999" onChange={(e) => {const value = e.nativeEvent.text; setInputValue(value);}}/>
+                  <TouchableHighlight style={styles.dodajButton} underlayColor="#948870"
+                    onPress={() => {if(inputValue.trim() !== '') { setPlayers(players => players.map((player, index) => index === showInput[1] ? new Player(inputValue) : player)); setShowInput([false, -1]); setInputValue('')}}}>
+                    <Text>Dodaj</Text>
+                  </TouchableHighlight>
                 </View>
-              </Modal>
-            )}
-          
+              </View>
+            </Modal>
+          )}
           {!isGameStarted && 
             <TouchableHighlight style={styles.button} underlayColor="#948870" onPress={() => {startGame(); setIsGameStarted(true);}}>
               <Text style={styles.buttonText}>Start Game</Text>
@@ -361,7 +362,7 @@ const PokerGame = () => {
       </SafeAreaView>
       { isSliderShown && 
         (<View style={styles.popUp}>
-          <CustomSlider minimumValue={minAmount+1} maximumValue={players[currentPlayerIndex].balance} step={1} value={minAmount} onValueChange={setSliderValue} onAccept={() => {raise(sliderValue);}}/>
+          <CustomSlider minimumValue={minAmount+1} maximumValue={players[currentPlayerIndex].balance} step={1} value={minAmount+1} onValueChange={setSliderValue} onAccept={() => {raise(sliderValue);}}/>
         </View>)
       }
       { isGameEnded && <PotsShowdown pots={pots} players={players} onClose={() => {setPlayers(prev => prev.filter(player => player.balance > 0)); setStartNewGame(true);}}/>}
@@ -373,34 +374,32 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: 'black',
+    position: 'relative'
   },
   container: {
     flex: 1,
-    // position: "absolute",
     display: 'flex',
-    // justifyContent: 'center',
-    // alignItems: 'center',
-    // alignContent: "center",
   },
   background: {
-    // flex: 1,
     position: "absolute",
-    alignSelf: "center",
+    top: '50%',
+    left: '50%',
     width: '80%',
     height: '100%',
-    // resizeMode: "cover",
-    // zIndex: -1
-    // marginHorizontal: "5%",
+    transform: [{ translateX: '-50%' }, { translateY: '-50%' }]
   },
   content: {
     position: 'relative',
     flex: 1,
+    top: '50%',
+    left: '50%',
+    transform: [{ translateX: '-50%' }, { translateY: '-50%' }]
   },
   row: {
     position: 'absolute',
     flexDirection: 'row',
     justifyContent: 'space-around',
-    width: '85%',
+    width: '55%',
     left: '50%',
     transform: [{translateX: '-50%'}]
   },
@@ -409,7 +408,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'space-around',
     alignItems: 'center',
-    height: '75%',
+    height: '70%',
     top: '50%',
     transform: [{translateY: '-50%'}],
   },
@@ -439,8 +438,6 @@ const styles = StyleSheet.create({
     color: '#000',
     fontSize: 18,
     textAlign: 'center',
-    // // alignSelf: "center"
-    // marginHorizontal: "5"
   },
   popUp: {
     position: 'absolute',
@@ -487,6 +484,7 @@ const styles = StyleSheet.create({
   buttonsRow: {
     display: 'flex',
     flexDirection: 'row',
+    alignSelf: 'center',
     gap: 15,
   },
   blindText: {

@@ -1,5 +1,5 @@
 type RootStackParamList = {
-  Game: { playersCount: number };
+  Game: { playersCount: number, initialBalance: number };
   ChoosePlayersAmount: { gameType: string };
   Article: { articleId: number };
 };
