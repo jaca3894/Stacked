@@ -21,7 +21,7 @@ const ChoosePlayersAmount = () => {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={styles.container}>
+      <View style={styles.container}>
         <View style={styles.header}>
           <Image source={require("../../assets/logo.png")} style={styles.logo} />
           <Text style={styles.headerText}>
@@ -88,7 +88,7 @@ const ChoosePlayersAmount = () => {
         <View style={styles.footer}>
             <Text style={styles.footerText}>2025 Stacked.</Text>
         </View>
-      </SafeAreaView>
+      </View>
     </SafeAreaProvider>
   );
 };
@@ -102,12 +102,17 @@ const styles = StyleSheet.create({
   },
   header:
   {
+    position: "absolute",
+    top: "0%",
     flexDirection: "row",
     width: "100%",
-    height: "15%",
+    height: "20%",
     backgroundColor: "#1c1c1c",
-    borderBottomWidth: 1,
-    borderBottomColor: "gray"
+    // borderBottomWidth: 1,
+    // borderBottomLeftRadius: 30,
+    // borderBottomRightRadius: 30,
+    // borderColor: "#cbbb9c",
+    zIndex: 3,
   },
   headerText:
   {
@@ -121,11 +126,18 @@ const styles = StyleSheet.create({
   },
   content:
   {
+    position: "absolute",
+    top: "17.5%",
+    zIndex: 2,
     width: "100%",
     justifyContent: "space-around",
     alignItems: "center",
-    backgroundColor: "#!c1c1c",
-    height: "75%",
+    backgroundColor: "#1c1c1c",
+    height: "70%",
+    // borderBottomLeftRadius: 30,
+    // borderBottomRightRadius: 30,
+    // borderWidth: 1,
+    // borderColor: "#f7e2bd"
   },
   logo:
   {
@@ -169,9 +181,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   footer: {
-    borderTopWidth: 1,
-    borderTopColor: "gray",
-    height: "10%",
+    position: "absolute",
+    top: "85%",
+    // borderTopWidth: 1,
+    // borderTopColor: "",
+    height: "15%",
     width: "100%",
     backgroundColor: '#1c1c1c',
     justifyContent: 'center',
