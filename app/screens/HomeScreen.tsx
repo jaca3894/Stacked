@@ -28,16 +28,16 @@ const HomeScreen = () => {
     <>
       {loading && <LoadingPanel visible={loading} />}
       <View style={styles.container}>
-        <View style={{ position: "absolute", zIndex: -1, top: "0%", backgroundColor: "#cbbb9c", width: "100%", height: blockOneOffset}}></View>
+        {/* <View style={{ position: "absolute", zIndex: -1, top: "0%", backgroundColor: "#cbbb9c", width: "100%", height: blockOneOffset}}></View>
         <View style={{ position: "absolute", zIndex: -1, top: blockOneOffset, backgroundColor: "#1c1c1c", width: "100%", height: blockTwoOffset}}></View>
-        <View style={{ position: "absolute", zIndex: -1, top: blockThreeOffset, backgroundColor: "#cbbb9c", width: "100%", height: blockThreeHeight}}></View>
+        <View style={{ position: "absolute", zIndex: -1, top: blockThreeOffset, backgroundColor: "#cbbb9c", width: "100%", height: blockThreeHeight}}></View> */}
         <SafeAreaView style={styles.header}>
           <Image source={require("../../assets/logo.png")} style={styles.logo} />
           <Text style={styles.text}>Hello, betatester!</Text>
         </SafeAreaView>
-        <SafeAreaView style={styles.content}>
+        <View style={styles.content}>
          
-        </SafeAreaView>
+        </View>
         <View style={styles.footer}>
           <Text style={styles.footerText}>2025 Stacked.</Text>
         </View>
@@ -50,59 +50,36 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'transparent',
-    alignItems: 'center',
+    flexDirection: 'column',
+    width: '100%',
+  },
+  header: {
+    height: '30%',
+    backgroundColor: '#1c1c1c',
     justifyContent: 'center',
+    alignItems: 'center',
   },
-  header:
-  {
-    zIndex: 2, 
-    width: "100%", 
-    height: blockOneOffset, 
-    position: 'absolute', 
-    top: "0%", 
-    backgroundColor: "#1c1c1c",
-    borderBottomLeftRadius: 50
+  content: {
+    height: '50%',
+    backgroundColor: '#1c1c1c',
   },
-  content:
-  {
-    backgroundColor: "#cbbb9c",
-    zIndex: 2, 
-    width: "100%", 
-    height: blockTwoOffset, 
-    position: 'absolute', 
-    top: blockOneOffset,
-    borderTopRightRadius: 50,
-    borderBottomLeftRadius: 50, 
-    // borderWidth: 5,
-    // borderColor: "red",
+  footer: {
+    height: '20%',
+    backgroundColor: '#1c1c1c',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  logo:
-  {
-    marginTop: "10%",
-    alignSelf: "center",
-    width: "60%",
-    height: "60%",
-    zIndex: 2,
-    resizeMode: "contain"
+  logo: {
+    marginTop: '10%',
+    width: '60%',
+    height: '60%',
+    resizeMode: 'contain',
   },
   text: {
     color: '#fff',
     fontSize: 24,
     fontWeight: 'bold',
-    textAlign: "center",
-  },
-  footer: {
-    position: "absolute",
-    top: blockThreeOffset,
-    zIndex: 2,
-    // borderTopWidth: 1,
-    // borderTopColor: "",
-    height: blockThreeHeight,
-    width: "100%",
-    backgroundColor: '#1c1c1c',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderTopRightRadius: 50,
+    textAlign: 'center',
   },
   footerText: {
     color: 'gray',
@@ -110,5 +87,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+
 
 export default HomeScreen;
