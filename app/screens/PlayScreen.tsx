@@ -41,7 +41,7 @@ const PlayScreen = () => {
               </View>
             </TouchableHighlight>
 
-            <TouchableHighlight
+            {/* <TouchableHighlight
               style={styles.button}
               onPress={() => (navigation as any).navigate('ChoosePlayersAmount', { gameType: 'RouletteGame' })}
             >
@@ -49,7 +49,7 @@ const PlayScreen = () => {
                 <Text style={styles.buttonText}>Roulette</Text>
                 <Image style={styles.arrow} source={require('../../assets/arrowRight.png')} resizeMode="cover" />
               </View>
-            </TouchableHighlight>
+            </TouchableHighlight> */}
           </View>
         </View>
 

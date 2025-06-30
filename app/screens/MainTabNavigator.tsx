@@ -4,6 +4,7 @@ import HomeScreen from './HomeScreen';
 import PlayScreen from './PlayScreen';
 import AcademyScreen from './AcademyScreen';
 import MoreScreen from './MoreScreen';
+import CheckHandScreen from './CheckHandScreen';
 import { Dimensions } from 'react-native';
 
 export default function App() {
@@ -18,12 +19,19 @@ export default function App() {
         tabBarStyle: { backgroundColor: '#1c1c1c' },
         tabBarActiveTintColor: 'white',
         tabBarIndicatorStyle: { backgroundColor: '#cbbb9c' },
-        tabBarItemStyle: { width: Dimensions.get('window').width / 4 },
+        tabBarItemStyle: {  
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          paddingHorizontal: 0,
+          marginHorizontal: -8, 
+        },
         tabBarIcon: ({ focused, color }) => {
           let iconName = "";
           
           if (route.name === 'Academy') iconName = 'book';
           else if(route.name === 'More') iconName = 'ellipsis-horizontal'
+          else if(route.name === 'Check') iconName = "layers";
           else iconName = route.name.toLowerCase();
           
           if (!focused) iconName += '-outline';
@@ -35,6 +43,7 @@ export default function App() {
       <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarShowLabel: true }} />
       <Tab.Screen name="Play" component={PlayScreen} options={{ tabBarShowLabel: true }} />
       <Tab.Screen name="Academy" component={AcademyScreen} options={{ tabBarShowLabel: true }} />
+      <Tab.Screen name="Check" component={CheckHandScreen} options={{ tabBarShowLabel: true }} />
       <Tab.Screen name="More" component={MoreScreen} options={{ tabBarShowLabel: true }} />
     </Tab.Navigator>
   );
