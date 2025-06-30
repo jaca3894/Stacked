@@ -1,7 +1,7 @@
 import { View, Text, Image, StyleSheet, ScrollView, Dimensions, Linking, TouchableOpacity } from "react-native";
 import RootStackParamList from "../../props/RootStackParamList";
 import { useState } from "react";
-import { RouteProp, useRoute } from "@react-navigation/native";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import Icon from 'react-native-vector-icons/Ionicons';
 import { articlesData as data } from "../../classes/Database";
 import { Image as Gif } from 'expo-image';
@@ -17,6 +17,7 @@ const extractYouTubeId = (url: string): string => {
 const screenHeight = Dimensions.get('window').height;
 
 const ArticleScreen = () => {
+  const navigation = useNavigation();
   const route = useRoute<ArticleScreenProp>();
   const { articleId } = route.params;
   const article = data[articleId];
@@ -30,7 +31,25 @@ const ArticleScreen = () => {
   return (
     <View style={{ flex: 1, backgroundColor: '#1c1c1c' }}>
       <ScrollView>
-        <Gif
+      <TouchableOpacity
+        onPress={() => navigation.goBack()}
+        style={{
+              position: 'absolute',
+              top: '3%',
+              left: '7%',
+              zIndex: 2,
+            }}
+      >
+      <Image
+        source={require('../../assets/arrowRight.png')}
+        style={{
+          width: 20,
+          height: 20,
+          transform: [{ scaleX: -1 }],
+          }}
+      />
+    </TouchableOpacity>        
+    <Gif
           source={article.bannerPath}
           style={styles.banner}
           contentFit="cover"
