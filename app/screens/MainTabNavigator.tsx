@@ -5,7 +5,6 @@ import PlayScreen from './PlayScreen';
 import AcademyScreen from './AcademyScreen';
 import MoreScreen from './MoreScreen';
 import CheckHandScreen from './CheckHandScreen';
-import { Dimensions } from 'react-native';
 
 export default function App() {
   const Tab = createMaterialTopTabNavigator();
@@ -14,11 +13,11 @@ export default function App() {
     <Tab.Navigator
       tabBarPosition="bottom"
       screenOptions={({ route }: { route: { name: string } }) => ({
-        headerStyle: { backgroundColor: '#1c1c1c' },
+        headerStyle: { backgroundColor: '#121212' },
         headerTintColor: '#fff',
-        tabBarStyle: { backgroundColor: '#1c1c1c' },
+        tabBarStyle: { backgroundColor: '#121212', boxShadow: '0 0 10px 10px rgba(0, 0, 0, .35)' },
         tabBarActiveTintColor: 'white',
-        tabBarIndicatorStyle: { backgroundColor: '#cbbb9c' },
+        tabBarIndicatorStyle: { backgroundColor: '#cbbb9c', marginBottom: 5 },
         tabBarItemStyle: {  
           flex: 1,
           justifyContent: 'center',
@@ -41,9 +40,9 @@ export default function App() {
       })}
       >
       <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarShowLabel: true }} />
-      <Tab.Screen name="Play" component={PlayScreen} options={{ tabBarShowLabel: true }} />
-      <Tab.Screen name="Academy" component={AcademyScreen} options={{ tabBarShowLabel: true }} />
       <Tab.Screen name="Check" component={CheckHandScreen} options={{ tabBarShowLabel: true }} />
+      <Tab.Screen name="Play" component={PlayScreen} options={{ tabBarShowLabel: true}}/>
+      <Tab.Screen name="Academy" component={AcademyScreen} options={{ tabBarShowLabel: true }} />
       <Tab.Screen name="More" component={MoreScreen} options={{ tabBarShowLabel: true }} />
     </Tab.Navigator>
   );
