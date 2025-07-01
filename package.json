@@ -26,6 +26,7 @@
     "react-native-gesture-handler": "^2.24.0",
     "react-native-linear-gradient": "^2.8.3",
     "react-native-pager-view": "^6.8.1",
+    "react-native-popover-view": "^6.1.0",
     "react-native-reanimated": "^3.17.4",
     "react-native-reanimated-carousel": "^4.0.2",
     "react-native-safe-area-context": "^5.4.0",
