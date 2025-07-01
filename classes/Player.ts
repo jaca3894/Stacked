@@ -3,7 +3,7 @@ export default class Player {
   public balance: number;
   public isDealer: boolean;
   public currentBet: number;
-  public didFold: boolean;
+  public folded: boolean;
   public lastAmount: number;
   public lastAction: "" | "call" | "check" | "bet" | "raise" | "fold" | "SB" | "BB" | "All-in";
   constructor(name: string = '', balance: number = 1000) {
@@ -11,7 +11,7 @@ export default class Player {
     this.balance = balance
     this.currentBet = 0;
     this.isDealer = false;
-    this.didFold = false;
+    this.folded = false;
     this.lastAmount = 0;
     this.lastAction = "";
   }
@@ -30,7 +30,7 @@ export default class Player {
     this.balance = balance;
   }
   fold() {
-    this.didFold = true;
+    this.folded = true;
   }
   setLastAction(action: "" | "call" | "check" | "bet" | "raise" | "fold" | "SB" | "BB" | "All-in") {
     this.lastAction = action
