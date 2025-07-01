@@ -47,12 +47,12 @@ const PokerGame = () => {
   const [players, setPlayers] = useState<Player[]>(Array.from({ length: maxPlayers }, () => new Player('', initialBalance)));
   const [smallBlindAmount, bigBlindAmount] = [5, 10];
   const [pots, setPots] = useState<Pot[]>([new Pot(players, "Main Pot", smallBlindAmount + bigBlindAmount)]);
-  const [minAmount, setMinAmount] = useState(0);
+  const [minAmount, setMinAmount] = useState<number>(bigBlindAmount);
   const [shownCards, setShownCards] = useState(0);
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(-1);
   const [biggestBetPlayerIndex, setBiggestBetPlayerIndex] = useState(-1);
 
-  const [canRaise, setCanRaise] = useState(true);
+  const [canRaise, setCanRaise] = useState(false);
 
   const [showInput, setShowInput] = useState([false, -1]);
   const [inputValue, setInputValue] = useState("");
@@ -177,7 +177,7 @@ const PokerGame = () => {
     const player = players[currentPlayerIndex];
     const playersNames = players.filter(player => !player.didFold).map(player => player.name);
     if(playersNames.length === 0) return;
-    if(pots[pots.length-2].currentBetForAPlayer === player.balance) {
+    if(pots[pots.length-2]?.currentBetForAPlayer === player.balance) {
       pots[pots.length-2].add(player.balance);
       player.balance = 0;
       return
@@ -233,6 +233,7 @@ const PokerGame = () => {
 
   function raise(amount: number) {
     if(amount > minAmount) setBiggestBetPlayerIndex(currentPlayerIndex);
+    console.log(amount, minAmount)
     setMinAmount(amount);
     const player = players[currentPlayerIndex];
     const raiseAmount = amount - player.currentBet;
@@ -346,7 +347,7 @@ const PokerGame = () => {
       </SafeAreaView>
       { isSliderShown && 
         (<View style={styles.popUp}>
-          <CustomSlider minimumValue={minAmount+1} maximumValue={players[currentPlayerIndex].balance} step={1} value={minAmount+1} onValueChange={setSliderValue} onAccept={() => {raise(sliderValue);}}/>
+          <CustomSlider minimumValue={+minAmount+1} maximumValue={+players[currentPlayerIndex].balance} step={1} value={+minAmount+1} onValueChange={setSliderValue} onAccept={() => {raise(sliderValue);}}/>
         </View>)
       }
       { isGameEnded && <PotsShowdown pots={pots} players={players} onClose={() => {setPlayers(prev => prev.filter(player => player.balance > 0)); setStartNewGame(true);}}/>}
