@@ -19,8 +19,8 @@ const HelpPopover = ({isVisible, from, onRequestClose, text} : HelpPopoverProps)
       arrowSize={{ width: 10, height: 6 }}
       backgroundStyle={{ backgroundColor: 'rgba(0,0,0,0.3)' }}
       animationConfig={{
-        duration: 100, // czas animacji w ms
-        easing: Easing.out(Easing.ease), // łagodny easing
+        duration: 50,
+        easing: Easing.out(Easing.ease),
       }}
     >
       <View style={{  backgroundColor: "#1c1c1c", padding: 10,  borderWidth: 3, borderColor: "#cbbb9c", borderRadius: 5 }}>
