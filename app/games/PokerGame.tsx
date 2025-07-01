@@ -3,7 +3,7 @@ import { Text, StyleSheet, View, TouchableHighlight, Dimensions, TextInput, Moda
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import Player from "../../classes/Player";
-import { Svg, Path } from 'react-native-svg';
+import { Svg, Path, Rect } from 'react-native-svg';
 
 import RootStackParamList from "../../props/RootStackParamList";
 
@@ -39,12 +39,11 @@ type GameRouteProp = RouteProp<RootStackParamList, "Game">;
 
 const PokerGame = () => {
   const route = useRoute<GameRouteProp>();
-  const { playersCount, initialBalance } = route.params;
+  const { playersCount, initialBalance, smallBlindAmount, bigBlindAmount } = route.params;
   const [top, right, bottom, left] = seatingPlan[playersCount];
   const maxPlayers = top + right + bottom + left;
 
   const [players, setPlayers] = useState<Player[]>(Array.from({ length: maxPlayers }, () => new Player('', initialBalance)));
-  const [smallBlindAmount, bigBlindAmount] = [5, 10];
   const [minAmount, setMinAmount] = useState<number>(bigBlindAmount);
   const [shownCards, setShownCards] = useState(0);
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(-1);
@@ -253,11 +252,12 @@ const PokerGame = () => {
     <SafeAreaProvider>
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.container}>
-          <Image
-            source={require('../../assets/pokerTable.png')}
-            style={styles.background}
-            resizeMode="contain"
-          />
+          <Svg style={styles.background} viewBox="0 0 600 1200">
+            <Rect x={0} y={0} width={600} height={1200} rx={300} ry={180} fill="#2E1C1C"/>
+            <Rect x={20} y={20} width={560} height={1160} rx={280} ry={160} fill="#4d342f"/>
+            <Rect x={40} y={40} width={520} height={1120} rx={260} ry={140} fill="#006400"/>
+            <Rect x={150} y={200} width={300} height={800} rx={180} ry={100} fill="none" stroke="#005000" strokeWidth={12}/>
+          </Svg>
           <View style={[styles.content]}>
             {edges.map(({ pos, dir, len, addStyle }, index) => (
               <View key={index+1} style={[styles[dir], pos, addStyle]}>
@@ -356,7 +356,7 @@ const PokerGame = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#060606',
+    backgroundColor: '#0e0e0e',
     position: 'relative'
   },
   container: {

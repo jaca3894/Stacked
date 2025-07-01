@@ -32,10 +32,10 @@ const CheckHandScreen = () =>
                 <Image source={require("../../assets/logo.png")} style={styles.logo} />
             </SafeAreaView>
             <View style={styles.content}>
-                <Text style={styles.buttonText}>Drag and drop (or just click) cards into empty slots to check your hand.</Text>
+                <Text style={styles.buttonText}>Select your cards.</Text>
                 <View style={styles.dropZone}>
                     {selectedCards.map((item, index) => (
-                        <View key={index} style={styles.emptyCardSlot}>
+                        <View key={index+1} style={styles.emptyCardSlot}>
 
                         </View>
                     ))}

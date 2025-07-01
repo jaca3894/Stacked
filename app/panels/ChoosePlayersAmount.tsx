@@ -1,24 +1,12 @@
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import {
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-  Image,
-  SafeAreaView,
-  Pressable,
-  StyleSheet
-} from "react-native";
-import { Component, useState } from "react";
+import { Text, TextInput, TouchableOpacity, View, Image, SafeAreaView, StyleSheet, TouchableHighlight } from "react-native";
+import { useState, useRef } from "react";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/core";
 import RootStackParamList from "../../props/RootStackParamList";
 import Toast from "react-native-toast-message";
 import toastConfig from "../../config/ToastConfig";
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import Popover from 'react-native-popover-view';
-import { useRef } from 'react';
-import { PopoverPlacement } from 'react-native-popover-view';
-import { Touchable } from "react-native";
+import Popover, { PopoverPlacement } from 'react-native-popover-view';
 
 
 type ChoosePlayersAmountProp = RouteProp<RootStackParamList, "ChoosePlayersAmount">;
@@ -42,29 +30,16 @@ const ChoosePlayersAmount = () => {
 
   const finalPlayersAmount = playersAmount === '' ? 2 : parseInt(playersAmount, 10);
 
-  const smallBlindsData = [
-    { id: 0, value: 1 },
-    { id: 1, value: 2 },
-    { id: 2, value: 5 },
-    { id: 3, value: 10 },
-    { id: 4, value: 20 },
-  ];
-
-  const bigBlindsData = [
-    { id: 0, value: 2 },
-    { id: 1, value: 5 },
-    { id: 2, value: 10 },
-    { id: 3, value: 20 },
-    { id: 4, value: 50 },
-  ];
+  const smallBlindsData = [1, 2, 5, 10, 20];
+  const bigBlindsData = [2, 5, 10, 20, 50];
 
   const handleStart = () => {
     if (+playersAmount >= 2 && +initialBalance >= 100)
       navigation.navigate(gameType, {
         playersCount: finalPlayersAmount,
         initialBalance,
-        bigBlind: bigBlindsData.find(i => i.id === selectedBigBlind)?.value,
-        smallBlind: smallBlindsData.find(i => i.id === selectedSmallBlind)?.value
+        bigBlindAmount: bigBlindsData[selectedBigBlind ?? 0],
+        smallBlindAmount: smallBlindsData[selectedSmallBlind ?? 0],
       });
     else {
       Toast.show({
@@ -112,7 +87,7 @@ const ChoosePlayersAmount = () => {
                 setPlayersAmount(number.toString());
               }}
               keyboardType="numeric"
-              placeholder="Select number between 2 and 12"
+              placeholder="(2-12)"
               placeholderTextColor="#888"
               maxLength={2}
             />
@@ -151,7 +126,7 @@ const ChoosePlayersAmount = () => {
               setInitialBalance(number.toString());
             }}
             keyboardType="numeric"
-            placeholder="Select number between 100 and 100k"
+            placeholder="(100-100k)"
             placeholderTextColor="#888"
             maxLength={5}
           />
@@ -181,17 +156,18 @@ const ChoosePlayersAmount = () => {
             </View>
           </Popover>
           <View style={{ width: "90%", flexDirection: "row" }}>
-            {bigBlindsData.map((item) => (
-              <Pressable
-                key={item.id}
-                onPress={() => setSelectedBigBlind(item.id)}
+            {bigBlindsData.map((value, i) => (
+              <TouchableHighlight
+                key={i+1}
+                onPress={() => setSelectedBigBlind(i)}
                 style={[
                   styles.blindItem,
-                  selectedBigBlind === item.id && styles.blindItemSelected
+                  selectedBigBlind === i && styles.blindItemSelected
                 ]}
+                underlayColor='#948870'
               >
-                <Text style={{ textAlign: "center" }}>{item.value}</Text>
-              </Pressable>
+                <Text style={{ textAlign: "center" }}>{value}</Text>
+              </TouchableHighlight>
             ))}
           </View>
           
@@ -218,25 +194,26 @@ const ChoosePlayersAmount = () => {
           </View>
         </Popover>
         <View style={{ width: "90%", flexDirection: "row" }}>
-          {smallBlindsData.map((item) => (
-            <Pressable
-              key={item.id}
-              onPress={() => setSelectedSmallBlind(item.id)}
+          {smallBlindsData.map((value, i) => (
+            <TouchableHighlight
+              key={i+1}
+              onPress={() => setSelectedSmallBlind(i)}
               style={[
                 styles.blindItem,
-                selectedSmallBlind === item.id && styles.blindItemSelected
+                selectedSmallBlind === i && styles.blindItemSelected
               ]}
+              underlayColor='#948870'
             >
-              <Text style={{ textAlign: "center" }}>{item.value}</Text>
-            </Pressable>
+              <Text style={{ textAlign: "center" }}>{value}</Text>
+            </TouchableHighlight>
           ))}
         </View>
 
 
           {/* START BUTTON */}
-          <TouchableOpacity onPress={handleStart} style={styles.button}>
+          <TouchableHighlight onPress={handleStart} style={styles.button} underlayColor='#0b0b0b'>
             <Text style={styles.buttonText}>Start Game</Text>
-          </TouchableOpacity>
+          </TouchableHighlight>
         </View>
 
         {/* FOOTER */}
@@ -345,9 +322,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   blindItemSelected: {
-    // borderWidth: 2,
-    // borderColor: "white",
-    backgroundColor: "gray"
+    outlineWidth: 2.5,
+    outlineColor: "white"
   },
   footer: {
     height: "20%",
