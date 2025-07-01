@@ -31,11 +31,13 @@ const HomeScreen = () => {
       {loading && <LoadingPanel visible={loading} />}
       <SafeAreaProvider>
         <SafeAreaView style={styles.container}>
+          <View style={styles.header}>
+            <Image source={require("../../assets/logo.png")} style={styles.logo} />
+            <Text style={styles.text}>Hello, betatester!</Text>
+          </View>
             {/* <View style={{ position: "absolute", zIndex: -1, top: "0%", backgroundColor: "#cbbb9c", width: "100%", height: blockOneOffset}}></View>
             <View style={{ position: "absolute", zIndex: -1, top: blockOneOffset, backgroundColor: "#1c1c1c", width: "100%", height: blockTwoOffset}}></View>
             <View style={{ position: "absolute", zIndex: -1, top: blockThreeOffset, backgroundColor: "#cbbb9c", width: "100%", height: blockThreeHeight}}></View> */}
-            <Image source={require("../../assets/logo.png")} style={styles.logo} />
-            <Text style={styles.text}>Hello, betatester!</Text>
             <View style={styles.content}>
             
             </View>
@@ -56,7 +58,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   header: {
-    height: '30%',
+    height: '20%',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -75,7 +77,7 @@ const styles = StyleSheet.create({
   logo: {
     width: screenWidth * 0.35,
     height: screenWidth * 0.35,
-    marginHorizontal: 'auto'
+    // marginHorizontal: 'auto'
   },
   text: {
     color: 'hsl(0, 0%, 100%)',
