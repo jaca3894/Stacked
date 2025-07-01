@@ -4,6 +4,7 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import Player from "../../classes/Player";
 import Pot from "../../classes/Pot";
+import { Svg, Path } from 'react-native-svg';
 
 import RootStackParamList from "../../props/RootStackParamList";
 
@@ -317,25 +318,8 @@ const PokerGame = () => {
               <Text style={{color: '#000', fontSize: 24}}>{pots.reduce((sum, pot) => sum + pot.balance, 0)}</Text>
             </View>
           </View>
-          {showInput[0] && (
-            <Modal onRequestClose={() => setShowInput([false, -1]) } transparent={true} animationType="fade">
-              <View style={styles.popUp}>
-                <View style={styles.popUpInside}>
-                  <TouchableHighlight style={styles.closeButton} underlayColor="transparent" onPress={() => setShowInput([false, -1])}>
-                    <Text style={styles.buttonText}>x</Text>
-                  </TouchableHighlight>
-                  <Text style={{ marginBottom: 10 }}>Podaj coś:</Text>
-                  <TextInput placeholder="Podaj nazwę gracza" style={styles.input} placeholderTextColor="#999" onChange={(e) => {const value = e.nativeEvent.text; setInputValue(value);}}/>
-                  <TouchableHighlight style={styles.dodajButton} underlayColor="#948870"
-                    onPress={() => {if(inputValue.trim() !== '') { setPlayers(players => players.map((player, index) => index === showInput[1] ? new Player(inputValue) : player)); setShowInput([false, -1]); setInputValue('')}}}>
-                    <Text>Dodaj</Text>
-                  </TouchableHighlight>
-                </View>
-              </View>
-            </Modal>
-          )}
           {!isGameStarted && 
-            <TouchableHighlight style={styles.button} underlayColor="#948870" onPress={() => {startGame(); setIsGameStarted(true);}}>
+            <TouchableHighlight style={[styles.button, { marginBottom: '4%' }]} underlayColor="#948870" onPress={() => {startGame(); setIsGameStarted(true);}}>
               <Text style={styles.buttonText}>Start Game</Text>
             </TouchableHighlight>
           }
@@ -366,6 +350,29 @@ const PokerGame = () => {
         </View>)
       }
       { isGameEnded && <PotsShowdown pots={pots} players={players} onClose={() => {setPlayers(prev => prev.filter(player => player.balance > 0)); setStartNewGame(true);}}/>}
+      {showInput[0] && (
+        <Modal onRequestClose={() => setShowInput([false, -1]) } transparent={true} animationType="fade">
+          <View style={styles.popUp}>
+            <View style={styles.popUpInside}>
+              <TouchableHighlight style={styles.closeButton} underlayColor="transparent" onPress={() => setShowInput([false, -1])}>
+                <Svg viewBox="-1 -1 2 2" width={10} height={10}>
+                  <Path
+                    d="M -1 -1 L 1 1 M 1 -1 L -1 1"
+                    stroke="#fff"
+                    strokeWidth={0.2}
+                    strokeLinecap="round"
+                    />
+                </Svg>
+              </TouchableHighlight>
+              <TextInput placeholder="Player name" style={styles.input} placeholderTextColor="#999" onChange={(e) => {const value = e.nativeEvent.text; setInputValue(value);}}/>
+              <TouchableHighlight style={styles.dodajButton} underlayColor="#948870"
+                onPress={() => {if(inputValue.trim() !== '') { setPlayers(players => players.map((player, index) => index === showInput[1] ? new Player(inputValue) : player)); setShowInput([false, -1]); setInputValue('')}}}>
+                <Text>Dodaj</Text>
+              </TouchableHighlight>
+            </View>
+          </View>
+        </Modal>
+      )}
     </SafeAreaProvider>
   );
 };
@@ -373,7 +380,7 @@ const PokerGame = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: 'black',
+    backgroundColor: '#060606',
     position: 'relative'
   },
   container: {
@@ -445,7 +452,7 @@ const styles = StyleSheet.create({
     left: 0,
     width: '100%',
     height: '100%',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0, 0, 0, .7)',
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 1000,
@@ -453,7 +460,7 @@ const styles = StyleSheet.create({
   popUpInside: {
     width: screenWidth * 0.7,
     height: screenWidth * 0.7,
-    backgroundColor: '#fff',
+    backgroundColor: '#121212',
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
@@ -463,16 +470,17 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 10,
     right: 10,
+    color: '#ccc'
   },
   input: {
     width: '80%',
     height: 40,
-    borderColor: '#ccc',
-    borderWidth: 1,
+    borderColor: '#00c',
+    borderWidth: 2,
     borderRadius: 6,
     paddingHorizontal: 10,
-    backgroundColor: '#fff',
-    color: '#000',
+    backgroundColor: '#222',
+    color: '#fff',
   },
   dodajButton: {
     marginTop: 20,

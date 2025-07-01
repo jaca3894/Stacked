@@ -1,20 +1,12 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Dimensions,
-  Image,
-  SafeAreaView,
-  TouchableHighlight,
-  Modal,
-} from 'react-native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { View, Text, StyleSheet, Dimensions, Image, TouchableHighlight, Modal } from 'react-native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { morePanelsData as data } from '../../classes/Database';
 import type { DimensionValue } from 'react-native';
 
 const leftHeights: DimensionValue[] = ['45%', '20%', '30%'];
 const rightHeights: DimensionValue[] = ['20%', '50%', '25%'];
+const screenWidth = Math.round(Dimensions.get('window').width);
 
 const MoreScreen = () => {
   const [activePanelIndex, setActivePanelIndex] = useState<number | null>(null);
@@ -34,7 +26,7 @@ const MoreScreen = () => {
           <View style={styles.leftFlexContainer}>
             {data.slice(0, 3).map((item, index) => (
               <TouchableHighlight
-                key={index}
+                key={index+1}
                 style={[styles.flexBlock, { height: leftHeights[index] }]}
                 underlayColor="#948870"
                 onPress={() => setActivePanelIndex(index)}
@@ -107,9 +99,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logo: {
-    width: '70%',
-    height: '70%',
-    marginTop: '10%',
+    width: screenWidth * 0.35,
+    height: screenWidth * 0.35,
   },
   flexContainer: {
     height: '70%',
@@ -171,6 +162,10 @@ const styles = StyleSheet.create({
     height: '10%',
     justifyContent: 'center',
     alignItems: 'center',
+    position: 'absolute',
+    bottom: 0,
+    left: '50%',
+    transform: [{translateX: '-50%'}],
   },
   footerText: {
     color: 'gray',

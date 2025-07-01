@@ -3,33 +3,30 @@ import { skillsData as data } from '../../classes/Database';
 import { Image as Gif} from 'expo-image';
 import { useNavigation } from '@react-navigation/native';
 import { useRef } from 'react';
+
 const screenHeight = Math.round(Dimensions.get('window').height);
 
 const AcademyScreen = () => {
-  
   const navigation = useNavigation<any>();
   let globalIndex = useRef(0).current;
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#1c1c1c' }}>
       <View style={styles.header}>
-          <Image
-            source={require('../../assets/logoAcademy.png')}
-            style={styles.logo}
-            resizeMode="contain"
-          />
+        <Image
+          source={require('../../assets/logoAcademy.png')}
+          style={styles.logo}
+          resizeMode="contain"
+        />
       </View>
       <ScrollView style={ styles.container } showsVerticalScrollIndicator={false} nestedScrollEnabled={true}>
-        <View style={{ width: '100%', padding: 20, alignItems: 'center' }}>
-          <Text style={{color: "#f7e2bd", fontSize: 24, fontWeight: "bold"}}>I want to learn more about...</Text>
-        </View>
-          {data.map((category, categoryIdx) => (
-            <View key={categoryIdx} style={styles.categoryBlock}>
+          {data.map((category, categoryIndex) => (
+            <View key={categoryIndex + 1} style={styles.categoryBlock}>
               <Text style={styles.categoryTitle}>{category.category}</Text>
               <Text style={styles.categoryDescription}>{category.description}</Text>
               <FlatList
                 data={category.items}
-                keyExtractor={(item, idx) => `${item.name}-${idx}`}
+                keyExtractor={(item, index) => `${item.name}-${index}`}
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 renderItem={({ item }) => {

@@ -12,12 +12,12 @@ const PlayScreen = () => {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
+        <Image
+          source={require('../../assets/logo.png')}
+          style={styles.logo}
+          resizeMode="contain"
+        />
         <View style={styles.content}>
-          <Image
-            source={require('../../assets/logo.png')}
-            style={styles.logo}
-            resizeMode="contain"
-          />
           <View style={styles.mainContainer}>
             <Text style={styles.title}>What do you want to{'\n'}track today?</Text>
 
@@ -67,20 +67,23 @@ const styles = StyleSheet.create({
     backgroundColor: '#1c1c1c',
   },
   content: {
-    height: '85%',
+    height: '70%',
     alignItems: 'center',
     justifyContent: 'center',
   },
   footer: {
-    height: '15%',
-    backgroundColor: '#1c1c1c',
+    height: '10%',
     justifyContent: 'center',
     alignItems: 'center',
+    position: 'absolute',
+    bottom: 0,
+    left: '50%',
+    transform: [{translateX: '-50%'}],
   },
   logo: {
-    width: screenHeight * 0.15,
-    height: screenHeight * 0.15,
-    marginBottom: 30,
+    width: screenWidth * 0.35,
+    height: screenWidth * 0.35,
+    marginHorizontal: 'auto'
   },
   mainContainer: {
     alignItems: 'center',

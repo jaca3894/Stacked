@@ -8,30 +8,41 @@ const [screenWidth, screenHeight] = [
   Dimensions.get('window').height,
 ];
 
-const PotsShowdown = ({pots, players, onClose}: {pots: Pot[]; players: Player[]; onClose: () => void;}) => {
-  console.log(pots[0].players)
-  console.log(pots[0])
-  const [selectedPotWinners, setSelectedPotWinners] = useState<Record<number, Player>>({});
+const PotsShowdown = ({ pots, players, onClose }: { pots: Pot[]; players: Player[]; onClose: () => void }) => {
+  const [selectedPotWinners, setSelectedPotWinners] = useState<Record<number, Player[]>>({});
 
   const handleSelectWinner = (potIndex: number, player: Player) => {
-    setSelectedPotWinners(prev => ({
-      ...prev,
-      [potIndex]: player
-    }));
+    setSelectedPotWinners(prev => {
+      const currentWinners = prev[potIndex] || [];
+      const isAlreadySelected = currentWinners.includes(player);
+
+      const updatedWinners = isAlreadySelected
+        ? currentWinners.filter(p => p !== player) // remove
+        : [...currentWinners, player]; // add
+
+      return {
+        ...prev,
+        [potIndex]: updatedWinners,
+      };
+    });
   };
 
   const addMoneyToWinners = () => {
-    if (Object.keys(selectedPotWinners).length < pots.length) return;
+    // upewnij się, że każda pula ma przynajmniej jednego zwycięzcę
+    if (!pots.every((_, i) => selectedPotWinners[i]?.length > 0)) return;
+
     pots.forEach((pot, potIndex) => {
-      const winner = selectedPotWinners[potIndex];
-      console.log(winner);
-      if (winner) {
-        winner.balance += pot.balance;
-        pot.winner = winner;
+      const winners = selectedPotWinners[potIndex];
+      if (winners && winners.length > 0) {
+        const share = pot.balance / winners.length;
+        winners.forEach(winner => {
+          winner.balance += share;
+        });
       }
     });
+
     onClose();
-  }
+  };
 
   return (
     <Modal transparent animationType="fade" statusBarTranslucent>
@@ -41,30 +52,40 @@ const PotsShowdown = ({pots, players, onClose}: {pots: Pot[]; players: Player[];
           <Text style={{ color: '#fff', fontSize: 35 }}>Showdown</Text>
           <Text style={{ color: 'hsl(0, 0%, 50%)' }}>Select pot winner(s)</Text>
 
-          {pots.map((pot, potIndex) => (
-            <View key={potIndex+1} style={{ marginBottom: 10, padding: 10 }}>
-              <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#fff' }}>
-                {`${pot.name}: ${pot.balance}`}
-              </Text>
-              <View style={styles.playersView}>
-                {players
-                  .map((player, playerIndex) => ({ player, playerIndex }))
-                  .filter(({ player }) => pot.players.includes(player))
-                  .map(({ player, playerIndex }) => (
-                    <TouchableOpacity
-                      key={playerIndex + 1}
-                      style={[
-                        styles.playerButton,
-                        selectedPotWinners[potIndex] === player && styles.playerSelected,
-                      ]}
-                      onPress={() => handleSelectWinner(potIndex, player)}
-                    >
-                      <Text style={styles.text}>{player.name}</Text>
-                    </TouchableOpacity>
-                  ))}
+          {pots.map((pot, potIndex) => {
+            const winners = selectedPotWinners[potIndex] || [];
+
+            return (
+              <View key={potIndex+1} style={{ marginBottom: 10, padding: 10 }}>
+                <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#fff', textAlign: 'center' }}>
+                  {`${pot.name}: ${pot.balance}`}
+                </Text>
+                <View style={styles.playersView}>
+                  {players
+                    .filter(player => pot.players.includes(player))
+                    .map((player, playerIndex) => {
+                      const isSelected = winners.includes(player);
+
+                      return (
+                        <TouchableOpacity
+                          key={playerIndex+1}
+                          style={[
+                            styles.playerButton,
+                            isSelected && styles.playerSelected,
+                          ]}
+                          onPress={() => handleSelectWinner(potIndex, player)}
+                        >
+                          <Text style={styles.text}>{player.name}</Text>
+                        </TouchableOpacity>
+                      );
+                    })}
+                </View>
+                <Text style={styles.selectedPlayersText}>
+                  Selected {winners.length}/{pot.players.length}
+                </Text>
               </View>
-            </View>
-          ))}
+            );
+          })}
 
           <TouchableHighlight style={styles.nextButton} onPress={addMoneyToWinners}>
             <Text style={styles.text}>Next Hand</Text>
@@ -74,6 +95,7 @@ const PotsShowdown = ({pots, players, onClose}: {pots: Pot[]; players: Player[];
     </Modal>
   );
 };
+
 
 const styles = StyleSheet.create({
   popUp: {
@@ -93,18 +115,22 @@ const styles = StyleSheet.create({
   playersView: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
     marginTop: 10,
   },
   playerButton: {
-    borderColor: '#cbbb9c',
+    borderColor: '#33f',
     borderWidth: 2,
     borderRadius: 6,
     padding: 8,
     margin: 4,
   },
   playerSelected: {
-    backgroundColor: '#cbbb9c',
+    backgroundColor: '#33f',
+  },
+  selectedPlayersText: {
+    marginTop: '1%',
+    color: 'hsl(0, 0%, 75%)',
+    textAlign: 'center'
   },
   text: {
     color: '#fff',

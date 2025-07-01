@@ -4,6 +4,7 @@ import { useState } from "react";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/core";
 import RootStackParamList from "../../props/RootStackParamList";
 import Toast from "react-native-toast-message";
+import toastConfig from "../../config/ToastConfig";
 
 const screenHeight = Dimensions.get("window").height;
 const screenWidth = Dimensions.get("window").width;
@@ -20,27 +21,17 @@ const ChoosePlayersAmount = () => {
   const finalPlayersAmount = playersAmount === '' ? 2 : parseInt(playersAmount, 10);
 
   const handleStart = () => {
-    if (
-      playersAmount !== '' &&
-      initialBalance !== '' &&
-      +playersAmount >= 2 &&
-      +initialBalance >= 100
-    ) {
-      navigation.navigate(gameType, {
-        playersCount: finalPlayersAmount,
-        initialBalance,
-      });
-    }
-    else{
+    if (+playersAmount >= 2 && +initialBalance >= 100)
+      navigation.navigate(gameType, { playersCount: finalPlayersAmount, initialBalance });
+    else {
       Toast.show({
         type: 'error',
         text1: 'Invalid game parameters',
-        text2: 'Players ≥ 2 and balance ≥ 100',
+        text2: 'Players ≥ 2\t Balance ≥ 100',
         position: 'top',
         text1Style: { fontSize: 20, fontWeight: 'bold', color: '#cbbb9c', textAlign: "left" },
         text2Style: { fontSize: 12, color: 'gray' },
-
-        swipeable: true,
+        swipeable: true
       });
     }
   };
@@ -61,7 +52,7 @@ const ChoosePlayersAmount = () => {
 
         {/* CONTENT */}
         <View style={styles.content}>
-          <Text style={styles.title}>Amount of players</Text>
+          <Text style={styles.title}>Players</Text>
           <TextInput
             style={styles.input}
             value={playersAmount}
@@ -79,7 +70,7 @@ const ChoosePlayersAmount = () => {
             maxLength={2}
           />
 
-          <Text style={styles.title}>Initial balance</Text>
+          <Text style={styles.title}>Balance</Text>
           <TextInput
             style={styles.input}
             value={initialBalance}
@@ -107,7 +98,7 @@ const ChoosePlayersAmount = () => {
           <Text style={styles.footerText}>2025 Stacked.</Text>
         </View>
       </SafeAreaView>
-      <Toast />
+      <Toast config={toastConfig} />
     </SafeAreaProvider>
   );
 };

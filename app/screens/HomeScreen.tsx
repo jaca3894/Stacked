@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Platform, Image, SafeAreaView, DimensionValue } from 'react-native';
+import { View, Text, StyleSheet, Platform, Image, DimensionValue, Dimensions } from 'react-native';
 import LoadingPanel from '../panels/LoadingPanel'; // Zakładamy, że masz ten komponent
 import * as NavigationBar from 'expo-navigation-bar';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 const parsePercent = (value: string) => parseFloat(value.replace('%', ''));
+const screenWidth = Math.round(Dimensions.get('window').width);
 
 const blockOneOffset = "30%"; // ustawia wysokosc naglowka i offset contentu
 const blockTwoOffset = "50%"; // ustawia wysokosc contentu
@@ -27,21 +29,21 @@ const HomeScreen = () => {
   return (
     <>
       {loading && <LoadingPanel visible={loading} />}
-      <View style={styles.container}>
-        {/* <View style={{ position: "absolute", zIndex: -1, top: "0%", backgroundColor: "#cbbb9c", width: "100%", height: blockOneOffset}}></View>
-        <View style={{ position: "absolute", zIndex: -1, top: blockOneOffset, backgroundColor: "#1c1c1c", width: "100%", height: blockTwoOffset}}></View>
-        <View style={{ position: "absolute", zIndex: -1, top: blockThreeOffset, backgroundColor: "#cbbb9c", width: "100%", height: blockThreeHeight}}></View> */}
-        <SafeAreaView style={styles.header}>
-          <Image source={require("../../assets/logo.png")} style={styles.logo} />
-          <Text style={styles.text}>Hello, betatester!</Text>
+      <SafeAreaProvider>
+        <SafeAreaView style={styles.container}>
+            {/* <View style={{ position: "absolute", zIndex: -1, top: "0%", backgroundColor: "#cbbb9c", width: "100%", height: blockOneOffset}}></View>
+            <View style={{ position: "absolute", zIndex: -1, top: blockOneOffset, backgroundColor: "#1c1c1c", width: "100%", height: blockTwoOffset}}></View>
+            <View style={{ position: "absolute", zIndex: -1, top: blockThreeOffset, backgroundColor: "#cbbb9c", width: "100%", height: blockThreeHeight}}></View> */}
+            <Image source={require("../../assets/logo.png")} style={styles.logo} />
+            <Text style={styles.text}>Hello, betatester!</Text>
+            <View style={styles.content}>
+            
+            </View>
+            <View style={styles.footer}>
+              <Text style={styles.footerText}>2025 Stacked.</Text>
+            </View>
         </SafeAreaView>
-        <View style={styles.content}>
-         
-        </View>
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>2025 Stacked.</Text>
-        </View>
-      </View>
+      </SafeAreaProvider>
     </>
   );
 };
@@ -49,34 +51,34 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'transparent',
+    backgroundColor: '#1c1c1c',
     flexDirection: 'column',
     width: '100%',
   },
   header: {
     height: '30%',
-    backgroundColor: '#1c1c1c',
     justifyContent: 'center',
     alignItems: 'center',
   },
   content: {
-    height: '50%',
-    backgroundColor: '#1c1c1c',
+    height: '60%',
   },
   footer: {
-    height: '20%',
-    backgroundColor: '#1c1c1c',
+    height: '10%',
     justifyContent: 'center',
     alignItems: 'center',
+    position: 'absolute',
+    bottom: 0,
+    left: '50%',
+    transform: [{translateX: '-50%'}],
   },
   logo: {
-    marginTop: '10%',
-    width: '60%',
-    height: '60%',
-    resizeMode: 'contain',
+    width: screenWidth * 0.35,
+    height: screenWidth * 0.35,
+    marginHorizontal: 'auto'
   },
   text: {
-    color: '#fff',
+    color: 'hsl(0, 0%, 100%)',
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
@@ -85,6 +87,7 @@ const styles = StyleSheet.create({
     color: 'gray',
     fontSize: 16,
     textAlign: 'center',
+    marginHorizontal: 'auto'
   },
 });
 
