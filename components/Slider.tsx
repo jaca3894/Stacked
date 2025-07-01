@@ -27,7 +27,7 @@ const CustomSlider = ({value, onValueChange, onAccept, minimumValue, maximumValu
         maximumTrackTintColor="#CCCCCC"
         thumbTintColor="#FFFFFF"
       />
-      <TouchableHighlight onPress={onAccept} style={{ marginTop: 10, padding: 10, backgroundColor: 'lightblue', borderRadius: 5 }}>
+      <TouchableHighlight onPress={onAccept} style={{ marginTop: 10, padding: 10, backgroundColor: '#22f', borderRadius: 5 }}>
         <Text style={{ color: '#000', textAlign: 'center' }}>Zatwierdź</Text>
       </TouchableHighlight>
     </View>

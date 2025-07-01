@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Text, StyleSheet, View, TouchableHighlight, Dimensions, TextInput, Modal, Image } from "react-native";
+import { Text, StyleSheet, View, TouchableHighlight, Dimensions, TextInput, Modal } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import Player from "../../classes/Player";
@@ -127,7 +127,7 @@ const PokerGame = () => {
       newPlayerIndex = (newPlayerIndex + 1) % players.length;
     }
     setCurrentPlayerIndex(newPlayerIndex);
-    if(players[newPlayerIndex].balance == 0 || players[newPlayerIndex].balance < minAmount) setCanRaise(false);
+    if(players[newPlayerIndex].balance == 0 || players[newPlayerIndex].balance <= minAmount) setCanRaise(false);
     else setCanRaise(true);
   }
 
@@ -267,7 +267,7 @@ const PokerGame = () => {
                   try {
                     const isCurrentPlayer = currentPlayerIndex != -1 && currentIndex == currentPlayerIndex;
                     return (
-                    <TouchableHighlight key={j+1} disabled={isGameStarted} style={[styles.button, {borderColor: isCurrentPlayer ? 'yellow' : 'white', borderWidth: isCurrentPlayer ? 4 : 2, opacity: player.folded ? 0.5 : 1}]} underlayColor="#948870" onPress={() => {if (player.name === '') {setShowInput([true, currentIndex])}}}>
+                    <TouchableHighlight key={j+1} disabled={isGameStarted} style={[styles.button, {outlineColor: isCurrentPlayer ? '#11f' : 'white', outlineWidth: isCurrentPlayer ? 5 : 2, opacity: player.folded ? 0.5 : 1}]} underlayColor="#948870" onPress={() => {if (player.name === '') {setShowInput([true, currentIndex])}}}>
                       <View style={styles.buttonView}>
                         {player.isDealer && (
                           <View style={{position: 'absolute', top: -20, left: -20, backgroundColor: 'white', borderRadius: '50%', width: 30, height: 30, justifyContent: 'center', alignContent: 'center'}}>
@@ -275,7 +275,7 @@ const PokerGame = () => {
                           </View>
                         )}
                         <Text style={styles.buttonText} numberOfLines={2} ellipsizeMode="tail">{player.name != '' ? player.name + '\n' + player.balance : '+'}</Text>
-                        {(isGameStarted && player.lastAction != '') && <Text style={styles.blindText}>{player.lastAction}</Text>}
+                        {isGameStarted && <View style={styles.blindView}><Text style={styles.blindText}>{player.lastAction}</Text></View>}
                       </View>
                     </TouchableHighlight>)
                   }
@@ -406,8 +406,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     alignSelf: "center",
-    borderColor: 'white',
-    borderWidth: 2,
+    outlineColor: 'white',
+    outlineWidth: 2,
     padding: 5,
     textAlign: 'center',
   },
@@ -471,15 +471,18 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     gap: 15,
   },
-  blindText: {
+  blindView: {
     backgroundColor: '#111',
-    color: 'white',
     padding: 2,
     borderRadius: 5,
+    minWidth: screenWidth * .2,
+    maxWidth: screenWidth * .35,
+  },
+  blindText: {
+    color: 'white',
     textAlign: 'center',
     fontSize: 16,
     textTransform: "capitalize",
-    width: '100%'
   },
   potsView: {
     position: 'absolute',
