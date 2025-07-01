@@ -40,10 +40,9 @@ type GameRouteProp = RouteProp<RootStackParamList, "Game">;
 const PokerGame = () => {
   const route = useRoute<GameRouteProp>();
   const { playersCount, initialBalance, smallBlindAmount, bigBlindAmount } = route.params;
-  const [top, right, bottom, left] = seatingPlan[playersCount];
-  const maxPlayers = top + right + bottom + left;
-
-  const [players, setPlayers] = useState<Player[]>(Array.from({ length: maxPlayers }, () => new Player('', initialBalance)));
+  
+  const [players, setPlayers] = useState<Player[]>(Array.from({ length: seatingPlan[playersCount].reduce((acc, val) => acc + val, 0) }, () => new Player('', initialBalance)));
+  const [top, right, bottom, left] = seatingPlan[players.length];
   const [minAmount, setMinAmount] = useState<number>(bigBlindAmount);
   const [shownCards, setShownCards] = useState(0);
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(-1);
