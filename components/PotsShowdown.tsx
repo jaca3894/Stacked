@@ -1,15 +1,21 @@
 import {Modal, Text, View, StyleSheet, Dimensions, TouchableOpacity, TouchableHighlight, StatusBar } from 'react-native';
 import Pot from '../classes/Pot';
 import Player from '../classes/Player';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const [screenWidth, screenHeight] = [
   Dimensions.get('window').width,
   Dimensions.get('window').height,
 ];
 
-const PotsShowdown = ({ pots, players, onClose }: { pots: Pot[]; players: Player[]; onClose: () => void }) => {
+const PotsShowdown = ({ players, allIns, onClose }: { players: Player[]; allIns: Record<string, number>; onClose: () => void }) => {
   const [selectedPotWinners, setSelectedPotWinners] = useState<Record<number, Player[]>>({});
+  const [pots, setPots] = useState<Pot[]>([new Pot(players.filter(player => !player.folded))]);
+
+  useEffect(() => {
+    const generatedPots = myCreateSidePots();
+    setPots(generatedPots);
+  }, [players]);
 
   const handleSelectWinner = (potIndex: number, player: Player) => {
     setSelectedPotWinners(prev => {
@@ -28,21 +34,48 @@ const PotsShowdown = ({ pots, players, onClose }: { pots: Pot[]; players: Player
   };
 
   const addMoneyToWinners = () => {
-    // upewnij się, że każda pula ma przynajmniej jednego zwycięzcę
-    if (!pots.every((_, i) => selectedPotWinners[i]?.length > 0)) return;
-
-    pots.forEach((pot, potIndex) => {
-      const winners = selectedPotWinners[potIndex];
-      if (winners && winners.length > 0) {
-        const share = pot.balance / winners.length;
-        winners.forEach(winner => {
-          winner.balance += share;
-        });
+    pots.forEach((pot, index) => {
+      const winners = selectedPotWinners[index];
+      if (!winners || winners.length === 0) {
+        alert(`No winner selected for ${pot.name}`);
+        return;
       }
-    });
 
+      const share = pot.balance / winners.length;
+      winners.forEach(winner => {
+        winner.balance += share;
+      });
+    });
     onClose();
   };
+
+  const myCreateSidePots = () => {
+    const activePlayers = players.filter(p => !p.folded);
+    const sorted = [...activePlayers].sort((a, b) => a.currentBet - b.currentBet);
+    console.log(sorted);
+
+    const pots: Pot[] = [];
+    let previousBet = 0
+
+    for(let i = 0; i < sorted.length; i++) {
+      const currentBet = sorted[i].currentBet;
+      const contributingPlayers = sorted.slice(i);
+
+      const betDifference = currentBet - previousBet;
+
+      if (betDifference > 0) {
+        const potAmount = betDifference * contributingPlayers.length;
+
+        const pot = new Pot([...contributingPlayers]);
+        pot.name = i === 0 ? 'Main Pot' : `Side Pot ${pots.length}`;
+        pot.balance = potAmount;
+        pots.push(pot);
+
+        previousBet = currentBet;
+      }
+    }
+    return pots;
+  }
 
   return (
     <Modal transparent animationType="fade" statusBarTranslucent>
