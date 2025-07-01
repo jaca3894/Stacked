@@ -15,7 +15,7 @@ export default function App() {
       screenOptions={({ route }: { route: { name: string } }) => ({
         headerStyle: { backgroundColor: '#121212' },
         headerTintColor: '#fff',
-        tabBarStyle: { backgroundColor: '#121212', boxShadow: '0 0 10px 10px rgba(0, 0, 0, .35)' },
+        tabBarStyle: { backgroundColor: '#121212', boxShadow: '0 0 24px 24px #121212' },
         tabBarActiveTintColor: 'white',
         tabBarIndicatorStyle: { backgroundColor: '#cbbb9c', marginBottom: 5 },
         tabBarItemStyle: {  

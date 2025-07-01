@@ -13,7 +13,7 @@ const PlayScreen = () => {
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
         <Image
-          source={require('../../assets/logo.png')}
+          source={require('../../assets/logo/logo.png')}
           style={styles.logo}
           resizeMode="contain"
         />

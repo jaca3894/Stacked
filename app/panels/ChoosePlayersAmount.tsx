@@ -6,7 +6,7 @@ import RootStackParamList from "../../props/RootStackParamList";
 import Toast from "react-native-toast-message";
 import toastConfig from "../../config/ToastConfig";
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import Popover, { PopoverPlacement } from 'react-native-popover-view';
+import HelpPopover from "../../components/HelpPopover";
 
 
 type ChoosePlayersAmountProp = RouteProp<RootStackParamList, "ChoosePlayersAmount">;
@@ -103,19 +103,7 @@ const ChoosePlayersAmount = () => {
               </View>
             </TouchableOpacity>
           </View>
-          <Popover
-            popoverStyle={{backgroundColor: "#cbbb9c"}}
-            isVisible={showBalanceTip}
-            from={balanceRef}
-            onRequestClose={() => setShowBalanceTip(false)}
-            placement={PopoverPlacement.TOP}
-            arrowSize={{ width: 10, height: 6 }}
-            backgroundStyle={{ backgroundColor: 'rgba(0,0,0,0.3)' }}
-          >
-            <View style={{  backgroundColor: "#1c1c1c", padding: 10,  borderWidth: 3, borderColor: "#cbbb9c", borderRadius: 5 }}>
-              <Text style={{ color: "#fff" }}>Initial amount of money per player</Text>
-            </View>
-          </Popover>
+          <HelpPopover isVisible={showBalanceTip} from={balanceRef} onRequestClose={() => setShowBalanceTip(false)} text="Initial amount of money per player"/>
           <TextInput
             style={styles.input}
             value={initialBalance}
@@ -142,19 +130,7 @@ const ChoosePlayersAmount = () => {
               </View>
             </TouchableOpacity>
           </View>
-          <Popover
-            popoverStyle={{backgroundColor: "#cbbb9c"}}
-            isVisible={showBigBlindTip}
-            from={bigBlindRef}
-            onRequestClose={() => setShowBigBlindTip(false)}
-            placement={PopoverPlacement.TOP}
-            arrowSize={{ width: 10, height: 6 }}
-            backgroundStyle={{ backgroundColor: 'rgba(0,0,0,0.3)' }}
-          >
-            <View style={{  backgroundColor: "#1c1c1c", padding: 10,  borderWidth: 3, borderColor: "#cbbb9c", borderRadius: 5 }}>
-              <Text style={{ color: "#fff" }}>Mandatory bet from the player left to dealer</Text>
-            </View>
-          </Popover>
+          <HelpPopover isVisible={showBigBlindTip} from={bigBlindRef} onRequestClose={() => setShowBigBlindTip(false)} text="Mandatory bet from the player left to dealer"/>
           <View style={{ width: "90%", flexDirection: "row" }}>
             {bigBlindsData.map((value, i) => (
               <TouchableHighlight
@@ -180,19 +156,7 @@ const ChoosePlayersAmount = () => {
             </View>
           </TouchableOpacity>
         </View>
-        <Popover
-          popoverStyle={{backgroundColor: "#cbbb9c"}}
-          isVisible={showSmallBlindTip}
-          from={smallBlindRef}
-          onRequestClose={() => setShowSmallBlindTip(false)}
-          placement={PopoverPlacement.TOP}
-          arrowSize={{ width: 10, height: 6 }}
-          backgroundStyle={{ backgroundColor: 'rgba(0,0,0,0.3)' }}
-        >
-          <View style={{ backgroundColor: "#1c1c1c", padding: 10,  borderWidth: 3, borderColor: "#cbbb9c", borderRadius: 5 }}>
-            <Text style={{ color: "#fff", textAlign: "center" }}>Smaller forced bet before dealing cards</Text>
-          </View>
-        </Popover>
+        <HelpPopover isVisible={showSmallBlindTip} from={smallBlindRef} onRequestClose={() => setShowSmallBlindTip(false)} text="Smaller forced bet before dealing cards"/>
         <View style={{ width: "90%", flexDirection: "row" }}>
           {smallBlindsData.map((value, i) => (
             <TouchableHighlight

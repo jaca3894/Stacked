@@ -1,9 +1,8 @@
 import React, { useRef, useState } from 'react';
-import { View, Text, FlatList, Image, Dimensions, StyleSheet, SafeAreaView } from 'react-native';
+import { View, Text, FlatList, Image, Dimensions, StyleSheet, SafeAreaView, TouchableHighlight } from 'react-native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import { LinearGradient } from 'expo-linear-gradient';
 import { welcomeCardsData as data } from '../../classes/Database';
-import { TouchableHighlight } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type WelcomeScreenProps = {

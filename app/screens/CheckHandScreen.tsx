@@ -29,7 +29,7 @@ const CheckHandScreen = () =>
     return(
         <View style={ styles.container }>
             <SafeAreaView style={styles.header}>
-                <Image source={require("../../assets/logo.png")} style={styles.logo} />
+                <Image source={require("../../assets/logo/logo.png")} style={styles.logo} />
             </SafeAreaView>
             <View style={styles.content}>
                 <Text style={styles.buttonText}>Select your cards.</Text>

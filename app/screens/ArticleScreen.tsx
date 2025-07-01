@@ -10,7 +10,7 @@ type ArticleScreenProp = RouteProp<RootStackParamList, "Article">;
 
 const extractYouTubeId = (url: string): string => {
   const regExp = /(?:youtube\.com\/.*v=|youtu\.be\/)([^&\n?#]+)/;
-  const match = url.match(regExp);
+  const match = RegExp(regExp).exec(url);
   return match ? match[1] : '';
 };
 
@@ -71,7 +71,7 @@ const ArticleScreen = () => {
 
             <View style={styles.authorRow}>
               <Image
-                source={require('../../assets/logo.png')}
+                source={require('../../assets/logo/logo.png')}
                 style={styles.authorAvatar}
               />
               <View style={styles.authorDetails}>

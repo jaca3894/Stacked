@@ -1,16 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Platform, Image, DimensionValue, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Platform, Image, Dimensions } from 'react-native';
 import LoadingPanel from '../panels/LoadingPanel'; // Zakładamy, że masz ten komponent
 import * as NavigationBar from 'expo-navigation-bar';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 const parsePercent = (value: string) => parseFloat(value.replace('%', ''));
 const screenWidth = Math.round(Dimensions.get('window').width);
-
-const blockOneOffset = "30%"; // ustawia wysokosc naglowka i offset contentu
-const blockTwoOffset = "50%"; // ustawia wysokosc contentu
-const blockThreeOffset = `${parsePercent(blockOneOffset) + parsePercent(blockTwoOffset)}%` as DimensionValue;
-const blockThreeHeight = "20%"; // wysokosc stopki 
 
 const HomeScreen = () => {
   const [loading, setLoading] = useState(true);
@@ -32,7 +27,7 @@ const HomeScreen = () => {
       <SafeAreaProvider>
         <SafeAreaView style={styles.container}>
           <View style={styles.header}>
-            <Image source={require("../../assets/logo.png")} style={styles.logo} />
+            <Image source={require("../../assets/logo/logo.png")} style={styles.logo} />
             <Text style={styles.text}>Hello, betatester!</Text>
           </View>
             {/* <View style={{ position: "absolute", zIndex: -1, top: "0%", backgroundColor: "#cbbb9c", width: "100%", height: blockOneOffset}}></View>

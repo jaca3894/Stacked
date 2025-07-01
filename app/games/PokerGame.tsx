@@ -235,6 +235,8 @@ const PokerGame = () => {
       const winner = players.find(player => !player.folded);
       if(!winner) return;
       const winnerIndex = players.indexOf(winner);
+      const sum = players.reduce((sum, player) => sum + player.currentBet, 0);
+      players[winnerIndex].balance += sum - players[winnerIndex].balance;
       endGame();
     }
     else {

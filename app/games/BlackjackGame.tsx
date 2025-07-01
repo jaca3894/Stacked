@@ -4,6 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { RouteProp, useRoute } from "@react-navigation/native";
 
 import RootStackParamList from "../../props/RootStackParamList";
+import Svg, { Rect } from "react-native-svg";
 
 type GameRouteProp = RouteProp<RootStackParamList, "Game">;
 
@@ -53,55 +54,55 @@ const BlackjackGame = () => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ImageBackground
-        source={require('../../assets/pokerTable.png')}
-        style={styles.background}
-        resizeMode="contain"
-      >
-        <View style={[styles.content]}>
-          {edges.map(({ pos, dir, len, prefix, addStyle }) => (
-            <View key={prefix} style={[styles[dir], pos, addStyle]}>
-              {Array.from({ length: len }).map((_, j) => {
-                const currentIndex = globalIndex++;
-                return (
-                <TouchableHighlight key={j+1} style={styles.button} underlayColor="#948870" onPress={() => {setShowInput([true, currentIndex])}}>
-                  <Text style={styles.buttonText} numberOfLines={1} ellipsizeMode="tail">{players[currentIndex] != '' ? players[currentIndex] : '+' + currentIndex}</Text>
-                </TouchableHighlight>
-              )})}
-            </View>
-          ))}
-        </View>
-        {showInput[0] && (
-          <Modal onRequestClose={() => setShowInput([false, -1]) } transparent={true} animationType="fade">
-            <View style={styles.popUp}>
-              <View style={styles.popUpInside}>
-                <TouchableHighlight
-                  style={styles.closeButton}
-                  underlayColor="transparent"
-                  onPress={() => setShowInput([false, -1])}
-                  >
-                  <Text style={styles.buttonText}>x</Text>
-                </TouchableHighlight>
+      <Svg style={styles.background} viewBox="0 0 600 1200">
+        <Rect x={0} y={0} width={600} height={1200} rx={300} ry={180} fill="#2E1C1C"/>
+        <Rect x={20} y={20} width={560} height={1160} rx={280} ry={160} fill="#4d342f"/>
+        <Rect x={40} y={40} width={520} height={1120} rx={260} ry={140} fill="#006400"/>
+        <Rect x={150} y={200} width={300} height={800} rx={180} ry={100} fill="none" stroke="#005000" strokeWidth={12}/>
+      </Svg>
+      <View style={[styles.content]}>
+        {edges.map(({ pos, dir, len, prefix, addStyle }) => (
+          <View key={prefix} style={[styles[dir], pos, addStyle]}>
+            {Array.from({ length: len }).map((_, j) => {
+              const currentIndex = globalIndex++;
+              return (
+              <TouchableHighlight key={j+1} style={styles.button} underlayColor="#948870" onPress={() => {setShowInput([true, currentIndex])}}>
+                <Text style={styles.buttonText} numberOfLines={1} ellipsizeMode="tail">{players[currentIndex] != '' ? players[currentIndex] : '+' + currentIndex}</Text>
+              </TouchableHighlight>
+            )})}
+          </View>
+        ))}
+      </View>
+      {showInput[0] && (
+        <Modal onRequestClose={() => setShowInput([false, -1]) } transparent={true} animationType="fade">
+          <View style={styles.popUp}>
+            <View style={styles.popUpInside}>
+              <TouchableHighlight
+                style={styles.closeButton}
+                underlayColor="transparent"
+                onPress={() => setShowInput([false, -1])}
+                >
+                <Text style={styles.buttonText}>x</Text>
+              </TouchableHighlight>
 
-                <Text style={{ marginBottom: 10 }}>Podaj coś:</Text>
-                <TextInput
-                  placeholder="Podaj nazwę gracza"
-                  style={styles.input}
-                  placeholderTextColor="#999"
-                  onChange={(e) => {
-                    const value = e.nativeEvent.text;
-                    setInputValue(value);
-                  }}
-                  />
-                <TouchableHighlight style={styles.dodajButton} underlayColor="#948870"
-                  onPress={() => {setPlayers(players => players.map((player, index) => index === showInput[1] ? inputValue : player)); setShowInput([false, -1])}}>
-                  <Text>Dodaj</Text>
-                </TouchableHighlight>
-              </View>
+              <Text style={{ marginBottom: 10 }}>Podaj coś:</Text>
+              <TextInput
+                placeholder="Podaj nazwę gracza"
+                style={styles.input}
+                placeholderTextColor="#999"
+                onChange={(e) => {
+                  const value = e.nativeEvent.text;
+                  setInputValue(value);
+                }}
+                />
+              <TouchableHighlight style={styles.dodajButton} underlayColor="#948870"
+                onPress={() => {setPlayers(players => players.map((player, index) => index === showInput[1] ? inputValue : player)); setShowInput([false, -1])}}>
+                <Text>Dodaj</Text>
+              </TouchableHighlight>
             </View>
-          </Modal>
-        )}
-      </ImageBackground>
+          </View>
+        </Modal>
+      )}
     </SafeAreaView>
   );
 };
