@@ -23,6 +23,7 @@
     "expo-updates": "~0.28.15",
     "react": "19.0.0",
     "react-native": "0.79.3",
+    "react-native-draggable": "^3.3.0",
     "react-native-gesture-handler": "^2.24.0",
     "react-native-linear-gradient": "^2.8.3",
     "react-native-pager-view": "^6.8.1",
