@@ -24,11 +24,16 @@
 <img src="https://github.com/user-attachments/assets/21caca99-46ce-4ed9-aa13-d3a1e053426c" width="200" />
 <img src="https://github.com/user-attachments/assets/46247702-bb58-46a5-85b2-0f17b119ee2c" width="200" />
 <img src="https://github.com/user-attachments/assets/918b3004-095d-455f-b6fd-f713ea6a54d2" width="200" />
+
+<br>
 Jedna z lekcji Academy
+<br>
 <img src="https://github.com/user-attachments/assets/4c9df98d-40de-4522-86c5-968ce329b970" width="200" />
 <img src="https://github.com/user-attachments/assets/f90869a5-7703-4107-bf4c-0cdce0061354" width="200" />
 
+<br>
 Po wybraniu Pokera
+<br>
 <img src="https://github.com/user-attachments/assets/665fa561-16d3-4321-b52c-a17c1ff2a702" width="200" />
 <img src="https://github.com/user-attachments/assets/48e04bd7-d724-42d7-85fb-84efd44e9725" width="200" />
 <img src="https://github.com/user-attachments/assets/70b02e5f-2143-4335-adbb-d15b427960e0" width="200" />
