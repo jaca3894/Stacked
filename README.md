@@ -40,7 +40,7 @@ Academy oraz jedna z jej lekcji
 <br><br>
 
 <img src="https://github.com/user-attachments/assets/918b3004-095d-455f-b6fd-f713ea6a54d2" width="200" />
-<img src="https://github.com/user-attachments/assets/f90869a5-7703-4107-bf4c-0cdce0061354" width="200" />
+<img src="https://github.com/user-attachments/assets/c141dd49-e8ac-4df1-9e32-2b1a95e3bec0" width="200" />
 
 <!-- tu se opisz po krotce  ->  chat gpt to zrobi -->
 
