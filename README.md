@@ -22,7 +22,7 @@
 ## Introduction
 
 <br><br>
-Poker
+<h2>Poker</h2>
 <br><br>
 
 <img src="https://github.com/user-attachments/assets/21caca99-46ce-4ed9-aa13-d3a1e053426c" width="200" />
@@ -31,16 +31,23 @@ Poker
 <img src="https://github.com/user-attachments/assets/70b02e5f-2143-4335-adbb-d15b427960e0" width="200" />
 
 <br><br>
-Check
+<h2>Check</h2>
 <br><br>
 <img src="https://github.com/user-attachments/assets/46247702-bb58-46a5-85b2-0f17b119ee2c" width="200" />
 
 <br><br>
-Academy oraz jedna z jej lekcji
+<h2>Academy oraz jedna z jej lekcji</h2>h2>
 <br><br>
 
 <img src="https://github.com/user-attachments/assets/918b3004-095d-455f-b6fd-f713ea6a54d2" width="200" />
 <img src="https://github.com/user-attachments/assets/c141dd49-e8ac-4df1-9e32-2b1a95e3bec0" width="200" />
+
+<br><br>
+<h2>More</h2>
+<br><br>
+
+<img src="https://github.com/user-attachments/assets/3b4a5cb9-8e9e-4e85-97f3-acbe1222dc68" width="200" />
+
 
 <!-- tu se opisz po krotce  ->  chat gpt to zrobi -->
 
