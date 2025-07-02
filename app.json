@@ -2,6 +2,7 @@
   "expo": {
     "name": "Stacked",
     "slug": "Stacked",
+    "owner": "qczer",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -20,21 +21,22 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.qczer.Stacked"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    },
-    "extra": {
-      "eas": {
-        "projectId": "8635e157-b89b-4dde-a905-76519f62a062"
-      }
     },
     "runtimeVersion": {
       "policy": "appVersion"
     },
     "updates": {
       "url": "https://u.expo.dev/8635e157-b89b-4dde-a905-76519f62a062"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "0be0cbc3-6179-4b5f-bf58-6ba9d7f7f1fc"
+      }
     }
   }
 }
