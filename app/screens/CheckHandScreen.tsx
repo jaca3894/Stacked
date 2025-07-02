@@ -232,7 +232,7 @@ const CheckHandScreen = () => {
               return (
                 <TouchableOpacity
                   key={card.id}
-                  style={[styles.cardView, { opacity: isSelected ? 0.7 : 1 }]}
+                  style={[styles.cardView, { opacity: isSelected ? 0.5 : 1 }]}
                   onPress={() => handleCardSelect(card)}
                 >
                   <Text style={[styles.cornerLeftText, { color: card.color }]}>
@@ -299,7 +299,14 @@ const CheckHandScreen = () => {
 
             {evaluatedHand && (
               <>
-                <Text style={{ fontSize: 18, color: "#0f0", marginBottom: 4 }}>
+                <Text
+                  style={{
+                    fontSize: 18,
+                    color: "#0f0",
+                    marginBottom: 4,
+                    fontWeight: "bold",
+                  }}
+                >
                   {evaluatedHand.handType}
                 </Text>
                 <Text style={{ fontSize: 14, color: "#ccc" }}>
@@ -318,7 +325,7 @@ const CheckHandScreen = () => {
               }}
               onPress={() => setModalVisible(false)}
             >
-              <Text style={{ color: "#fff" }}>Close</Text>
+              <Text style={{ color: "#fff", fontWeight: "bold" }}>Close</Text>
             </TouchableOpacity>
           </View>
         </View>
