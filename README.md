@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/472d768b-49bc-4e7f-acb6-9bbcc80b73e1" alt="logo" width="300"></img>
+  <img src="https://github.com/user-attachments/assets/472d768b-49bc-4e7f-acb6-9bbcc80b73e1" alt="logo"></img>
 </p>
 <h1 align="center"> Stacked </h1> <br>
 
