@@ -33,6 +33,8 @@ All visual materials (images, gifs, and videos) used in this project are either:
 
 Stacked is an experimental React Native app built around card game mastery. It combines live-action tracking of poker and blackjack tables with educational tools for learning the rules, strategies, and psychology behind the cards. Whether you're here to sharpen your game, fact-check a suspicious poker hand, or explore sneaky sleight-of-hand techniques used by pros, Stacked offers a compact toolkit designed to keep your brain dealt in.
 
+  > ⚠️ **Notice**: This UI is a work in progress.
+  > The current design and layout are not final and may change as the project evolves.
 <br>
 <div align="center">
   <h3>Poker</h3>
