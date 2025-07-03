@@ -1,20 +1,26 @@
 import {Modal, Text, View, StyleSheet, Dimensions, TouchableOpacity, TouchableHighlight, StatusBar } from 'react-native';
 import Pot from '../classes/Pot';
 import Player from '../classes/Player';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { ConfettiMethods, PIConfetti } from 'react-native-fast-confetti';
 
 const [screenWidth, screenHeight] = [
   Dimensions.get('window').width,
   Dimensions.get('window').height,
 ];
 
-const PotsShowdown = ({ players, allIns, onClose }: { players: Player[]; allIns: Record<string, number>; onClose: () => void }) => {
+const PotsShowdown = ({ players, onClose }: { players: Player[]; onClose: () => void }) => {
   const [selectedPotWinners, setSelectedPotWinners] = useState<Record<number, Player[]>>({});
   const [pots, setPots] = useState<Pot[]>([new Pot(players.filter(player => !player.folded))]);
+  const navigation = useNavigation();
+  const confettiRef = useRef<ConfettiMethods>(null);
 
   useEffect(() => {
     const generatedPots = myCreateSidePots();
     setPots(generatedPots);
+    if(players.length === 1)
+      confettiRef.current?.restart();
   }, [players]);
 
   const handleSelectWinner = (potIndex: number, player: Player) => {
@@ -49,31 +55,43 @@ const PotsShowdown = ({ players, allIns, onClose }: { players: Player[]; allIns:
     onClose();
   };
 
+  const endGame = () => {
+    (navigation as any).navigate('MainTabs', {screen: 'Play'})
+  }
+
   const myCreateSidePots = () => {
+    // Filter active (not folded) players
     const activePlayers = players.filter(p => !p.folded);
-    const sorted = [...activePlayers].sort((a, b) => a.currentBet - b.currentBet);
-    console.log(sorted);
+
+    // Extract unique bet values, sort ascending
+    const uniqueBets = Array.from(
+      new Set(activePlayers.map(p => p.currentBet))
+    ).sort((a, b) => a - b);
 
     const pots: Pot[] = [];
-    let previousBet = 0
+    let previousBet = 0;
 
-    for(let i = 0; i < sorted.length; i++) {
-      const currentBet = sorted[i].currentBet;
-      const contributingPlayers = sorted.slice(i);
-
-      const betDifference = currentBet - previousBet;
-
-      if (betDifference > 0) {
-        const potAmount = betDifference * contributingPlayers.length;
-
-        const pot = new Pot([...contributingPlayers]);
-        pot.name = i === 0 ? 'Main Pot' : `Side Pot ${pots.length}`;
-        pot.balance = potAmount;
-        pots.push(pot);
-
-        previousBet = currentBet;
+    uniqueBets.forEach((bet, index) => {
+      const betDifference = bet - previousBet;
+      if (betDifference <= 0) {
+        // No additional pot needed
+        previousBet = bet;
+        return;
       }
-    }
+
+      // Players eligible for this pot: those who contributed at least 'bet'
+      const contributingPlayers = activePlayers.filter(p => p.currentBet >= bet);
+      const potAmount = betDifference * contributingPlayers.length;
+
+      // Create and name the pot
+      const pot = new Pot(contributingPlayers);
+      pot.balance = potAmount;
+      pot.name = index === 0 ? 'Main Pot' : `Side Pot ${index}`;
+      pots.push(pot);
+
+      previousBet = bet;
+    });
+
     return pots;
   }
 
@@ -83,9 +101,9 @@ const PotsShowdown = ({ players, allIns, onClose }: { players: Player[]; allIns:
       <View style={styles.popUp}>
         <View style={styles.popUpInside}>
           <Text style={{ color: '#fff', fontSize: 35 }}>Showdown</Text>
-          <Text style={{ color: 'hsl(0, 0%, 50%)' }}>Select pot winner(s)</Text>
+          {players.length !== 1 && <Text style={{ color: 'hsl(0, 0%, 50%)' }}>Select pot winner(s)</Text>}
 
-          {pots.map((pot, potIndex) => {
+          {players.length !== 1 && pots.map((pot, potIndex) => {
             const winners = selectedPotWinners[potIndex] || [];
 
             return (
@@ -120,11 +138,23 @@ const PotsShowdown = ({ players, allIns, onClose }: { players: Player[]; allIns:
             );
           })}
 
-          <TouchableHighlight style={styles.nextButton} onPress={addMoneyToWinners}>
-            <Text style={styles.text}>Next Hand</Text>
-          </TouchableHighlight>
+          {players.length === 1 && (
+            <Text style={styles.winnerText}>Winner: {players[0].name}</Text>
+          )}
+
+          {players.length !== 1 && 
+            <TouchableHighlight style={styles.nextButton} onPress={addMoneyToWinners}>
+              <Text style={styles.text}>Next Hand</Text>
+            </TouchableHighlight>
+          }
+          {players.length === 1 && 
+            <TouchableHighlight style={styles.nextButton} onPress={endGame}>
+              <Text style={styles.text}>End Game</Text>
+            </TouchableHighlight>
+          }
         </View>
       </View>
+      <PIConfetti ref={confettiRef} />
     </Modal>
   );
 };
@@ -175,6 +205,10 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 8,
   },
+  winnerText: {
+    color: '#fff',
+    fontSize: 44,
+  }
 });
 
 export default PotsShowdown;
