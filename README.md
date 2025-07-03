@@ -4,9 +4,9 @@
 <!-- <h1 align="center"> Stacked </h1> <br>
  -->
 <p align="center">
-  ⚠ TREAT ALL DATA AS FICTIONAL! ⚠<br>⚠ SINCE THIS APP WILL NOT BE DEPLOYED OR PUBLISHED, REAL PEOPLE/PLACES MIGHT BE REFERENCED ⚠  
+  ⚠ Made only for educational purposes. ⚠
   <br><br>
-  Built with React Native. Made only for educational purposes.
+  Built with React Native.
 </p>
 
 ## Table of Contents
@@ -18,29 +18,48 @@
 - [Feedback](#feedback)
 - [Acknowledgements](#acknowledgements)
 
+## 📂 About Visual Content Licensing
+
+All visual materials (images, gifs, and videos) used in this project are either:
+
+- 🧠 AI-generated using tools like Microsoft Designer or Copilot
+- 🎨 Licensed under Creative Commons (with attribution when required)
+- 📸 Sourced from platforms like [Pixabay](https://pixabay.com/) under free-use licenses appropriate for educational and non-commercial use
+
+> No copyrighted content has been used without proper rights or attribution. All assets are compliant with their respective license agreements.
+
+
 ## Introduction
 
 Stacked is an experimental React Native app built around card game mastery. It combines live-action tracking of poker and blackjack tables with educational tools for learning the rules, strategies, and psychology behind the cards. Whether you're here to sharpen your game, fact-check a suspicious poker hand, or explore sneaky sleight-of-hand techniques used by pros, Stacked offers a compact toolkit designed to keep your brain dealt in.
 
-<br><br>
-<h3>Poker</h3>
-<img src="https://github.com/user-attachments/assets/21caca99-46ce-4ed9-aa13-d3a1e053426c" width="200" />
-<img src="https://github.com/user-attachments/assets/665fa561-16d3-4321-b52c-a17c1ff2a702" width="200" />
-<img src="https://github.com/user-attachments/assets/48e04bd7-d724-42d7-85fb-84efd44e9725" width="200" />
-<img src="https://github.com/user-attachments/assets/70b02e5f-2143-4335-adbb-d15b427960e0" width="200" />
+<br>
+<div align="center">
+  <h3>Poker</h3>
+  <img src="https://github.com/user-attachments/assets/21caca99-46ce-4ed9-aa13-d3a1e053426c" width="200" />
+  <img src="https://github.com/user-attachments/assets/665fa561-16d3-4321-b52c-a17c1ff2a702" width="200" />
+  <img src="https://github.com/user-attachments/assets/48e04bd7-d724-42d7-85fb-84efd44e9725" width="200" />
+  <img src="https://github.com/user-attachments/assets/70b02e5f-2143-4335-adbb-d15b427960e0" width="200" />
+</div>
 
-<br><br>
-<h3>Check</h3>
+<div align="center">
+<br>
+<h3>Checking hand</h3>
 <img src="https://github.com/user-attachments/assets/46247702-bb58-46a5-85b2-0f17b119ee2c" width="200" />
+</div>
 
-<br><br>
+<div align="center">
+<br>
 <h3>Academy</h3>
 <img src="https://github.com/user-attachments/assets/918b3004-095d-455f-b6fd-f713ea6a54d2" width="200" />
 <img src="https://github.com/user-attachments/assets/c141dd49-e8ac-4df1-9e32-2b1a95e3bec0" width="200" />
+</div>
 
-<br><br>
-<h3>More</h3>
-<img src="https://github.com/user-attachments/assets/3b4a5cb9-8e9e-4e85-97f3-acbe1222dc68" width="200" />
+<div align="center">
+  <br>
+  <h3>More</h3>
+  <img src="https://github.com/user-attachments/assets/3b4a5cb9-8e9e-4e85-97f3-acbe1222dc68" width="200" />
+</div>
 
 ## Features
 <ul>
