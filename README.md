@@ -67,7 +67,7 @@ Stacked is an experimental React Native app built around card game mastery. It c
 <div align="center">
   <br>
   <h3>More</h3>
-  <img src="https://github.com/user-attachments/assets/3b4a5cb9-8e9e-4e85-97f3-acbe1222dc68" width="200" />
+  <img src="https://github.com/user-attachments/assets/70a7d1b2-8975-48cd-983c-ea6c024624aa" width="200" />
 </div>
 
 
