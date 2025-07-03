@@ -33,6 +33,13 @@ All visual materials (images, gifs, and videos) used in this project are either:
 
 Stacked is an experimental React Native app built around card game mastery. It combines live-action tracking of poker and blackjack tables with educational tools for learning the rules, strategies, and psychology behind the cards. Whether you're here to sharpen your game, fact-check a suspicious poker hand, or explore sneaky sleight-of-hand techniques used by pros, Stacked offers a compact toolkit designed to keep your brain dealt in.
 
+## Features
+<ul>
+  <li>🎴 Real-time tracking of poker and blackjack tables – including player actions, hands dealt, and betting progression.</li>
+  <li>🃏 Hand evaluator for checking and verifying poker hands based on current cards.</li>
+  <li>📚 Academy with engaging lessons on card game rules, flourishes, tricks, and subtle table tactics.</li>
+</ul>
+
   > ⚠️ **Notice**: This UI is a work in progress.
   > The current design and layout are not final and may change as the project evolves.
 <br>
@@ -63,12 +70,6 @@ Stacked is an experimental React Native app built around card game mastery. It c
   <img src="https://github.com/user-attachments/assets/3b4a5cb9-8e9e-4e85-97f3-acbe1222dc68" width="200" />
 </div>
 
-## Features
-<ul>
-  <li>🎴 Real-time tracking of poker and blackjack tables – including player actions, hands dealt, and betting progression.</li>
-  <li>🃏 Hand evaluator for checking and verifying poker hands based on current cards.</li>
-  <li>📚 Academy with engaging lessons on card game rules, flourishes, tricks, and subtle table tactics.</li>
-</ul>
 
 ## Installation
 
