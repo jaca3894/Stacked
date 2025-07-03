@@ -1,12 +1,18 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Dimensions, Image, TouchableHighlight, Modal } from 'react-native';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { morePanelsData as data } from '../../classes/Database';
-import type { DimensionValue } from 'react-native';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Dimensions,
+  Image,
+  TouchableOpacity,
+  Modal,
+} from "react-native";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { morePanelsData as data } from "../../classes/Database";
+import Icon from "react-native-vector-icons/Ionicons";
 
-const leftHeights: DimensionValue[] = ['45%', '20%', '30%'];
-const rightHeights: DimensionValue[] = ['20%', '50%', '25%'];
-const screenWidth = Math.round(Dimensions.get('window').width);
+const screenWidth = Math.round(Dimensions.get("window").width);
 
 const MoreScreen = () => {
   const [activePanelIndex, setActivePanelIndex] = useState<number | null>(null);
@@ -16,56 +22,33 @@ const MoreScreen = () => {
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
           <Image
-            source={require('../../assets/logo/logo.png')}
+            source={require("../../assets/logo/logo.png")}
             style={styles.logo}
             resizeMode="contain"
           />
         </View>
 
         <View style={styles.flexContainer}>
-          <View style={styles.leftFlexContainer}>
-            {data.slice(0, 3).map((item, index) => (
-              <TouchableHighlight
-                key={index+1}
-                style={[styles.flexBlock, { height: leftHeights[index] }]}
-                underlayColor="#948870"
-                onPress={() => setActivePanelIndex(index)}
-              >
-                <View style={[styles.flexBlock, { borderWidth: 0 }]}>
-                  <Image source={item.imagePath} style={styles.backgroundImage} resizeMode="cover" />
-                  <View style={styles.overlay} />
-                  <Text style={styles.overlayText}>{item.title}</Text>
-                  <Image
-                    source={require('../../assets/arrowRight.png')}
-                    style={styles.arrowIcon}
-                    resizeMode="cover"
-                  />
-                </View>
-              </TouchableHighlight>
-            ))}
-          </View>
-
-          <View style={styles.rightFlexContainer}>
-            {data.slice(3, 6).map((item, index) => (
-              <TouchableHighlight
-                key={index + 3}
-                style={[styles.flexBlock, { height: rightHeights[index] }]}
-                underlayColor="#948870"
-                onPress={() => setActivePanelIndex(index + 3)}
-              >
-                <View style={[styles.flexBlock, { borderWidth: 0 }]}>
-                  <Image source={item.imagePath} style={styles.backgroundImage} resizeMode="cover" />
-                  <View style={styles.overlay} />
-                  <Text style={styles.overlayText}>{item.title}</Text>
-                  <Image
-                    source={require('../../assets/arrowRight.png')}
-                    style={styles.arrowIcon}
-                    resizeMode="cover"
-                  />
-                </View>
-              </TouchableHighlight>
-            ))}
-          </View>
+          {data.map((item, index) => (
+            <TouchableOpacity
+              key={index}
+              style={styles.card}
+              onPress={() => setActivePanelIndex(index)}
+              activeOpacity={0.8}
+            >
+              <Icon
+                name={item.iconName}
+                size={36}
+                color="#cbbb9c"
+                style={styles.cardIcon}
+              />
+              <View style={styles.cardText}>
+                <Text style={styles.cardTitle}>{item.title}</Text>
+                <Text style={styles.cardSubtitle}>{item.subtitle}</Text>
+              </View>
+              <Icon name="chevron-forward" size={20} color="#cbbb9c" />
+            </TouchableOpacity>
+          ))}
         </View>
 
         <View style={styles.footer}>
@@ -74,13 +57,14 @@ const MoreScreen = () => {
 
         {activePanelIndex !== null && data[activePanelIndex] && (
           <Modal
-            // transparent
             animationType="slide"
             visible
             onRequestClose={() => setActivePanelIndex(null)}
             presentationStyle="fullScreen"
           >
-          {React.createElement(data[activePanelIndex].panel as React.ComponentType)}
+            {React.createElement(
+              data[activePanelIndex].panel as React.ComponentType
+            )}
           </Modal>
         )}
       </SafeAreaView>
@@ -91,98 +75,54 @@ const MoreScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1c1c1c',
+    backgroundColor: "#1c1c1c",
   },
   header: {
-    height: '20%',
-    justifyContent: 'center',
-    alignItems: 'center',
+    height: "20%",
+    justifyContent: "center",
+    alignItems: "center",
   },
   logo: {
     width: screenWidth * 0.35,
     height: screenWidth * 0.35,
   },
   flexContainer: {
-    height: '70%',
-    flexDirection: 'row',
-    padding: 10,
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
   },
-  leftFlexContainer: {
-    width: '50%',
-    paddingRight: 5,
-    justifyContent: 'space-between',
+  card: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#2a2a2a",
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
   },
-  rightFlexContainer: {
-    width: '50%',
-    paddingLeft: 5,
-    justifyContent: 'space-between',
+  cardIcon: {
+    marginRight: 16,
   },
-  flexBlock: {
-    width: '100%',
-    backgroundColor: '#cbbb9c',
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderColor: 'white',
-    borderWidth: 2,
+  cardText: {
+    flex: 1,
   },
-  backgroundImage: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 10,
-    zIndex: 0,
+  cardTitle: {
+    color: "#ffffff",
+    fontSize: 18,
+    fontWeight: "600",
   },
-  overlay: {
-    position: 'absolute',
-    height: '100%',
-    width: '100%',
-    backgroundColor: 'rgba(0,0,0,0.3)',
-    borderRadius: 10,
-    zIndex: 1,
-  },
-  overlayText: {
-    position: 'absolute',
-    bottom: 10,
-    left: 10,
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-    zIndex: 2,
-  },
-  arrowIcon: {
-    width: 20,
-    height: 20,
-    position: 'absolute',
-    right: 10,
-    bottom: 10,
-    zIndex: 2,
-    tintColor: 'white',
+  cardSubtitle: {
+    color: "#cccccc",
+    fontSize: 14,
+    marginTop: 2,
   },
   footer: {
-    height: '10%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'absolute',
-    bottom: 0,
-    left: '50%',
-    transform: [{translateX: '-50%'}],
+    height: "10%",
+    justifyContent: "center",
+    alignItems: "center",
   },
   footerText: {
-    color: 'gray',
+    color: "gray",
     fontSize: 16,
-  },
-  modalBackdrop: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContent: {
-    width: '90%',
-    height: '80%',
-    backgroundColor: '#1c1c1c',
-    borderRadius: 10,
-    padding: 10,
   },
 });
 
