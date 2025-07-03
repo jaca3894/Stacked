@@ -70,7 +70,6 @@ const PokerGame = () => {
 
   useEffect(() => {
     if(players.length === 1) {
-      console.log(`Winner: ${players[0].name}`)
       endGame();
       return;
     }
@@ -148,8 +147,6 @@ const PokerGame = () => {
 
     if (amountToCall < 0) amountToCall = 0;
 
-    console.log(amountToCall)
-
     player.take(amountToCall);
     player.setLastAction("call");
 
@@ -205,13 +202,8 @@ const PokerGame = () => {
 
   function raise(amount: number) {
     const player = players[currentPlayerIndex];
-    const raiseAmount = amount - player.currentBet;
-    console.log(`Current bet before change: ${player.currentBet}`)
-    player.take(raiseAmount);
+    player.take(amount);
     player.setLastAction("raise");
-
-    console.log(`Amount: ${amount}, Raise: ${raiseAmount}`)
-    console.log(`Current bet: ${player.currentBet}, Balance: ${player.balance}`)
 
     setMinAmount(amount);
     setBiggestBetPlayerIndex(currentPlayerIndex);

@@ -28,13 +28,11 @@ const CreateBlackjack = () => {
   const trainingRef = useRef<any>(null);
   const insuranceRef = useRef<any>(null);
   const doubleRef = useRef<any>(null);
-  //   const autoHitRef = useRef<any>(null);
 
   const [showTrackingTip, setShowTrackingTip] = useState(false);
   const [showTrainingTip, setShowTrainingTip] = useState(false);
   const [showInsuranceTip, setShowInsuranceTip] = useState(false);
   const [showDoubleTip, setShowDoubleTip] = useState(false);
-  //   const [showAutoHitTip, setShowAutoHitTip] = useState(false);
 
   const [autoHitOn17, setAutoHitOn17] = useState(false);
   const autoHitRef = useRef<any>(null);
