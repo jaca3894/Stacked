@@ -6,7 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import WelcomeScreen from './WelcomeScreen';
 import MainTabNavigator from './MainTabNavigator';
-import ChoosePlayersAmount from '../panels/ChoosePlayersAmount';
+import CreatePoker from '../panels/CreatePoker';
 import PokerGame from '../games/PokerGame';
 import BlackjackGame from '../games/BlackjackGame';
 import ArticleScreen from './ArticleScreen';
@@ -52,7 +52,7 @@ export default function App() {
         >
           <Stack.Screen name="Welcome" component={WelcomeScreen} options={{ headerShown: false }} />
           <Stack.Screen name="MainTabs" component={MainTabNavigator} options={{ headerShown: false }} />
-          <Stack.Screen name="ChoosePlayersAmount" component={ChoosePlayersAmount} options={{ headerShown: false  }} />
+          <Stack.Screen name="CreatePoker" component={CreatePoker} options={{ headerShown: false  }} />
           <Stack.Screen name="PokerGame" component={PokerGame} options={{ headerShown: false }} />
           <Stack.Screen name="BlackjackGame" component={BlackjackGame} options={{ headerShown: false }} />
           <Stack.Screen name="Article" component={ArticleScreen} options={{ headerShown: false }} />

@@ -1,17 +1,13 @@
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Text, TextInput, TouchableOpacity, View, Image, SafeAreaView, StyleSheet, TouchableHighlight } from "react-native";
 import { useState, useRef } from "react";
-import { RouteProp, useNavigation, useRoute } from "@react-navigation/core";
-import RootStackParamList from "../../props/RootStackParamList";
+import { useNavigation } from "@react-navigation/core";
 import Toast from "react-native-toast-message";
 import toastConfig from "../../config/ToastConfig";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import HelpPopover from "../../components/HelpPopover";
 
-
-type ChoosePlayersAmountProp = RouteProp<RootStackParamList, "ChoosePlayersAmount">;
-
-const ChoosePlayersAmount = () => {
+const CreatePoker = () => {
   const [playersAmount, setPlayersAmount] = useState('');
   const [initialBalance, setInitialBalance] = useState('');
   const [selectedBigBlind, setSelectedBigBlind] = useState<number | null>(null);
@@ -25,8 +21,6 @@ const ChoosePlayersAmount = () => {
   const smallBlindRef = useRef<any>(null);
 
   const navigation = useNavigation<any>();
-  const route = useRoute<ChoosePlayersAmountProp>();
-  const { gameType } = route.params;
 
   const finalPlayersAmount = playersAmount === '' ? 2 : parseInt(playersAmount, 10);
 
@@ -35,7 +29,7 @@ const ChoosePlayersAmount = () => {
 
   const handleStart = () => {
     if (+playersAmount >= 2 && +initialBalance >= 100)
-      navigation.navigate(gameType, {
+      navigation.navigate("PokerGame", {
         playersCount: finalPlayersAmount,
         initialBalance,
         bigBlindAmount: bigBlindsData[selectedBigBlind ?? 0],
@@ -303,4 +297,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default ChoosePlayersAmount;
+export default CreatePoker;

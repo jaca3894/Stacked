@@ -23,7 +23,7 @@ const PlayScreen = () => {
 
             <TouchableHighlight
               style={styles.button}
-              onPress={() => (navigation as any).navigate('ChoosePlayersAmount', { gameType: 'PokerGame' })}
+              onPress={() => (navigation as any).navigate('CreatePoker')}
             >
               <View style={styles.buttonView}>
                 <Text style={styles.buttonText}>Poker</Text>
@@ -33,7 +33,7 @@ const PlayScreen = () => {
 
             <TouchableHighlight
               style={styles.button}
-              onPress={() => (navigation as any).navigate('ChoosePlayersAmount', { gameType: 'BlackjackGame' })}
+              onPress={() => console.log('Create blackjack')}
             >
               <View style={styles.buttonView}>
                 <Text style={styles.buttonText}>Blackjack</Text>

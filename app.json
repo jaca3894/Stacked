@@ -2,7 +2,7 @@
   "expo": {
     "name": "Stacked",
     "slug": "Stacked",
-    "owner": "qczer",
+    "owner": "stackedapp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -31,7 +31,7 @@
       "policy": "appVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/8635e157-b89b-4dde-a905-76519f62a062"
+      "url": "https://u.expo.dev/0be0cbc3-6179-4b5f-bf58-6ba9d7f7f1fc"
     },
     "extra": {
       "eas": {
