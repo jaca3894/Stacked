@@ -42,7 +42,7 @@ export const morePanelsData = [
   },
   {
     title: "Credits",
-    subtitle: "Meet the people behind this project",
+    subtitle: "Tools and assets used in this project",
     iconName: "people-outline",
     panel: SettingsPanel,
   },
