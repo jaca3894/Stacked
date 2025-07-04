@@ -15,24 +15,22 @@ import Toast from "react-native-toast-message";
 import toastConfig from "../../config/ToastConfig";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import HelpPopover from "../../components/HelpPopover";
-import * as ScreenOrientation from 'expo-screen-orientation';
+import * as ScreenOrientation from "expo-screen-orientation";
 
 const CreateBlackjack = () => {
   useEffect(() => {
-      const lockOrientation = async () => {
-        await ScreenOrientation.lockAsync(
-          ScreenOrientation.OrientationLock.PORTRAIT
-        );
-      };
-  
-      lockOrientation();
+    const lockOrientation = async () => {
+      await ScreenOrientation.lockAsync(
+        ScreenOrientation.OrientationLock.PORTRAIT
+      );
+    };
 
-       return () => {
-        ScreenOrientation.lockAsync(
-          ScreenOrientation.OrientationLock.PORTRAIT
-        );
-      };
-    }, []);
+    lockOrientation();
+
+    return () => {
+      ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
+    };
+  }, []);
 
   const [playersAmount, setPlayersAmount] = useState("");
   const [initialBalance, setInitialBalance] = useState("");
@@ -86,9 +84,9 @@ const CreateBlackjack = () => {
     if (mode === "training" && balanceValid) {
       navigation.navigate("BlackjackTraining", {
         initialBalance,
-        allowInsurance,
-        allowDouble,
-        autoHitOn17,
+        insuranceEnabled: allowInsurance,
+        doubleEnabled: allowDouble,
+        autoHitOnSeventeenEnabled: autoHitOn17,
       });
     } else if (mode === "tracking" && balanceValid && playersValid) {
       navigation.navigate("BlackjackGame", {
@@ -163,7 +161,7 @@ const CreateBlackjack = () => {
                 const numeric = text.replace(/\D/g, "");
                 if (numeric === "") return setInitialBalance("");
                 let number = parseInt(numeric, 10);
-                if(number > 100000) number = 100000;
+                if (number > 100000) number = 100000;
                 setInitialBalance(number.toString());
               }}
               keyboardType="numeric"

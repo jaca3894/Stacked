@@ -1,310 +1,344 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useReducer, useRef, useState } from "react";
 import {
-  ImageBackground,
   Text,
   StyleSheet,
   View,
-  TouchableHighlight,
   Dimensions,
-  TextInput,
-  Modal,
+  TouchableOpacity,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { RouteProp, useRoute } from "@react-navigation/native";
-
 import * as ScreenOrientation from "expo-screen-orientation";
 
 import RootStackParamList from "../../props/RootStackParamList";
 import Svg, { Rect } from "react-native-svg";
+import Player from "../../classes/Player";
+import Deck from "../../classes/Deck"; // Zakładam, że dodałeś wcześniej
+import Card from "../../classes/Card";
+import BlackjackPlayer from "../../classes/BlackjackPlayer";
 
-type GameRouteProp = RouteProp<RootStackParamList, "Game">;
-
-const seatingPlan: Record<number, [number, number, number, number]> = {
-  2: [0, 1, 0, 1],
-  3: [1, 1, 0, 1],
-  4: [0, 2, 0, 2],
-  5: [0, 3, 0, 2],
-  6: [0, 3, 0, 3],
-  7: [0, 4, 0, 3],
-  8: [0, 4, 0, 4],
-  9: [1, 4, 0, 4],
-  10: [1, 4, 1, 4],
-  11: [2, 4, 1, 4],
-  12: [2, 4, 2, 4],
-};
-
-type EdgeConfig = {
-  pos: { [key: string]: number | string };
-  dir: "row" | "column";
-  len: number;
-  prefix: string;
-  addStyle?: object;
-};
-
-const screenWidth = Dimensions.get("window").width;
+import PlayerStatus from "../../components/PlayerStatus";
+import ActionBar from "../../components/ActionBar";
+import BetInput from "../../components/BetInput";
+import Toast from "react-native-toast-message";
+import toastConfig from "../../config/ToastConfig";
+type GameRouteProp = RouteProp<RootStackParamList, "BlackjackTraining">;
 
 const BlackjackTraining = () => {
   const route = useRoute<GameRouteProp>();
-  const { playersCount } = route.params;
-  const [top, right, bottom, left] = seatingPlan[playersCount] ?? [0, 0, 0, 0];
-  const maxPlayers = top + right + bottom + left;
+  const {
+    initialBalance,
+    insuranceEnabled,
+    doubleEnabled,
+    autoHitOnSeventeenEnabled,
+  } = route.params;
 
-  const [players, setPlayers] = useState<string[]>(Array(maxPlayers).fill(""));
+  console.log(`double: ${doubleEnabled}, insurance: ${insuranceEnabled}`);
+  const player = useRef<BlackjackPlayer>(
+    new BlackjackPlayer("Player", initialBalance)
+  );
+  const dealer = useRef<BlackjackPlayer>(
+    new BlackjackPlayer("Dealer", 1000000)
+  );
+  // const [dealer, setDealer] = useState<Player>(new Player("Krupier"));
+  const deck = useRef<Deck>(new Deck());
+  const [started, setStarted] = useState(false);
+  const [, forceUpdate] = useReducer((x) => x + 1, 0);
+  const [playerMoveFinished, setPlayerMoveFinished] = useState(false);
+  const [insuranceTaken, setInsuranceTaken] = useState(false);
 
-  const [showInput, setShowInput] = useState([false, -1]);
-  const [inputValue, setInputValue] = useState("");
+  // useEffect(() => {
+  //   ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
+  //   return () => {
+  //     ScreenOrientation.unlockAsync();
+  //   };
+  // }, []);
 
-  const edges: EdgeConfig[] = [
-    { pos: { top: "5%" }, dir: "row", len: top, prefix: "T" },
-    { pos: { right: "1%" }, dir: "column", len: right, prefix: "R" },
-    {
-      pos: { bottom: "5%" },
-      dir: "row",
-      len: bottom,
-      prefix: "B",
-      addStyle: { flexDirection: "row-reverse" },
-    },
-    {
-      pos: { left: "1%" },
-      dir: "column",
-      len: left,
-      prefix: "L",
-      addStyle: { flexDirection: "column-reverse" },
-    },
-  ];
+  const startGame = () => {
+    deck.current.reset();
+    deck.current.shuffle();
 
-  useEffect(() => {
-    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
+    player.current.resetHand();
+    dealer.current.resetHand();
 
-    return () => {
-      ScreenOrientation.unlockAsync();
-    };
-  }, []);
+    player.current.addCard(deck.current.draw()!);
+    dealer.current.addCard(deck.current.draw()!);
+    player.current.addCard(deck.current.draw()!);
+    dealer.current.addCard(deck.current.draw()!);
 
-  let globalIndex = 0;
+    // setPlayer(player);
+
+    setStarted(true);
+  };
+
+  const handleHit = (player: React.RefObject<BlackjackPlayer>) => {
+    player.current.addCard(deck.current.draw()!);
+    console.log(`Hand value: ${checkHandValue(player)}`);
+
+    const value = checkHandValue(player);
+    if (value > 21) {
+      handleBust(player);
+      return;
+    } else if (value === 21) {
+      // handle blackjack
+    } else {
+      // correct hit
+      forceUpdate();
+    }
+  };
+
+  const handleBust = (player: React.RefObject<BlackjackPlayer>) => {
+    if (player.current.name != "Dealer") {
+      setPlayerMoveFinished(true);
+      dealer.current.give(player.current.currentBet);
+      // player.current.busted = true;
+    } else {
+      player.current.give(player.current.currentBet * 2);
+      dealer.current.take(player.current.currentBet * 2);
+    }
+    return;
+  };
+
+  const handleStand = () => {
+    setPlayerMoveFinished(true);
+    // start ai dealer
+    return;
+  };
+
+  const handleDouble = () => {
+    console.log(player.current.balance);
+    console.log(player.current.currentBet);
+    if (player.current.balance < player.current.currentBet) {
+      Toast.show({ type: "error", text1: "Not enough chips to double 💸" });
+      return;
+    }
+    player.current.take(player.current.currentBet);
+    player.current.currentBet *= 2;
+    handleHit(player);
+    setPlayerMoveFinished(true);
+    return;
+  };
+
+  const handleInsurance = () => {
+    // przez 2 bo insurancebet to polowa glownego
+    const insuranceBet = player.current.currentBet / 2;
+    if (player.current.balance < insuranceBet) {
+      Toast.show({ type: "error", text1: "Not enough chips to insure 💸" });
+      return;
+    }
+
+    player.current.take(insuranceBet);
+    setInsuranceTaken(true);
+
+    // Sprawdź, czy dealer ma blackjacka:
+    if (dealer.current.getHandValue().includes(21)) {
+      player.current.give(insuranceBet * 2);
+      Toast.show({
+        type: "success",
+        text1: "Dealer has Blackjack!",
+        text2: "Insurance paid off 💰",
+      });
+      setStarted(false); // Runda kończy się
+    } else {
+      Toast.show({
+        type: "info",
+        text1: "Dealer doesn’t have Blackjack",
+        text2: "Insurance lost 😬",
+      });
+      // gra toczy się dalej
+    }
+  };
+
+  const checkHandValue = (player: React.RefObject<BlackjackPlayer>) => {
+    const playerHand = player.current.hand;
+    var sum = 0;
+    var aces = 0;
+    playerHand.forEach((card: Card) => {
+      switch (card.rank) {
+        case "A":
+          {
+            sum += 11;
+            aces++;
+          }
+          break;
+        case "J":
+        case "K":
+        case "Q":
+          sum += 10;
+          break;
+        default:
+          sum += parseInt(card.rank);
+      }
+    });
+    if (sum > 21 && aces > 0) {
+      while (sum > 21 && aces > 0) {
+        sum -= 10;
+        aces--;
+      }
+    }
+
+    return sum;
+  };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <Svg style={styles.background} viewBox="0 0 600 1200">
-        <Rect
-          x={0}
-          y={0}
-          width={600}
-          height={1200}
-          rx={300}
-          ry={180}
-          fill="#2E1C1C"
-        />
-        <Rect
-          x={20}
-          y={20}
-          width={560}
-          height={1160}
-          rx={280}
-          ry={160}
-          fill="#4d342f"
-        />
-        <Rect
-          x={40}
-          y={40}
-          width={520}
-          height={1120}
-          rx={260}
-          ry={140}
-          fill="#006400"
-        />
-        <Rect
-          x={150}
-          y={200}
-          width={300}
-          height={800}
-          rx={180}
-          ry={100}
-          fill="none"
-          stroke="#005000"
-          strokeWidth={12}
-        />
-      </Svg>
-      <View style={[styles.content]}>
-        {edges.map(({ pos, dir, len, prefix, addStyle }) => (
-          <View key={prefix} style={[styles[dir], pos, addStyle]}>
-            {Array.from({ length: len }).map((_, j) => {
-              const currentIndex = globalIndex++;
-              return (
-                <TouchableHighlight
-                  key={j + 1}
-                  style={styles.button}
-                  underlayColor="#948870"
-                  onPress={() => {
-                    setShowInput([true, currentIndex]);
-                  }}
-                >
-                  <Text
-                    style={styles.buttonText}
-                    numberOfLines={1}
-                    ellipsizeMode="tail"
-                  >
-                    {players[currentIndex] != ""
-                      ? players[currentIndex]
-                      : "+" + currentIndex}
-                  </Text>
-                </TouchableHighlight>
-              );
-            })}
-          </View>
-        ))}
-      </View>
-      {showInput[0] && (
-        <Modal
-          onRequestClose={() => setShowInput([false, -1])}
-          transparent={true}
-          animationType="fade"
-        >
-          <View style={styles.popUp}>
-            <View style={styles.popUpInside}>
-              <TouchableHighlight
-                style={styles.closeButton}
-                underlayColor="transparent"
-                onPress={() => setShowInput([false, -1])}
-              >
-                <Text style={styles.buttonText}>x</Text>
-              </TouchableHighlight>
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.container}>
+          {/* SVG background */}
+          <Svg
+            style={styles.background}
+            viewBox="0 0 1200 600"
+            preserveAspectRatio="xMidYMid meet"
+          >
+            <Rect
+              x={0}
+              y={0}
+              width={1200}
+              height={600}
+              rx={180}
+              ry={300}
+              fill="#2E1C1C"
+            />
+            <Rect
+              x={20}
+              y={20}
+              width={1160}
+              height={560}
+              rx={160}
+              ry={280}
+              fill="#4d342f"
+            />
+            <Rect
+              x={40}
+              y={40}
+              width={1120}
+              height={520}
+              rx={140}
+              ry={260}
+              fill="#006400"
+            />
+            <Rect
+              x={200}
+              y={150}
+              width={800}
+              height={300}
+              rx={100}
+              ry={180}
+              fill="none"
+              stroke="#005000"
+              strokeWidth={12}
+            />
+          </Svg>
 
-              <Text style={{ marginBottom: 10 }}>Podaj coś:</Text>
-              <TextInput
-                placeholder="Podaj nazwę gracza"
-                style={styles.input}
-                placeholderTextColor="#999"
-                onChange={(e) => {
-                  const value = e.nativeEvent.text;
-                  setInputValue(value);
+          {/* Game UI */}
+          <View style={styles.uiLayer}>
+            {!started && (
+              <BetInput
+                max={player.current.balance}
+                onConfirm={(amount) => {
+                  console.log("amount" + amount);
+                  player.current.take(amount);
+                  player.current.currentBet = amount;
+                  console.log("bet" + player.current.currentBet);
+                  startGame();
+                  // Twoja logika tutaj:
+                  // - player.current.take(amount)
+                  // - player.current.currentBet = amount
+                  // - rozdaj karty
+                  // - setStarted(true)
                 }}
               />
-              <TouchableHighlight
-                style={styles.dodajButton}
-                underlayColor="#948870"
-                onPress={() => {
-                  setPlayers((players) =>
-                    players.map((player, index) =>
-                      index === showInput[1] ? inputValue : player
-                    )
-                  );
-                  setShowInput([false, -1]);
-                }}
-              >
-                <Text>Dodaj</Text>
-              </TouchableHighlight>
-            </View>
+            )}
+            {started && (
+              <>
+                <PlayerStatus
+                  name="Dealer"
+                  balance={dealer.current.balance}
+                  hand={dealer.current.hand}
+                  points={dealer.current.getHandValue().join(" / ")}
+                />
+                <PlayerStatus
+                  name="Player"
+                  balance={player.current.balance}
+                  hand={player.current.hand}
+                  points={player.current.getHandValue().join(" / ")}
+                />
+                {!playerMoveFinished && (
+                  <ActionBar
+                    onHit={() => {
+                      /* TODO: connect handleHit logic */
+                      handleHit(player);
+                    }}
+                    onStand={() => {
+                      handleStand();
+                    }}
+                    onDouble={() => {
+                      /* TODO: connect handleDouble */
+                      handleDouble();
+                    }}
+                    onInsurance={() => {
+                      /* TODO: connect handleInsurance */
+                      handleInsurance();
+                    }}
+                    canDouble={
+                      doubleEnabled && player.current.hand.length === 2
+                    }
+                    canInsure={
+                      insuranceEnabled && dealer.current.hand[0].rank === "A"
+                    }
+                  />
+                )}
+              </>
+            )}
           </View>
-        </Modal>
-      )}
-    </SafeAreaView>
+        </View>
+      </SafeAreaView>
+      <Toast config={toastConfig} />
+    </SafeAreaProvider>
   );
 };
 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "black",
+    backgroundColor: "#0e0e0e",
+    position: "relative",
+  },
+  container: {
+    flex: 1,
   },
   background: {
     position: "absolute",
-    width: "100%",
-    height: "100%",
-    transform: [
-      { rotate: "-90deg" },
-      { translateY: Dimensions.get("window").height / 4 },
-      { scale: 0.5 },
-    ],
-  },
-
-  content: {
-    position: "relative",
-    flex: 1,
-  },
-  row: {
-    position: "absolute",
-    flexDirection: "row",
-    justifyContent: "space-around",
-    width: "90%",
-    left: "50%",
-    transform: [{ translateX: "-50%" }],
-  },
-  column: {
-    position: "absolute",
-    flexDirection: "column",
-    justifyContent: "space-around",
-    alignItems: "center",
-    height: "90%",
     top: "50%",
-    transform: [{ translateY: "-50%" }],
+    left: "50%",
+    width: "100%",
+    height: "80%",
+    transform: [{ translateX: "-50%" }, { translateY: "-50%" }],
   },
-  bottom: {
-    flexDirection: "row-reverse",
+  uiLayer: {
+    position: "absolute",
+    bottom: 60,
+    left: 80,
   },
   button: {
-    minWidth: screenWidth * 0.2,
-    maxWidth: screenWidth * 0.35,
-    backgroundColor: "#cbbb9c",
-    borderRadius: 10,
-    justifyContent: "center",
-    alignItems: "center",
-    borderColor: "white",
-    borderWidth: 2,
-    padding: 5,
-  },
-  buttonView: {
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    width: "100%",
-    height: "100%",
-  },
-  buttonText: {
-    color: "#000",
-    fontSize: 18,
-  },
-  popUp: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: "100%",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    justifyContent: "center",
-    alignItems: "center",
-    zIndex: 1000,
-  },
-  popUpInside: {
-    width: screenWidth * 0.7,
-    height: screenWidth * 0.7,
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    justifyContent: "center",
-    alignItems: "center",
-    zIndex: 1000,
-  },
-  closeButton: {
-    position: "absolute",
-    top: 10,
-    right: 10,
-  },
-  input: {
-    width: "80%",
-    height: 40,
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 6,
-    paddingHorizontal: 10,
-    backgroundColor: "#fff",
-    color: "#000",
-  },
-  dodajButton: {
-    marginTop: 20,
-    backgroundColor: "#cbbb9c",
     paddingVertical: 10,
     paddingHorizontal: 20,
-    borderRadius: 6,
+    backgroundColor: "#FFD700",
+    borderRadius: 12,
+  },
+  buttonText: {
+    fontSize: 18,
+    color: "#222",
+    fontWeight: "bold",
+  },
+  hands: {
+    marginTop: 20,
+  },
+  label: {
+    fontWeight: "bold",
+    fontSize: 16,
+    marginTop: 10,
+    color: "#fff",
   },
 });
 
