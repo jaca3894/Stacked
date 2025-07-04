@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ImageBackground, Text, StyleSheet, View, TouchableHighlight, Dimensions, TextInput, Modal } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { RouteProp, useRoute } from "@react-navigation/native";
+
+import Orientation from 'react-native-orientation-locker';
 
 import RootStackParamList from "../../props/RootStackParamList";
 import Svg, { Rect } from "react-native-svg";
@@ -49,6 +51,10 @@ const BlackjackGame = () => {
     { pos: { bottom: '5%' }, dir: 'row', len: bottom, prefix: 'B', addStyle: { flexDirection: 'row-reverse' } },
     { pos: { left: '1%' }, dir: 'column', len: left, prefix: 'L', addStyle: { flexDirection: 'column-reverse' } },
   ];
+
+  useEffect(() => {
+    Orientation.lockToLandscape(); // lub lockToLandscapeLeft / lockToLandscapeRight
+  }, []);
 
   let globalIndex = 0;
 

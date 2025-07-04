@@ -1,7 +1,7 @@
 import {Modal, Text, View, StyleSheet, Dimensions, TouchableOpacity, TouchableHighlight, StatusBar } from 'react-native';
 import Pot from '../classes/Pot';
 import Player from '../classes/Player';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 
 const [screenWidth, screenHeight] = [
