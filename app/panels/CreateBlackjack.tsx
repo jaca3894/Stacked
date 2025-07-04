@@ -63,21 +63,29 @@ const CreateBlackjack = () => {
       return;
     }
 
-    if (+playersAmount >= 1 && +initialBalance >= 100) {
+    const balanceValid = +initialBalance >= 100;
+    const playersValid = +playersAmount >= 1;
+
+    if (mode === "training" && balanceValid) {
+      navigation.navigate("BlackjackTraining", {
+        initialBalance,
+        allowInsurance,
+        allowDouble,
+        autoHitOn17,
+      });
+    } else if (mode === "tracking" && balanceValid && playersValid) {
       navigation.navigate("BlackjackGame", {
         playersCount: finalPlayersAmount,
         initialBalance,
-        trainingMode: mode === "training",
-        trackingEnabled: mode === "tracking",
-        allowInsurance: mode === "training" ? allowInsurance : false,
-        allowDouble: mode === "training" ? allowDouble : false,
-        autoHitOn17: mode === "training" ? autoHitOn17 : false,
       });
     } else {
       Toast.show({
         type: "error",
         text1: "Invalid game parameters",
-        text2: "Players ≥ 1   Balance ≥ 100",
+        text2:
+          mode === "training"
+            ? "Balance must be at least 100"
+            : "Insert correct players and balance value.",
         position: "top",
         text1Style: {
           fontSize: 20,

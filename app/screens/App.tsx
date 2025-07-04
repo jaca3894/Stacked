@@ -10,6 +10,7 @@ import CreatePoker from "../panels/CreatePoker";
 import CreateBlackjack from "../panels/CreateBlackjack";
 import PokerGame from "../games/PokerGame";
 import BlackjackGame from "../games/BlackjackGame";
+import BlackjackTraining from "../games/BlackjackTraining";
 import ArticleScreen from "./ArticleScreen";
 
 const Stack = createStackNavigator();
@@ -86,6 +87,11 @@ export default function App() {
           <Stack.Screen
             name="BlackjackGame"
             component={BlackjackGame}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="BlackjackTraining"
+            component={BlackjackTraining}
             options={{ headerShown: false }}
           />
           <Stack.Screen
