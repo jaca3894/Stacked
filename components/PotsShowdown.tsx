@@ -3,7 +3,6 @@ import Pot from '../classes/Pot';
 import Player from '../classes/Player';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { ConfettiMethods, PIConfetti } from 'react-native-fast-confetti';
 
 const [screenWidth, screenHeight] = [
   Dimensions.get('window').width,
@@ -14,13 +13,10 @@ const PotsShowdown = ({ players, onClose }: { players: Player[]; onClose: () => 
   const [selectedPotWinners, setSelectedPotWinners] = useState<Record<number, Player[]>>({});
   const [pots, setPots] = useState<Pot[]>([new Pot(players.filter(player => !player.folded))]);
   const navigation = useNavigation();
-  const confettiRef = useRef<ConfettiMethods>(null);
 
   useEffect(() => {
     const generatedPots = myCreateSidePots();
     setPots(generatedPots);
-    if(players.length === 1)
-      confettiRef.current?.restart();
   }, [players]);
 
   const handleSelectWinner = (potIndex: number, player: Player) => {
@@ -154,7 +150,6 @@ const PotsShowdown = ({ players, onClose }: { players: Player[]; onClose: () => 
           }
         </View>
       </View>
-      <PIConfetti ref={confettiRef} />
     </Modal>
   );
 };
