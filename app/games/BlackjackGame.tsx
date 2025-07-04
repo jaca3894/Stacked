@@ -1,28 +1,16 @@
-import React, { useEffect, useState } from "react";
-import { ImageBackground, Text, StyleSheet, View, TouchableHighlight, Dimensions, TextInput, Modal } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import React, { useEffect, useRef, useState } from "react";
+import { Text, StyleSheet, View, TouchableHighlight, Dimensions, TextInput, Modal } from "react-native";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { RouteProp, useRoute } from "@react-navigation/native";
 
-import Orientation from 'react-native-orientation-locker';
+import * as ScreenOrientation from 'expo-screen-orientation';
 
 import RootStackParamList from "../../props/RootStackParamList";
 import Svg, { Rect } from "react-native-svg";
+import Player from "../../classes/Player";
+import RoundButton from "../../components/RoundButton";
 
 type GameRouteProp = RouteProp<RootStackParamList, "Game">;
-
-const seatingPlan: Record<number, [number, number, number, number]> = {
-  2: [0, 1, 0, 1],
-  3: [1, 1, 0, 1],
-  4: [0, 2, 0, 2],
-  5: [0, 3, 0, 2],
-  6: [0, 3, 0, 3],
-  7: [0, 4, 0, 3],
-  8: [0, 4, 0, 4],
-  9: [1, 4, 0, 4],
-  10: [1, 4, 1, 4],
-  11: [2, 4, 1, 4],
-  12: [2, 4, 2, 4],
-};
 
 type EdgeConfig = {
   pos: { [key: string]: number | string };
@@ -34,98 +22,155 @@ type EdgeConfig = {
 
 const screenWidth = Dimensions.get('window').width;
 
+
 const BlackjackGame = () => {
   const route = useRoute<GameRouteProp>();
   const { playersCount } = route.params;
-  const [top, right, bottom, left] = seatingPlan[playersCount] ?? [0, 0, 0, 0];
-  const maxPlayers = top + right + bottom + left;
+  const maxPlayers = playersCount
 
-  const [players, setPlayers] = useState<string[]>(Array(maxPlayers).fill(''));
+  const [players, setPlayers] = useState<Player[]>(Array(maxPlayers).fill(new Player()));
+  const dealer = useRef<Player>(new Player('Dealer'));
+  const [isGameStarted, setIsGameStarted] = useState(false);
 
   const [showInput, setShowInput] = useState([false, -1]);
   const [inputValue, setInputValue] = useState("");
 
-  const edges: EdgeConfig[] = [
-    { pos: { top: '5%' }, dir: 'row', len: top, prefix: 'T' },
-    { pos: { right: '1%' }, dir: 'column', len: right, prefix: 'R' },
-    { pos: { bottom: '5%' }, dir: 'row', len: bottom, prefix: 'B', addStyle: { flexDirection: 'row-reverse' } },
-    { pos: { left: '1%' }, dir: 'column', len: left, prefix: 'L', addStyle: { flexDirection: 'column-reverse' } },
-  ];
-
   useEffect(() => {
-    Orientation.lockToLandscape(); // lub lockToLandscapeLeft / lockToLandscapeRight
+    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
+    return () => {
+      ScreenOrientation.unlockAsync();
+    };
   }, []);
 
-  let globalIndex = 0;
+  const { width, height } = Dimensions.get('window');
+
+  function startGame() {
+    setIsGameStarted(true);
+  }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <Svg style={styles.background} viewBox="0 0 600 1200">
-        <Rect x={0} y={0} width={600} height={1200} rx={300} ry={180} fill="#2E1C1C"/>
-        <Rect x={20} y={20} width={560} height={1160} rx={280} ry={160} fill="#4d342f"/>
-        <Rect x={40} y={40} width={520} height={1120} rx={260} ry={140} fill="#006400"/>
-        <Rect x={150} y={200} width={300} height={800} rx={180} ry={100} fill="none" stroke="#005000" strokeWidth={12}/>
-      </Svg>
-      <View style={[styles.content]}>
-        {edges.map(({ pos, dir, len, prefix, addStyle }) => (
-          <View key={prefix} style={[styles[dir], pos, addStyle]}>
-            {Array.from({ length: len }).map((_, j) => {
-              const currentIndex = globalIndex++;
-              return (
-              <TouchableHighlight key={j+1} style={styles.button} underlayColor="#948870" onPress={() => {setShowInput([true, currentIndex])}}>
-                <Text style={styles.buttonText} numberOfLines={1} ellipsizeMode="tail">{players[currentIndex] != '' ? players[currentIndex] : '+' + currentIndex}</Text>
-              </TouchableHighlight>
-            )})}
-          </View>
-        ))}
-      </View>
-      {showInput[0] && (
-        <Modal onRequestClose={() => setShowInput([false, -1]) } transparent={true} animationType="fade">
-          <View style={styles.popUp}>
-            <View style={styles.popUpInside}>
-              <TouchableHighlight
-                style={styles.closeButton}
-                underlayColor="transparent"
-                onPress={() => setShowInput([false, -1])}
-                >
-                <Text style={styles.buttonText}>x</Text>
-              </TouchableHighlight>
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.container}>
+          <Svg style={styles.background} viewBox="0 0 1200 600">
+            <Rect x={0} y={0} width={1200} height={600} rx={180} ry={300} fill="#2E1C1C" />
+            <Rect x={20} y={20} width={1160} height={560} rx={160} ry={280} fill="#4d342f" />
+            <Rect x={40} y={40} width={1120} height={520} rx={140} ry={260} fill="#006400" />
+            <Rect x={200} y={150} width={800} height={300} rx={100} ry={180} fill="none" stroke="#005000" strokeWidth={12} />
+          </Svg>
+          <TouchableHighlight style={[styles.button, {position: 'absolute', top: height * 0.015, backgroundColor: 'blue'}]} underlayColor="#948870">
+            <Text style={[styles.buttonText, {color: '#fff'}]} numberOfLines={1} ellipsizeMode="tail">
+              {dealer.current.name}
+            </Text>
+          </TouchableHighlight>
+          <View style={[styles.content]}>
+            <View style={[styles.row, {bottom: '25%'}]}>
+              {players.map((player: Player, index: number) => {
+                const isFirst = index === 0;
+                const isLast = index === players.length-1;
 
-              <Text style={{ marginBottom: 10 }}>Podaj coś:</Text>
-              <TextInput
-                placeholder="Podaj nazwę gracza"
-                style={styles.input}
-                placeholderTextColor="#999"
-                onChange={(e) => {
-                  const value = e.nativeEvent.text;
-                  setInputValue(value);
-                }}
-                />
-              <TouchableHighlight style={styles.dodajButton} underlayColor="#948870"
-                onPress={() => {setPlayers(players => players.map((player, index) => index === showInput[1] ? inputValue : player)); setShowInput([false, -1])}}>
-                <Text>Dodaj</Text>
-              </TouchableHighlight>
+                const extraStyle = isFirst ? { bottom: height * 0.15, left: width * 0.075 } : isLast ? { bottom: height * 0.15, right: width * 0.075 } : { bottom: 0 };
+
+                return (
+                  <TouchableHighlight
+                    key={index+1}
+                    style={[styles.button, extraStyle]}
+                    underlayColor="#948870"
+                    onPress={() => { setShowInput([true, index]); }}
+                  >
+                    <Text style={styles.buttonText} numberOfLines={1} ellipsizeMode="tail">
+                      {player.name !== '' ? player.name : '+' + index}
+                    </Text>
+                  </TouchableHighlight>
+                )
+              })}
             </View>
           </View>
-        </Modal>
-      )}
-    </SafeAreaView>
+          {!isGameStarted && 
+            <TouchableHighlight style={[styles.button, { marginBottom: '4%' }]} underlayColor="#948870" onPress={() => {startGame()}}>
+              <Text style={styles.buttonText}>Start Game</Text>
+            </TouchableHighlight>
+          }
+          {isGameStarted && (
+            <View style={[styles.row, {bottom: 0}]}>
+              {/* {(
+                  (players[currentPlayerIndex] && players[currentPlayerIndex].balance < minAmount && players[currentPlayerIndex].balance != 0) ? (
+                    // Gracz nie ma kasy, żeby sprawdzić — all-in za wszystko, co ma
+                    <RoundButton text="All-in" func={() => {}}} mainColor="green" secondColor="#005700" />
+                    ) : (players[currentPlayerIndex] && players[currentPlayerIndex].currentBet < minAmount && players[currentPlayerIndex].balance != 0) ? (
+                      // Gracz może wyrównać (call)
+                      <RoundButton text="Call" func={() => {}}} mainColor="orange" secondColor="#b47400" />
+                      ) : (
+                        // Gracz już wyrównał — może tylko przeczekać
+                        <RoundButton text="Check" func={() => {}} mainColor="green" secondColor="#005700" />
+                        )
+                        )
+                        } */}
+              <RoundButton text="Raise" func={() => {}} mainColor="red" secondColor="#a20000"/>
+              <RoundButton text="Fold" func={() => {}} mainColor="blue" secondColor="#0000a9"/>
+            </View>
+          )}
+          
+          {showInput[0] && (
+            <Modal onRequestClose={() => setShowInput([false, -1]) } transparent={true} animationType="fade">
+              <View style={styles.popUp}>
+                <View style={styles.popUpInside}>
+                  <TouchableHighlight
+                    style={styles.closeButton}
+                    underlayColor="transparent"
+                    onPress={() => setShowInput([false, -1])}
+                    >
+                    <Text style={styles.buttonText}>x</Text>
+                  </TouchableHighlight>
+
+                  <Text style={{ marginBottom: 10 }}>Podaj coś:</Text>
+                  <TextInput
+                    placeholder="Podaj nazwę gracza"
+                    style={styles.input}
+                    placeholderTextColor="#999"
+                    onChange={(e) => {
+                      const value = e.nativeEvent.text;
+                      setInputValue(value);
+                    }}
+                    />
+                  <TouchableHighlight style={styles.dodajButton} underlayColor="#948870"
+                    onPress={() => {setPlayers(players => players.map((player, index) => index === showInput[1] ? new Player(inputValue) : player)); setShowInput([false, -1])}}>
+                    <Text>Dodaj</Text>
+                  </TouchableHighlight>
+                </View>
+              </View>
+            </Modal>
+          )}
+        </View>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 };
 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: 'black',
+    backgroundColor: '#0e0e0e',
+    position: 'relative'
+  },
+  container: {
+    flex: 1,
+    display: 'flex'
   },
   background: {
-    flex: 1,
+    position: "absolute",
+    top: '50%',
+    left: '50%',
     width: '100%',
-    height: '100%',
+    height: '80%',
+    transform: [{ translateX: '-50%' }, { translateY: '-70%' }]
   },
   content: {
     position: 'relative',
     flex: 1,
+    top: '50%',
+    left: '50%',
+    transform: [{ translateX: '-50%' }, { translateY: '-50%' }]
   },
   row: {
     position: 'absolute',
@@ -148,12 +193,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row-reverse',
   },
   button: {
-    minWidth: screenWidth * .2,
-    maxWidth: screenWidth * .35,
+    minWidth: screenWidth * .1,
+    maxWidth: screenWidth * .12,
     backgroundColor: '#cbbb9c',
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
+    alignSelf: 'center',
     borderColor: 'white',
     borderWidth: 2,
     padding: 5,
@@ -210,7 +256,13 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 6,
-  }
+  },
+  buttonsRow: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignSelf: 'center',
+    gap: 15,
+  },
 });
 
 export default BlackjackGame;

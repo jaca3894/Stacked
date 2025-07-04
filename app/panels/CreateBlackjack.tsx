@@ -9,14 +9,31 @@ import {
   StyleSheet,
   Switch,
 } from "react-native";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigation } from "@react-navigation/core";
 import Toast from "react-native-toast-message";
 import toastConfig from "../../config/ToastConfig";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import HelpPopover from "../../components/HelpPopover";
+import * as ScreenOrientation from 'expo-screen-orientation';
 
 const CreateBlackjack = () => {
+  useEffect(() => {
+      const lockOrientation = async () => {
+        await ScreenOrientation.lockAsync(
+          ScreenOrientation.OrientationLock.PORTRAIT
+        );
+      };
+  
+      lockOrientation();
+
+       return () => {
+        ScreenOrientation.lockAsync(
+          ScreenOrientation.OrientationLock.PORTRAIT
+        );
+      };
+    }, []);
+
   const [playersAmount, setPlayersAmount] = useState("");
   const [initialBalance, setInitialBalance] = useState("");
   const [mode, setMode] = useState<"tracking" | "training">("training");
@@ -145,16 +162,14 @@ const CreateBlackjack = () => {
               onChangeText={(text) => {
                 const numeric = text.replace(/\D/g, "");
                 if (numeric === "") return setInitialBalance("");
-                const number = Math.max(
-                  100,
-                  Math.min(parseInt(numeric, 10), 100000)
-                );
+                let number = parseInt(numeric, 10);
+                if(number > 100000) number = 100000;
                 setInitialBalance(number.toString());
               }}
               keyboardType="numeric"
               placeholder="(100-100k)"
               placeholderTextColor="#888"
-              maxLength={5}
+              maxLength={6}
             />
           </View>
 
