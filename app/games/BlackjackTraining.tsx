@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ImageBackground,
   Text,
@@ -11,6 +11,8 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { RouteProp, useRoute } from "@react-navigation/native";
+
+import * as ScreenOrientation from "expo-screen-orientation";
 
 import RootStackParamList from "../../props/RootStackParamList";
 import Svg, { Rect } from "react-native-svg";
@@ -41,7 +43,7 @@ type EdgeConfig = {
 
 const screenWidth = Dimensions.get("window").width;
 
-const BlackjackGame = () => {
+const BlackjackTraining = () => {
   const route = useRoute<GameRouteProp>();
   const { playersCount } = route.params;
   const [top, right, bottom, left] = seatingPlan[playersCount] ?? [0, 0, 0, 0];
@@ -70,6 +72,14 @@ const BlackjackGame = () => {
       addStyle: { flexDirection: "column-reverse" },
     },
   ];
+
+  useEffect(() => {
+    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
+
+    return () => {
+      ScreenOrientation.unlockAsync();
+    };
+  }, []);
 
   let globalIndex = 0;
 
@@ -198,10 +208,16 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
   },
   background: {
-    flex: 1,
+    position: "absolute",
     width: "100%",
     height: "100%",
+    transform: [
+      { rotate: "-90deg" },
+      { translateY: Dimensions.get("window").height / 4 },
+      { scale: 0.5 },
+    ],
   },
+
   content: {
     position: "relative",
     flex: 1,
@@ -292,4 +308,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default BlackjackGame;
+export default BlackjackTraining;
