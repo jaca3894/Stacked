@@ -111,25 +111,6 @@ const CreateBlackjack = () => {
         {/* CONTENT */}
         <View style={styles.content}>
           {/* Players */}
-          <View style={{ width: "100%", alignItems: "center" }}>
-            <View style={styles.titleRow}>
-              <Text style={styles.title}>Players</Text>
-            </View>
-            <TextInput
-              style={styles.input}
-              value={playersAmount}
-              onChangeText={(text) => {
-                const numeric = text.replace(/\D/g, "");
-                if (numeric === "") return setPlayersAmount("");
-                const number = Math.max(1, Math.min(parseInt(numeric, 10), 7));
-                setPlayersAmount(number.toString());
-              }}
-              keyboardType="numeric"
-              placeholder="(1-7)"
-              placeholderTextColor="#888"
-              maxLength={1}
-            />
-          </View>
 
           {/* Balance + tooltip */}
           <View style={{ width: "100%", alignItems: "center" }}>
@@ -228,7 +209,30 @@ const CreateBlackjack = () => {
               />
             </TouchableOpacity>
           </View>
-
+          {mode === "tracking" && (
+            <View style={{ width: "100%", alignItems: "center" }}>
+              <View style={styles.titleRow}>
+                <Text style={styles.title}>Players</Text>
+              </View>
+              <TextInput
+                style={styles.input}
+                value={playersAmount}
+                onChangeText={(text) => {
+                  const numeric = text.replace(/\D/g, "");
+                  if (numeric === "") return setPlayersAmount("");
+                  const number = Math.max(
+                    1,
+                    Math.min(parseInt(numeric, 10), 7)
+                  );
+                  setPlayersAmount(number.toString());
+                }}
+                keyboardType="numeric"
+                placeholder="(1-7)"
+                placeholderTextColor="#888"
+                maxLength={1}
+              />
+            </View>
+          )}
           {/* Conditional options */}
           {mode === "training" && (
             <>
