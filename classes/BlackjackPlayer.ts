@@ -28,6 +28,13 @@ export default class BlackjackPlayer {
     this.currentBet += amount;
   }
 
+  isSoft17 = (hand: Card[]) => {
+    const hasAce = hand.some((card) => card.rank === "A");
+    const value = this.getHandValue();
+    const bestValue = Math.max(...value.filter((v) => v <= 21));
+    return hasAce && bestValue == 17;
+  };
+
   pass() {
     this.passed = true;
   }

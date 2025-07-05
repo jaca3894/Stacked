@@ -1,13 +1,5 @@
-import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  Dimensions,
-} from "react-native";
-import Toast from "react-native-toast-message";
+import React, { useState, useRef } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, Button } from "react-native";
 
 interface BetInputProps {
   max: number;
@@ -15,84 +7,91 @@ interface BetInputProps {
 }
 
 const BetInput: React.FC<BetInputProps> = ({ max, onConfirm }) => {
-  const [bet, setBet] = useState("");
-  //   const [error, setError] = useState("");
+  const [value, setValue] = useState(Math.min(10, max));
 
-  const handleConfirm = () => {
-    const amount = parseInt(bet);
-    if (isNaN(amount) || amount <= 0) {
-      Toast.show({
-        type: "error", // lub 'success'
-        text1: "Invalid amount",
-        text2: "Please enter a valid number.",
-      });
-    } else if (amount > max) {
-      Toast.show({
-        type: "error", // lub 'success'
-        text1: "Insufficient funds",
-        text2: "You dont have that much chips.",
-      });
-    } else {
-      onConfirm(amount);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  const startHolding = (fn: () => void) => {
+    fn(); // od razu wykonaj raz
+    intervalRef.current = setInterval(fn, 30);
+  };
+
+  const stopHolding = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
     }
   };
 
+  const increase = () => setValue((v) => Math.min(max, v + 1));
+  const decrease = () => setValue((v) => Math.max(1, v - 1));
+
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Enter your bet</Text>
-      <TextInput
-        style={styles.input}
-        keyboardType="numeric"
-        placeholder="0"
-        value={bet}
-        onChangeText={setBet}
-      />
-      {/* {error !== "" && <Text style={styles.error}>{error}</Text>} */}
-      <TouchableOpacity style={styles.button} onPress={handleConfirm}>
-        <Text style={styles.buttonText}>Confirm Bet</Text>
-      </TouchableOpacity>
+      <Text style={styles.label}>Choose your bet:</Text>
+      <View style={styles.stepperRow}>
+        <TouchableOpacity
+          onPressIn={() => startHolding(decrease)}
+          onPressOut={stopHolding}
+          style={styles.stepperButton}
+        >
+          <Text style={styles.buttonText}>–</Text>
+        </TouchableOpacity>
+
+        <Text style={styles.valueLabel}>{value} 💰</Text>
+
+        <TouchableOpacity
+          onPressIn={() => startHolding(increase)}
+          onPressOut={stopHolding}
+          style={styles.stepperButton}
+        >
+          <Text style={styles.buttonText}>+</Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={{ marginTop: 12 }}>
+        <Button
+          title={value < 1 ? "Insufficient chips" : "Confirm bet"}
+          onPress={() => onConfirm(value)}
+          color="#FFD700"
+          disabled={value < 1}
+        />
+      </View>
     </View>
   );
 };
 
-const screenWidth = Dimensions.get("window").width;
-
 const styles = StyleSheet.create({
   container: {
     alignItems: "center",
-    marginTop: 40,
-    paddingHorizontal: 20,
+    padding: 16,
   },
   label: {
-    fontSize: 18,
     color: "#fff",
+    fontSize: 18,
     marginBottom: 8,
   },
-  input: {
-    backgroundColor: "#fff",
-    width: screenWidth < 500 ? 140 : 180,
-    height: 40,
+  stepperRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  stepperButton: {
+    backgroundColor: "#444",
+    paddingHorizontal: 16,
+    paddingVertical: 6,
     borderRadius: 8,
-    paddingHorizontal: 12,
-    fontSize: 16,
-    marginBottom: 10,
-    textAlign: "center",
-  },
-  error: {
-    color: "#f66",
-    marginBottom: 8,
-  },
-  button: {
-    backgroundColor: "#FFD700",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 12,
-    marginTop: 4,
+    marginHorizontal: 12,
   },
   buttonText: {
-    color: "#222",
-    fontSize: 16,
+    fontSize: 28,
+    color: "#FFD700",
     fontWeight: "bold",
+  },
+  valueLabel: {
+    color: "#fff",
+    fontSize: 24,
+    minWidth: 60,
+    textAlign: "center",
   },
 });
 

@@ -9,17 +9,27 @@ type SliderProps = {
   minimumValue: number;
   maximumValue: number;
   step?: number;
-}
+};
 
-const CustomSlider = ({value, onValueChange, onAccept, minimumValue, maximumValue,step = 1}: SliderProps) => {
+const CustomSlider = ({
+  value,
+  onValueChange,
+  onAccept,
+  minimumValue,
+  maximumValue,
+  step = 1,
+}: SliderProps) => {
   const [currValue, setCurrValue] = useState(value);
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Wartość: {currValue}</Text>
+      <Text style={styles.label}>Choose your bet: {currValue}</Text>
       <Slider
         style={styles.slider}
         value={value}
-        onValueChange={(val) => { onValueChange(val); setCurrValue(val); }}
+        onValueChange={(val) => {
+          onValueChange(val);
+          setCurrValue(val);
+        }}
         minimumValue={minimumValue}
         maximumValue={maximumValue}
         step={step}
@@ -27,19 +37,27 @@ const CustomSlider = ({value, onValueChange, onAccept, minimumValue, maximumValu
         maximumTrackTintColor="#CCCCCC"
         thumbTintColor="#FFFFFF"
       />
-      <TouchableHighlight onPress={onAccept} style={{ marginTop: 10, padding: 10, backgroundColor: '#22f', borderRadius: 5 }}>
-        <Text style={{ color: '#000', textAlign: 'center' }}>Zatwierdź</Text>
+      <TouchableHighlight
+        onPress={onAccept}
+        style={{
+          marginTop: 10,
+          padding: 10,
+          backgroundColor: "#22f",
+          borderRadius: 5,
+        }}
+      >
+        <Text style={{ color: "#000", textAlign: "center" }}>Zatwierdź</Text>
       </TouchableHighlight>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
-    width: '75%',
+    width: "75%",
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: '#121212',
+    backgroundColor: "#121212",
     borderRadius: 12,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
@@ -49,13 +67,13 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: "500",
     marginBottom: 8,
-    color: '#fff',
-    textAlign: 'center',
+    color: "#fff",
+    textAlign: "center",
   },
   slider: {
-    width: '100%',
+    width: "100%",
     height: 40,
   },
 });

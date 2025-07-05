@@ -33,119 +33,285 @@ const BlackjackTraining = () => {
     autoHitOnSeventeenEnabled,
   } = route.params;
 
-  console.log(`double: ${doubleEnabled}, insurance: ${insuranceEnabled}`);
+  // console.log(`double: ${doubleEnabled}, insurance: ${insuranceEnabled}`);
   const player = useRef<BlackjackPlayer>(
     new BlackjackPlayer("Player", initialBalance)
   );
-  const dealer = useRef<BlackjackPlayer>(
-    new BlackjackPlayer("Dealer", 1000000)
-  );
+  const dealer = useRef<BlackjackPlayer>(new BlackjackPlayer("Dealer", 200));
   // const [dealer, setDealer] = useState<Player>(new Player("Krupier"));
   const deck = useRef<Deck>(new Deck());
   const [started, setStarted] = useState(false);
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
   const [playerMoveFinished, setPlayerMoveFinished] = useState(false);
   const [insuranceTaken, setInsuranceTaken] = useState(false);
+  const [isDoubled, setIsDoubled] = useState(false);
+  const [revealDealerCard, setRevealDealerCard] = useState(false);
 
-  // useEffect(() => {
-  //   ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
-  //   return () => {
-  //     ScreenOrientation.unlockAsync();
-  //   };
-  // }, []);
+  useEffect(() => {
+    // Zablokuj orientację poziomą
+    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
+
+    // Przywróć domyślną orientację po opuszczeniu widoku
+    return () => {
+      ScreenOrientation.unlockAsync(); // lub OrientationLock.DEFAULT
+    };
+  }, []);
 
   const startGame = () => {
+    if (dealer.current.balance <= 0) {
+      setStarted(false);
+      Toast.show({
+        type: "success",
+        text1: "🎉 You've cleaned out the dealer!",
+        text2: "No more chips in the house.",
+      });
+      return;
+    }
+
+    console.log("-----------------NEW GAME---------------------");
+    // player.current.currentBet = 0;
+    setPlayerMoveFinished(false);
+    setRevealDealerCard(false);
+    setInsuranceTaken(false);
+    setIsDoubled(false);
     deck.current.reset();
     deck.current.shuffle();
+    // player.current.currentBet = 0;
 
     player.current.resetHand();
     dealer.current.resetHand();
+    forceUpdate();
 
     player.current.addCard(deck.current.draw()!);
     dealer.current.addCard(deck.current.draw()!);
     player.current.addCard(deck.current.draw()!);
     dealer.current.addCard(deck.current.draw()!);
-
-    // setPlayer(player);
 
     setStarted(true);
+
+    if (
+      player.current.getHandValue().includes(21) &&
+      player.current.hand.length === 2
+    ) {
+      Toast.show({
+        type: "success",
+        text1: "Blackjack!",
+        text2: "3:2 payout 💰",
+      });
+      player.current.give(player.current.currentBet * 2.5); // 3:2
+      dealer.current.take(player.current.currentBet * 2.5); // 3:2
+      setStarted(false);
+      return;
+    }
+    // setPlayer(player);
   };
 
-  const handleHit = (player: React.RefObject<BlackjackPlayer>) => {
-    player.current.addCard(deck.current.draw()!);
+  const handleHit = (_player: string) => {
+    let playerObj = _player === "Dealer" ? dealer : player;
+
+    playerObj.current.addCard(deck.current.draw()!);
     console.log(`Hand value: ${checkHandValue(player)}`);
 
     const value = checkHandValue(player);
     if (value > 21) {
-      handleBust(player);
+      handleBust(_player);
       return;
     } else if (value === 21) {
-      // handle blackjack
+      Toast.show({
+        type: "info",
+        text1: "You hit 21!",
+        text2: "Dealer’s turn!",
+      });
+      setPlayerMoveFinished(true);
+      handleDealerAI();
+      return;
     } else {
       // correct hit
       forceUpdate();
     }
   };
 
-  const handleBust = (player: React.RefObject<BlackjackPlayer>) => {
-    if (player.current.name != "Dealer") {
+  const handleBust = (_player: string) => {
+    if (_player != "Dealer") {
       setPlayerMoveFinished(true);
-      dealer.current.give(player.current.currentBet);
+      // dealer.current.give(
+      //   isDoubled ? player.current.currentBet / 2 : player.current.currentBet
+      // );
+      console.log("you busted");
+      Toast.show({
+        type: "error",
+        text1: "You busted! 🤝",
+        text2: `-${player.current.currentBet}`,
+      });
+      setStarted(false);
       // player.current.busted = true;
     } else {
+      console.log("dealer busted");
+      Toast.show({
+        type: "success",
+        text1: "You win! 🤝",
+        text2: `+${player.current.currentBet}`,
+      });
+      console.log(`player: ${player.current.name}`);
       player.current.give(player.current.currentBet * 2);
       dealer.current.take(player.current.currentBet * 2);
+      setStarted(false);
+      return;
     }
     return;
   };
 
+  const handleDealerAI = () => {
+    while (true) {
+      const dealerValue = dealer.current.getHandValue();
+      const bestValue = Math.max(...dealerValue.filter((v) => v <= 21));
+
+      // Jeśli dealer przekroczył 21 — zakończ ruch
+      if (dealerValue.every((v) => v > 21)) {
+        handleBust("Dealer");
+        Toast.show({
+          type: "success",
+          text1: "You win! 🤝",
+          text2: `+${player.current.currentBet}`,
+        });
+        return;
+      }
+
+      // Jeśli dealer ma 17+ i nie musi dobierać — koniec
+      if (
+        bestValue > 17 ||
+        (bestValue === 17 &&
+          (!autoHitOnSeventeenEnabled ||
+            !dealer.current.isSoft17(dealer.current.hand)))
+      ) {
+        break;
+      }
+
+      // Dobieramy jedną kartę i aktualizujemy UI
+      dealer.current.addCard(deck.current.draw()!);
+      forceUpdate();
+    }
+
+    endGame();
+
+    // if (!dealer.current.isBusted()) {
+    //   endGame();
+    // }
+  };
+
+  const getBestHandValue = (values: number[]) => {
+    return Math.max(...values.filter((v) => v <= 21));
+  };
+
+  const endGame = () => {
+    const playerValue = getBestHandValue(player.current.getHandValue());
+    const dealerValue = getBestHandValue(dealer.current.getHandValue());
+    const bet = player.current.currentBet;
+
+    if (playerValue === dealerValue) {
+      console.log("draw (push)");
+      player.current.give(bet);
+      dealer.current.take(bet);
+      Toast.show({
+        type: "info",
+        text1: "Push 🤝",
+        text2: "Your bet has been returned",
+      });
+    } else if (playerValue > dealerValue) {
+      console.log("player won");
+      if (dealer.current.balance < bet * 2) {
+        Toast.show({
+          type: "warning",
+          text1: "Dealer can't pay 😱",
+          text2: "You've bankrupted the house!",
+        });
+      }
+
+      player.current.give(bet * 2);
+      Toast.show({
+        type: "success",
+        text1: "You win! 🎉",
+        text2: `+${bet}`,
+      });
+    } else {
+      console.log("dealer won");
+      Toast.show({
+        type: "error",
+        text1: "Dealer wins 😔",
+        text2: `–${bet}`,
+      });
+    }
+
+    player.current.currentBet = 0;
+    setStarted(false);
+  };
+
+  // const resetGame = () => {
+  //   dealer.current.resetHand();
+  //   player.current.resetHand();
+  //   setInsuranceTaken(false);
+  //   setIsDoubled(false);
+  //   startGame();
+  // };
+
   const handleStand = () => {
     setPlayerMoveFinished(true);
-    // start ai dealer
+    handleDealerAI();
     return;
   };
 
   const handleDouble = () => {
-    console.log(player.current.balance);
-    console.log(player.current.currentBet);
-    if (player.current.balance < player.current.currentBet) {
-      Toast.show({ type: "error", text1: "Not enough chips to double 💸" });
-      return;
-    }
+    setIsDoubled(true);
     player.current.take(player.current.currentBet);
     player.current.currentBet *= 2;
-    handleHit(player);
+    handleHit("Player");
     setPlayerMoveFinished(true);
-    return;
+    handleDealerAI();
   };
 
   const handleInsurance = () => {
-    // przez 2 bo insurancebet to polowa glownego
+    if (insuranceTaken) return;
+    setInsuranceTaken(true);
+
     const insuranceBet = player.current.currentBet / 2;
     if (player.current.balance < insuranceBet) {
       Toast.show({ type: "error", text1: "Not enough chips to insure 💸" });
       return;
     }
 
+    // Pobranie ubezpieczenia
     player.current.take(insuranceBet);
-    setInsuranceTaken(true);
 
-    // Sprawdź, czy dealer ma blackjacka:
-    if (dealer.current.getHandValue().includes(21)) {
+    // Ujawnienie karty krupiera
+    setRevealDealerCard(true);
+    forceUpdate();
+
+    // Sprawdzenie, czy krupier ma Blackjack
+    const dealerHasBJ =
+      dealer.current.getHandValue().includes(21) &&
+      dealer.current.hand.length === 2;
+
+    if (dealerHasBJ) {
+      // Ubezpieczenie wygrywa 2:1
       player.current.give(insuranceBet * 2);
       Toast.show({
         type: "success",
         text1: "Dealer has Blackjack!",
         text2: "Insurance paid off 💰",
       });
-      setStarted(false); // Runda kończy się
+
+      // Główna stawka: gracz ją już utracił przy licytacji,
+      // więc nie robimy tu żadnej dodatkowej operacji.
+
+      // Zakończ rundę
+      setStarted(false);
     } else {
       Toast.show({
         type: "info",
         text1: "Dealer doesn’t have Blackjack",
         text2: "Insurance lost 😬",
       });
-      // gra toczy się dalej
+      // Gra toczy się dalej, gracz może hit/stand/double…
     }
   };
 
@@ -187,7 +353,7 @@ const BlackjackTraining = () => {
           {/* SVG background */}
           <Svg
             style={styles.background}
-            viewBox="0 0 1200 600"
+            viewBox="0 0 1800 800"
             preserveAspectRatio="xMidYMid meet"
           >
             <Rect
@@ -232,42 +398,57 @@ const BlackjackTraining = () => {
 
           {/* Game UI */}
           <View style={styles.uiLayer}>
-            {!started && (
-              <BetInput
-                max={player.current.balance}
-                onConfirm={(amount) => {
-                  console.log("amount" + amount);
-                  player.current.take(amount);
-                  player.current.currentBet = amount;
-                  console.log("bet" + player.current.currentBet);
-                  startGame();
-                  // Twoja logika tutaj:
-                  // - player.current.take(amount)
-                  // - player.current.currentBet = amount
-                  // - rozdaj karty
-                  // - setStarted(true)
-                }}
+            <View
+              style={{ flexDirection: "row", justifyContent: "space-around" }}
+            >
+              <PlayerStatus
+                name="Player"
+                balance={player.current.balance}
+                hand={player.current.hand}
+                points={player.current.getHandValue().join(" / ")}
+                isFirstDeal={
+                  !playerMoveFinished && dealer.current.hand.length === 2
+                }
               />
+              <PlayerStatus
+                name="Dealer"
+                balance={dealer.current.balance}
+                hand={dealer.current.hand}
+                points={dealer.current.getHandValue().join(" / ")}
+                hideSecondCard={started && !revealDealerCard}
+                isFirstDeal={
+                  !playerMoveFinished && dealer.current.hand.length === 2
+                }
+              />
+            </View>
+
+            {!started && (
+              <>
+                <BetInput
+                  max={player.current.balance}
+                  onConfirm={(amount) => {
+                    // console.log("amount" + amount);
+                    player.current.take(amount);
+                    player.current.currentBet = amount;
+                    dealer.current.give(amount);
+                    // console.log("bet" + player.current.currentBet);
+                    startGame();
+                    // Twoja logika tutaj:
+                    // - player.current.take(amount)
+                    // - player.current.currentBet = amount
+                    // - rozdaj karty
+                    // - setStarted(true)
+                  }}
+                />
+              </>
             )}
             {started && (
               <>
-                <PlayerStatus
-                  name="Dealer"
-                  balance={dealer.current.balance}
-                  hand={dealer.current.hand}
-                  points={dealer.current.getHandValue().join(" / ")}
-                />
-                <PlayerStatus
-                  name="Player"
-                  balance={player.current.balance}
-                  hand={player.current.hand}
-                  points={player.current.getHandValue().join(" / ")}
-                />
                 {!playerMoveFinished && (
                   <ActionBar
                     onHit={() => {
-                      /* TODO: connect handleHit logic */
-                      handleHit(player);
+                      /* TODO: connect - logic */
+                      handleHit("Player");
                     }}
                     onStand={() => {
                       handleStand();
@@ -316,10 +497,12 @@ const styles = StyleSheet.create({
     transform: [{ translateX: "-50%" }, { translateY: "-50%" }],
   },
   uiLayer: {
-    position: "absolute",
-    bottom: 60,
-    left: 80,
+    flex: 1,
+    justifyContent: "space-between",
+    paddingVertical: 24,
+    paddingHorizontal: 32,
   },
+
   button: {
     paddingVertical: 10,
     paddingHorizontal: 20,
