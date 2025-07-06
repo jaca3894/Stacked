@@ -37,7 +37,7 @@ const BlackjackTraining = () => {
   const player = useRef<BlackjackPlayer>(
     new BlackjackPlayer("Player", initialBalance)
   );
-  const dealer = useRef<BlackjackPlayer>(new BlackjackPlayer("Dealer", 20));
+  const dealer = useRef<BlackjackPlayer>(new BlackjackPlayer("Dealer", initialBalance*10));
   // const [dealer, setDealer] = useState<Player>(new Player("Krupier"));
   const deck = useRef<Deck>(new Deck());
   const [started, setStarted] = useState(false);

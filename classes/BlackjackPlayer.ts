@@ -42,7 +42,6 @@ export default class BlackjackPlayer {
 
   resetHand() {
     this.hand = [];
-    // this.currentBet = 0;
     this.passed = false;
     this.stood = false;
   }

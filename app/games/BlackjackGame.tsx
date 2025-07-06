@@ -7,8 +7,8 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 
 import RootStackParamList from "../../props/RootStackParamList";
 import Svg, { Rect } from "react-native-svg";
-import Player from "../../classes/Player";
 import RoundButton from "../../components/RoundButton";
+import BlackjackPlayer from "../../classes/BlackjackPlayer";
 
 type GameRouteProp = RouteProp<RootStackParamList, "Game">;
 
@@ -28,8 +28,10 @@ const BlackjackGame = () => {
   const { playersCount } = route.params;
   const maxPlayers = playersCount
 
-  const [players, setPlayers] = useState<Player[]>(Array(maxPlayers).fill(new Player()));
-  const dealer = useRef<Player>(new Player('Dealer'));
+  const [players, setPlayers] = useState<BlackjackPlayer[]>(
+    Array.from({ length: maxPlayers }, () => new BlackjackPlayer())
+  );
+  const dealer = useRef<BlackjackPlayer>(new BlackjackPlayer('Dealer'));
   const [isGameStarted, setIsGameStarted] = useState(false);
 
   const [showInput, setShowInput] = useState([false, -1]);
@@ -45,6 +47,14 @@ const BlackjackGame = () => {
   const { width, height } = Dimensions.get('window');
 
   function startGame() {
+    console.log(players)
+    players.forEach((player, i) => {
+      player.currentBet = 0;
+      player.isDealer = false;
+
+      if (player.name == "") player.name = `Player${i+1}`;
+    });
+
     setIsGameStarted(true);
   }
 
@@ -65,7 +75,7 @@ const BlackjackGame = () => {
           </TouchableHighlight>
           <View style={[styles.content]}>
             <View style={[styles.row, {bottom: '25%'}]}>
-              {players.map((player: Player, index: number) => {
+              {players.map((player: BlackjackPlayer, index: number) => {
                 const isFirst = index === 0;
                 const isLast = index === players.length-1;
 
@@ -78,7 +88,7 @@ const BlackjackGame = () => {
                     underlayColor="#948870"
                     onPress={() => { setShowInput([true, index]); }}
                   >
-                    <Text style={styles.buttonText} numberOfLines={1} ellipsizeMode="tail">
+                    <Text style={[styles.buttonText, {color: '#000'}]} numberOfLines={1} ellipsizeMode="tail">
                       {player.name !== '' ? player.name : '+' + index}
                     </Text>
                   </TouchableHighlight>
@@ -93,19 +103,6 @@ const BlackjackGame = () => {
           }
           {isGameStarted && (
             <View style={[styles.row, {bottom: 0}]}>
-              {/* {(
-                  (players[currentPlayerIndex] && players[currentPlayerIndex].balance < minAmount && players[currentPlayerIndex].balance != 0) ? (
-                    // Gracz nie ma kasy, żeby sprawdzić — all-in za wszystko, co ma
-                    <RoundButton text="All-in" func={() => {}}} mainColor="green" secondColor="#005700" />
-                    ) : (players[currentPlayerIndex] && players[currentPlayerIndex].currentBet < minAmount && players[currentPlayerIndex].balance != 0) ? (
-                      // Gracz może wyrównać (call)
-                      <RoundButton text="Call" func={() => {}}} mainColor="orange" secondColor="#b47400" />
-                      ) : (
-                        // Gracz już wyrównał — może tylko przeczekać
-                        <RoundButton text="Check" func={() => {}} mainColor="green" secondColor="#005700" />
-                        )
-                        )
-                        } */}
               <RoundButton text="Raise" func={() => {}} mainColor="red" secondColor="#a20000"/>
               <RoundButton text="Fold" func={() => {}} mainColor="blue" secondColor="#0000a9"/>
             </View>
@@ -123,7 +120,7 @@ const BlackjackGame = () => {
                     <Text style={styles.buttonText}>x</Text>
                   </TouchableHighlight>
 
-                  <Text style={{ marginBottom: 10 }}>Podaj coś:</Text>
+                  <Text style={{ marginBottom: 10, color: '#fff' }}>Podaj coś:</Text>
                   <TextInput
                     placeholder="Podaj nazwę gracza"
                     style={styles.input}
@@ -134,7 +131,7 @@ const BlackjackGame = () => {
                     }}
                     />
                   <TouchableHighlight style={styles.dodajButton} underlayColor="#948870"
-                    onPress={() => {setPlayers(players => players.map((player, index) => index === showInput[1] ? new Player(inputValue) : player)); setShowInput([false, -1])}}>
+                    onPress={() => {setPlayers(players => players.map((player, index) => index === showInput[1] ? new BlackjackPlayer(inputValue) : player)); setShowInput([false, -1])}}>
                     <Text>Dodaj</Text>
                   </TouchableHighlight>
                 </View>
@@ -212,7 +209,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   buttonText: {
-    color: '#000',
+    color: '#fff',
     fontSize: 18,
   },
   popUp: {
@@ -229,10 +226,10 @@ const styles = StyleSheet.create({
   popUpInside: {
     width: screenWidth * 0.7,
     height: screenWidth * 0.7,
-    backgroundColor: '#fff',
+    backgroundColor: "#121212",
     borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     zIndex: 1000,
   },
   closeButton: {
@@ -247,8 +244,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 6,
     paddingHorizontal: 10,
-    backgroundColor: '#fff',
-    color: '#000',
+    backgroundColor: '#222',
+    color: '#fff',
   },
   dodajButton: {
     marginTop: 20,
