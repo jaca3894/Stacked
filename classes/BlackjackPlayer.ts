@@ -8,6 +8,7 @@ export default class BlackjackPlayer {
   public hand: Card[] = [];
   public stood: boolean = false;
   public isDealer: boolean = false;
+  public insuranceBet: number = 0;
 
   constructor(name: string = "", balance: number = 1000) {
     this.name = name;

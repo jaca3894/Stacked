@@ -37,7 +37,7 @@ const BlackjackTraining = () => {
   const player = useRef<BlackjackPlayer>(
     new BlackjackPlayer("Player", initialBalance)
   );
-  const dealer = useRef<BlackjackPlayer>(new BlackjackPlayer("Dealer", 200));
+  const dealer = useRef<BlackjackPlayer>(new BlackjackPlayer("Dealer", 20));
   // const [dealer, setDealer] = useState<Player>(new Player("Krupier"));
   const deck = useRef<Deck>(new Deck());
   const [started, setStarted] = useState(false);
@@ -58,16 +58,6 @@ const BlackjackTraining = () => {
   }, []);
 
   const startGame = () => {
-    if (dealer.current.balance <= 0) {
-      setStarted(false);
-      Toast.show({
-        type: "success",
-        text1: "🎉 You've cleaned out the dealer!",
-        text2: "No more chips in the house.",
-      });
-      return;
-    }
-
     console.log("-----------------NEW GAME---------------------");
     // player.current.currentBet = 0;
     setPlayerMoveFinished(false);
@@ -98,7 +88,9 @@ const BlackjackTraining = () => {
         text1: "Blackjack!",
         text2: "3:2 payout 💰",
       });
+      console.log(`Giving player: ${player.current.currentBet * 2.5}`);
       player.current.give(player.current.currentBet * 2.5); // 3:2
+      console.log(`Taking dealer: ${player.current.currentBet * 2.5}`);
       dealer.current.take(player.current.currentBet * 2.5); // 3:2
       setStarted(false);
       return;
@@ -134,6 +126,7 @@ const BlackjackTraining = () => {
   const handleBust = (_player: string) => {
     if (_player != "Dealer") {
       setPlayerMoveFinished(true);
+      // kasa juz jest u dealera wiec nie trzeba mu dawac
       // dealer.current.give(
       //   isDoubled ? player.current.currentBet / 2 : player.current.currentBet
       // );
@@ -153,7 +146,10 @@ const BlackjackTraining = () => {
         text2: `+${player.current.currentBet}`,
       });
       console.log(`player: ${player.current.name}`);
+      console.log(`Giving player: ${player.current.currentBet}`);
+
       player.current.give(player.current.currentBet * 2);
+      console.log(`Taking dealer: ${player.current.currentBet}`);
       dealer.current.take(player.current.currentBet * 2);
       setStarted(false);
       return;
@@ -210,7 +206,9 @@ const BlackjackTraining = () => {
 
     if (playerValue === dealerValue) {
       console.log("draw (push)");
+      console.log(`Giving player: ${bet}`);
       player.current.give(bet);
+      console.log(`Taking dealer: ${bet}`);
       dealer.current.take(bet);
       Toast.show({
         type: "info",
@@ -221,13 +219,16 @@ const BlackjackTraining = () => {
       console.log("player won");
       if (dealer.current.balance < bet * 2) {
         Toast.show({
-          type: "warning",
+          type: "error",
           text1: "Dealer can't pay 😱",
           text2: "You've bankrupted the house!",
         });
       }
 
+      console.log(`Giving player: ${bet * 2}`);
       player.current.give(bet * 2);
+      console.log(`Taking dealer: ${bet * 2}`);
+      dealer.current.take(bet * 2);
       Toast.show({
         type: "success",
         text1: "You win! 🎉",
@@ -238,7 +239,7 @@ const BlackjackTraining = () => {
       Toast.show({
         type: "error",
         text1: "Dealer wins 😔",
-        text2: `–${bet}`,
+        text2: `-${bet}`,
       });
     }
 
@@ -262,9 +263,29 @@ const BlackjackTraining = () => {
 
   const handleDouble = () => {
     setIsDoubled(true);
-    player.current.take(player.current.currentBet);
-    player.current.currentBet *= 2;
+    const bet = player.current.currentBet - player.current.insuranceBet;
+
+    console.log("IM IN DOUBLE");
+    console.log(
+      `[DEBUG] currentBet before double: ${player.current.currentBet}`
+    );
+    console.log(`[DEBUG] insuranceBet: ${player.current.insuranceBet}`);
+
+    console.log(`Taking player in double: ${bet}`);
+    player.current.take(bet);
+    console.log(`Giving dealer in double: ${bet}`);
+    dealer.current.give(bet);
+    player.current.currentBet = bet * 2;
     handleHit("Player");
+    if (player.current.isBusted()) {
+      Toast.show({
+        type: "error",
+        text1: "Dealer wins 😔",
+        text2: ``,
+      });
+      setPlayerMoveFinished(true);
+      return;
+    }
     setPlayerMoveFinished(true);
     handleDealerAI();
   };
@@ -279,9 +300,12 @@ const BlackjackTraining = () => {
       return;
     }
 
+    player.current.insuranceBet = insuranceBet;
     // Pobranie ubezpieczenia
+    console.log(`Taking player: ${insuranceBet}`);
     player.current.take(insuranceBet);
-
+    console.log(`Giving dealer: ${insuranceBet}`);
+    dealer.current.give(insuranceBet);
     // Ujawnienie karty krupiera
     setRevealDealerCard(true);
     forceUpdate();
@@ -293,7 +317,10 @@ const BlackjackTraining = () => {
 
     if (dealerHasBJ) {
       // Ubezpieczenie wygrywa 2:1
-      player.current.give(insuranceBet * 2);
+      console.log(`Giving player: ${insuranceBet * 3}`);
+      player.current.give(insuranceBet * 3);
+      console.log(`Taking dealer: ${insuranceBet * 3}`);
+      dealer.current.take(insuranceBet * 3);
       Toast.show({
         type: "success",
         text1: "Dealer has Blackjack!",
@@ -427,9 +454,29 @@ const BlackjackTraining = () => {
                 <BetInput
                   max={player.current.balance}
                   onConfirm={(amount) => {
+                    if (dealer.current.balance < amount * 2.5) {
+                      Toast.show({
+                        type: "error",
+                        text1: "Dealer can't cover this bet 💸",
+                        text2: "Lower your stake or let them recover!",
+                      });
+                      return; // Przerwij start gry
+                    }
+                    if (dealer.current.balance <= 0) {
+                      setStarted(false);
+                      Toast.show({
+                        type: "success",
+                        text1: "🎉 You've cleaned out the dealer!",
+                        text2: "No more chips in the house.",
+                      });
+                      return;
+                    }
+
                     // console.log("amount" + amount);
+                    console.log(`Taking player: ${amount}`);
                     player.current.take(amount);
                     player.current.currentBet = amount;
+                    console.log(`Giving dealer: ${amount}`);
                     dealer.current.give(amount);
                     // console.log("bet" + player.current.currentBet);
                     startGame();
@@ -465,7 +512,9 @@ const BlackjackTraining = () => {
                       doubleEnabled && player.current.hand.length === 2
                     }
                     canInsure={
-                      insuranceEnabled && dealer.current.hand[0].rank === "A"
+                      insuranceEnabled &&
+                      dealer.current.hand[0].rank === "A" &&
+                      !insuranceTaken
                     }
                   />
                 )}
