@@ -11,6 +11,7 @@ import {
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { morePanelsData as data } from "../../classes/Database";
 import Icon from "react-native-vector-icons/Ionicons";
+import * as Animatable from "react-native-animatable";
 
 const screenWidth = Math.round(Dimensions.get("window").width);
 
@@ -36,17 +37,30 @@ const MoreScreen = () => {
               onPress={() => setActivePanelIndex(index)}
               activeOpacity={0.8}
             >
-              <Icon
-                name={item.iconName}
-                size={36}
-                color="#cbbb9c"
-                style={styles.cardIcon}
-              />
-              <View style={styles.cardText}>
-                <Text style={styles.cardTitle}>{item.title}</Text>
-                <Text style={styles.cardSubtitle}>{item.subtitle}</Text>
-              </View>
-              <Icon name="chevron-forward" size={20} color="#cbbb9c" />
+              <Animatable.View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+                animation="fadeIn"
+                duration={1500}
+                delay={500}
+                iterationCount={1}
+                useNativeDriver
+              >
+                <Icon
+                  name={item.iconName}
+                  size={36}
+                  color="#cbbb9c"
+                  style={styles.cardIcon}
+                />
+                <View style={styles.cardText}>
+                  <Text style={styles.cardTitle}>{item.title}</Text>
+                  <Text style={styles.cardSubtitle}>{item.subtitle}</Text>
+                </View>
+                <Icon name="chevron-forward" size={20} color="#cbbb9c" />
+              </Animatable.View>
             </TouchableOpacity>
           ))}
         </View>

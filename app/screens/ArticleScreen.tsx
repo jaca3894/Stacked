@@ -1,20 +1,30 @@
-import { View, Text, Image, StyleSheet, ScrollView, Dimensions, Linking, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  ScrollView,
+  Dimensions,
+  Linking,
+  TouchableOpacity,
+} from "react-native";
 import RootStackParamList from "../../props/RootStackParamList";
 import { useState } from "react";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
-import Icon from 'react-native-vector-icons/Ionicons';
+import Icon from "react-native-vector-icons/Ionicons";
 import { articlesData as data } from "../../classes/Database";
-import { Image as Gif } from 'expo-image';
+import { Image as Gif } from "expo-image";
+import * as Animatable from "react-native-animatable";
 
 type ArticleScreenProp = RouteProp<RootStackParamList, "Article">;
 
 const extractYouTubeId = (url: string): string => {
   const regExp = /(?:youtube\.com\/.*v=|youtu\.be\/)([^&\n?#]+)/;
   const match = RegExp(regExp).exec(url);
-  return match ? match[1] : '';
+  return match ? match[1] : "";
 };
 
-const screenHeight = Dimensions.get('window').height;
+const screenHeight = Dimensions.get("window").height;
 
 const ArticleScreen = () => {
   const navigation = useNavigation();
@@ -29,27 +39,27 @@ const ArticleScreen = () => {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#1c1c1c' }}>
+    <View style={{ flex: 1, backgroundColor: "#1c1c1c" }}>
       <ScrollView>
-      <TouchableOpacity
-        onPress={() => navigation.goBack()}
-        style={{
-              position: 'absolute',
-              top: '3%',
-              left: '7%',
-              zIndex: 2,
-            }}
-      >
-      <Image
-        source={require('../../assets/arrowRight.png')}
-        style={{
-          width: 20,
-          height: 20,
-          transform: [{ scaleX: -1 }],
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={{
+            position: "absolute",
+            top: "3%",
+            left: "7%",
+            zIndex: 2,
           }}
-      />
-    </TouchableOpacity>        
-    <Gif
+        >
+          <Image
+            source={require("../../assets/arrowRight.png")}
+            style={{
+              width: 20,
+              height: 20,
+              transform: [{ scaleX: -1 }],
+            }}
+          />
+        </TouchableOpacity>
+        <Gif
           source={article.bannerPath}
           style={styles.banner}
           contentFit="cover"
@@ -58,25 +68,76 @@ const ArticleScreen = () => {
         />
 
         <View style={styles.content}>
-          <View style={styles.introFlexContainer}>
-            <Text style={[styles.categoryTab, { backgroundColor: article.categoryTabColor || '#cbbb9c' }]}>
+          <Animatable.View
+            animation="fadeIn"
+            duration={1500}
+            delay={300}
+            iterationCount={1}
+            style={styles.introFlexContainer}
+          >
+            <Animatable.Text
+              animation="fadeIn"
+              duration={1500}
+              delay={300}
+              iterationCount={1}
+              style={[
+                styles.categoryTab,
+                { backgroundColor: article.categoryTabColor || "#cbbb9c" },
+              ]}
+            >
               {article.category}
-            </Text>
-            <Text style={styles.titleText}>{article.title}</Text>
+            </Animatable.Text>
+            <Animatable.Text
+              animation="fadeIn"
+              duration={1500}
+              delay={300}
+              iterationCount={1}
+              style={styles.titleText}
+            >
+              {article.title}
+            </Animatable.Text>
             {article.videoLink !== "null" && (
-              <Text style={styles.videoNote}>
+              <Animatable.Text
+                animation="fadeIn"
+                duration={1500}
+                delay={300}
+                iterationCount={1}
+                style={styles.videoNote}
+              >
                 Thumbnail sourced from the linked video below.
-              </Text>
+              </Animatable.Text>
             )}
 
-            <View style={styles.authorRow}>
+            <Animatable.View
+              animation="fadeIn"
+              duration={1500}
+              delay={300}
+              iterationCount={1}
+              style={styles.authorRow}
+            >
               <Image
-                source={require('../../assets/logo/logo.png')}
+                source={require("../../assets/logo/logo.png")}
                 style={styles.authorAvatar}
               />
               <View style={styles.authorDetails}>
-                <Text style={styles.authorTextTitle}>Stacked Academy</Text>
-                <Text style={styles.dateText}>{article.date}</Text>
+                <Animatable.Text
+                  // animation="fadeIn"
+                  // duration={1500}
+                  // delay={300}
+                  // iterationCount={1}
+                  style={styles.authorTextTitle}
+                >
+                  Stacked Academy
+                </Animatable.Text>
+                <Animatable.Text
+                  // animation="fadeIn"
+                  // duration={1500}
+                  // delay={300}
+                  // iterationCount={1}
+                  style={styles.dateText}
+                >
+                  {article.date}
+                </Animatable.Text>
               </View>
               <Icon
                 onPress={toggleLike}
@@ -85,11 +146,19 @@ const ArticleScreen = () => {
                 size={35}
                 style={{ alignSelf: "center" }}
               />
-            </View>
-          </View>
+            </Animatable.View>
+          </Animatable.View>
 
           <View style={{ flex: 1, padding: 20 }}>
-            <Text style={styles.contentText}>{article.content}</Text>
+            <Animatable.Text
+              animation="fadeIn"
+              duration={1500}
+              delay={300}
+              iterationCount={1}
+              style={styles.contentText}
+            >
+              {article.content}
+            </Animatable.Text>
 
             {article.videoLink !== "null" && (
               <TouchableOpacity
@@ -97,12 +166,23 @@ const ArticleScreen = () => {
                 onPress={() => Linking.openURL(article.videoLink)}
               >
                 <Image
-                  source={{ uri: `https://img.youtube.com/vi/${extractYouTubeId(article.videoLink)}/hqdefault.jpg` }}
+                  source={{
+                    uri: `https://img.youtube.com/vi/${extractYouTubeId(
+                      article.videoLink
+                    )}/hqdefault.jpg`,
+                  }}
                   style={styles.videoThumbnail}
                 />
-                <Text style={styles.videoCaption}>
-                  Watch the video tutorial — created by {article.videoAuthor}, shared on YouTube under the CC BY 3.0 license.
-                </Text>
+                <Animatable.Text
+                  animation="fadeIn"
+                  duration={1500}
+                  delay={300}
+                  iterationCount={1}
+                  style={styles.videoCaption}
+                >
+                  Watch the video tutorial — created by {article.videoAuthor},
+                  shared on YouTube under the CC BY 3.0 license.
+                </Animatable.Text>
               </TouchableOpacity>
             )}
 
@@ -118,7 +198,7 @@ const ArticleScreen = () => {
 
 const styles = StyleSheet.create({
   banner: {
-    width: '100%',
+    width: "100%",
     height: screenHeight * 0.35,
   },
   content: {
@@ -126,11 +206,11 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 35,
     borderTopRightRadius: 35,
     padding: 20,
-    backgroundColor: '#1c1c1c',
+    backgroundColor: "#1c1c1c",
   },
   introFlexContainer: {
-    flexDirection: 'column',
-    justifyContent: 'space-between',
+    flexDirection: "column",
+    justifyContent: "space-between",
     marginBottom: 20,
     padding: 10,
     borderBottomColor: "white",
@@ -139,23 +219,23 @@ const styles = StyleSheet.create({
   categoryTab: {
     fontSize: 16,
     paddingHorizontal: 20,
-    alignSelf: 'flex-start',
-    maxWidth: '70%',
-    textAlign: 'center',
+    alignSelf: "flex-start",
+    maxWidth: "70%",
+    textAlign: "center",
     height: screenHeight * 0.03,
     lineHeight: screenHeight * 0.03,
-    color: '#1c1c1c',
-    fontWeight: 'bold',
-    textTransform: 'uppercase',
+    color: "#1c1c1c",
+    fontWeight: "bold",
+    textTransform: "uppercase",
     marginTop: 10,
     marginBottom: 20,
   },
   titleText: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: 'white',
-    width: '100%',
-    textAlign: 'left',
+    fontWeight: "bold",
+    color: "white",
+    width: "100%",
+    textAlign: "left",
     marginBottom: 10,
   },
   videoNote: {
@@ -165,8 +245,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   authorRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   authorAvatar: {
     width: 50,
@@ -175,27 +255,27 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   authorDetails: {
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'flex-start',
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "flex-start",
     height: 70,
     width: "70%",
   },
   authorTextTitle: {
     fontSize: 16,
-    color: '#cbbb9c',
+    color: "#cbbb9c",
     marginBottom: 5,
-    fontWeight: 'bold',
-    textAlign: 'left',
-    width: '100%',
+    fontWeight: "bold",
+    textAlign: "left",
+    width: "100%",
   },
   dateText: {
     fontSize: 14,
-    color: 'gray',
-    fontStyle: 'italic',
+    color: "gray",
+    fontStyle: "italic",
   },
   contentText: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
     lineHeight: 24,
   },
@@ -204,21 +284,21 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   videoCaption: {
-    color: '#cbbb9c',
+    color: "#cbbb9c",
     marginTop: 20,
-    textAlign: 'center',
-    fontStyle: 'italic',
+    textAlign: "center",
+    fontStyle: "italic",
   },
   footer: {
     height: screenHeight * 0.1,
-    backgroundColor: '#1c1c1c',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#1c1c1c",
+    justifyContent: "center",
+    alignItems: "center",
   },
   footerText: {
-    color: 'gray',
+    color: "gray",
     fontSize: 16,
-    textAlign: 'center',
+    textAlign: "center",
   },
 });
 
