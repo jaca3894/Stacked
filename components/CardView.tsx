@@ -1,25 +1,47 @@
 import React from "react";
-import { View, Text, StyleSheet, Dimensions } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import Card from "../classes/Card";
 
-interface CardViewProps {
+interface Props {
   card: Card;
 }
 
-const CardView: React.FC<CardViewProps> = ({ card }) => {
+const CardView: React.FC<Props> = ({ card }) => {
+  const value =
+    card.rank.toUpperCase() === "T" ? "10" : card.rank.toUpperCase();
+  const suit =
+    card.suit === "hearts"
+      ? "♥"
+      : card.suit === "diamonds"
+      ? "♦"
+      : card.suit === "clubs"
+      ? "♣"
+      : "♠";
   const isRed = card.suit === "hearts" || card.suit === "diamonds";
-  const suitSymbols = {
-    hearts: "♥",
-    diamonds: "♦",
-    spades: "♠",
-    clubs: "♣",
-  };
 
   return (
-    <View style={styles.card}>
-      <Text style={[styles.rank, isRed && styles.red]}>{card.rank}</Text>
-      <Text style={[styles.suit, isRed && styles.red]}>
-        {suitSymbols[card.suit]}
+    <View style={[styles.card, { borderColor: "#888" }]}>
+      <Text
+        style={[
+          styles.corner,
+          { alignSelf: "flex-start" },
+          isRed && styles.red,
+        ]}
+      >
+        {value}
+      </Text>
+      <Text style={[styles.suit, isRed && styles.red]}>{suit}</Text>
+      <Text
+        style={[
+          styles.corner,
+          {
+            alignSelf: "flex-end",
+            transform: [{ rotate: "180deg" }],
+          },
+          isRed && styles.red,
+        ]}
+      >
+        {value}
       </Text>
     </View>
   );
@@ -27,25 +49,23 @@ const CardView: React.FC<CardViewProps> = ({ card }) => {
 
 const styles = StyleSheet.create({
   card: {
-    width: 50,
-    height: 70,
-    backgroundColor: "#fff",
-    borderRadius: 8,
+    width: 40,
+    aspectRatio: 0.66,
+    backgroundColor: "white",
+    borderRadius: 6,
+    borderWidth: 1,
+    padding: 2,
+    justifyContent: "space-between",
     alignItems: "center",
-    justifyContent: "center",
-    marginRight: 8,
-    shadowColor: "#000",
-    shadowOpacity: 0.25,
-    shadowOffset: { width: 2, height: 2 },
-    shadowRadius: 4,
-  },
-  rank: {
-    fontSize: 18,
-    fontWeight: "bold",
   },
   suit: {
-    fontSize: 20,
-    marginTop: 4,
+    fontSize: 14,
+    textAlign: "center",
+    fontWeight: "bold",
+  },
+  corner: {
+    fontSize: 10,
+    fontWeight: "bold",
   },
   red: {
     color: "#D40000",

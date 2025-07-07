@@ -421,9 +421,11 @@ const styles = StyleSheet.create({
   cornerLeftText: {
     fontSize: 10,
     alignSelf: "flex-start",
+    fontWeight: "bold",
   },
   cornerRightText: {
     fontSize: 10,
+    fontWeight: "bold",
     alignSelf: "flex-end",
   },
   footer: {

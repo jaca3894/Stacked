@@ -110,7 +110,11 @@ const PlayerStatus: React.FC<PlayerStatusProps> = ({
     <View style={styles.wrapper}>
       <Text style={styles.name}>{name}</Text>
       <Text style={styles.balance}>Balance: {balance}</Text>
-      <Text style={styles.points}>Points: {points}</Text>
+      {!(name === "Dealer" && hideSecondCard) ? (
+        <Text style={styles.points}>Points: {points}</Text>
+      ) : (
+        <Text style={styles.points}>Points: ???</Text>
+      )}
 
       <View style={styles.hand}>
         {hand.map((card, index) => {
@@ -147,8 +151,10 @@ const PlayerStatus: React.FC<PlayerStatusProps> = ({
 
 const styles = StyleSheet.create({
   wrapper: {
+    // backgroundColor: "blue",
     marginVertical: 12,
     alignItems: "center",
+    zIndex: 2,
   },
   name: {
     fontSize: 18,
@@ -169,10 +175,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   cardImage: {
-    width: 50,
-    height: 70,
-    borderRadius: 8,
-    backgroundColor: "#333",
+    width: 40,
+    height: 60,
+    // aspectRatio: 0.66,
+    backgroundColor: "transparent",
+    borderRadius: 6,
+    borderWidth: 1,
+    padding: 2,
   },
 });
 

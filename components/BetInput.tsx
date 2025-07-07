@@ -1,5 +1,12 @@
 import React, { useState, useRef } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Button } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Button,
+  Pressable,
+} from "react-native";
 
 interface BetInputProps {
   max: number;
@@ -50,12 +57,20 @@ const BetInput: React.FC<BetInputProps> = ({ max, onConfirm }) => {
       </View>
 
       <View style={{ marginTop: 12 }}>
-        <Button
-          title={value < 1 ? "Insufficient chips" : "Confirm bet"}
-          onPress={() => onConfirm(value)}
-          color="#FFD700"
-          disabled={value < 1}
-        />
+        <Pressable onPress={() => onConfirm(value)} disabled={value < 1}>
+          <Text
+            style={{
+              fontWeight: "bold",
+              textTransform: "uppercase",
+              alignSelf: "flex-start",
+              padding: 10,
+              backgroundColor: "#cbbb9c",
+              borderRadius: 10,
+            }}
+          >
+            {value < 1 ? "Insufficient chips" : "Confirm bet"}
+          </Text>
+        </Pressable>
       </View>
     </View>
   );
@@ -65,6 +80,7 @@ const styles = StyleSheet.create({
   container: {
     alignItems: "center",
     padding: 16,
+    zIndex: 2,
   },
   label: {
     color: "#fff",
@@ -76,7 +92,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   stepperButton: {
-    backgroundColor: "#444",
+    backgroundColor: "#cbbb9c",
     paddingHorizontal: 16,
     paddingVertical: 6,
     borderRadius: 8,
@@ -84,7 +100,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 28,
-    color: "#FFD700",
+    color: "black",
     fontWeight: "bold",
   },
   valueLabel: {

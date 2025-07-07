@@ -49,14 +49,14 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   button: {
-    backgroundColor: "#FFD700",
+    backgroundColor: "#cbbb9c",
     borderRadius: 10,
     paddingVertical: 10,
     paddingHorizontal: 16,
     marginVertical: 6,
   },
   text: {
-    color: "#222",
+    color: "black",
     fontWeight: "bold",
     fontSize: 16,
   },

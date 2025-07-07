@@ -5,13 +5,16 @@ import {
   View,
   Dimensions,
   TouchableOpacity,
+  Image,
+  Platform,
+  StatusBar,
 } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import * as ScreenOrientation from "expo-screen-orientation";
 
 import RootStackParamList from "../../props/RootStackParamList";
-import Svg, { Rect } from "react-native-svg";
+import Svg, { Circle, Ellipse, Path, Polygon, Rect } from "react-native-svg";
 import Player from "../../classes/Player";
 import Deck from "../../classes/Deck"; // Zakładam, że dodałeś wcześniej
 import Card from "../../classes/Card";
@@ -22,7 +25,12 @@ import ActionBar from "../../components/ActionBar";
 import BetInput from "../../components/BetInput";
 import Toast from "react-native-toast-message";
 import toastConfig from "../../config/ToastConfig";
+import * as NavigationBar from "expo-navigation-bar";
+import BlackjackWinModal from "../panels/BlackjackWinModal";
+
 type GameRouteProp = RouteProp<RootStackParamList, "BlackjackTraining">;
+
+const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
 const BlackjackTraining = () => {
   const route = useRoute<GameRouteProp>();
@@ -32,12 +40,15 @@ const BlackjackTraining = () => {
     doubleEnabled,
     autoHitOnSeventeenEnabled,
   } = route.params;
+  const { width, height } = Dimensions.get("window");
 
   // console.log(`double: ${doubleEnabled}, insurance: ${insuranceEnabled}`);
   const player = useRef<BlackjackPlayer>(
     new BlackjackPlayer("Player", initialBalance)
   );
-  const dealer = useRef<BlackjackPlayer>(new BlackjackPlayer("Dealer", initialBalance*10));
+  const dealer = useRef<BlackjackPlayer>(
+    new BlackjackPlayer("Dealer", initialBalance * 10)
+  );
   // const [dealer, setDealer] = useState<Player>(new Player("Krupier"));
   const deck = useRef<Deck>(new Deck());
   const [started, setStarted] = useState(false);
@@ -46,10 +57,16 @@ const BlackjackTraining = () => {
   const [insuranceTaken, setInsuranceTaken] = useState(false);
   const [isDoubled, setIsDoubled] = useState(false);
   const [revealDealerCard, setRevealDealerCard] = useState(false);
+  const [blackjackWin, setBlackjackWin] = useState(false);
 
   useEffect(() => {
     // Zablokuj orientację poziomą
+    // StatusBar.setHidden(true);
     ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
+
+    if (Platform.OS === "android") {
+      NavigationBar.setVisibilityAsync("hidden");
+    }
 
     // Przywróć domyślną orientację po opuszczeniu widoku
     return () => {
@@ -57,7 +74,7 @@ const BlackjackTraining = () => {
     };
   }, []);
 
-  const startGame = () => {
+  const startGame = async () => {
     console.log("-----------------NEW GAME---------------------");
     // player.current.currentBet = 0;
     setPlayerMoveFinished(false);
@@ -83,11 +100,14 @@ const BlackjackTraining = () => {
       player.current.getHandValue().includes(21) &&
       player.current.hand.length === 2
     ) {
-      Toast.show({
-        type: "success",
-        text1: "Blackjack!",
-        text2: "3:2 payout 💰",
-      });
+      await sleep(600);
+      setBlackjackWin(true);
+
+      // Toast.show({
+      //   type: "success",
+      //   text1: "Blackjack!",
+      //   text2: "3:2 payout 💰",
+      // });
       console.log(`Giving player: ${player.current.currentBet * 2.5}`);
       player.current.give(player.current.currentBet * 2.5); // 3:2
       console.log(`Taking dealer: ${player.current.currentBet * 2.5}`);
@@ -98,9 +118,8 @@ const BlackjackTraining = () => {
     // setPlayer(player);
   };
 
-  const handleHit = (_player: string) => {
+  const handleHit = async (_player: string) => {
     let playerObj = _player === "Dealer" ? dealer : player;
-
     playerObj.current.addCard(deck.current.draw()!);
     console.log(`Hand value: ${checkHandValue(player)}`);
 
@@ -133,8 +152,8 @@ const BlackjackTraining = () => {
       console.log("you busted");
       Toast.show({
         type: "error",
-        text1: "You busted! 🤝",
-        text2: `-${player.current.currentBet}`,
+        text1: "You busted! 💔🥀",
+        text2: `-${player.current.currentBet - player.current.insuranceBet}`,
       });
       setStarted(false);
       // player.current.busted = true;
@@ -142,7 +161,7 @@ const BlackjackTraining = () => {
       console.log("dealer busted");
       Toast.show({
         type: "success",
-        text1: "You win! 🤝",
+        text1: "You win! 🤑",
         text2: `+${player.current.currentBet}`,
       });
       console.log(`player: ${player.current.name}`);
@@ -157,7 +176,8 @@ const BlackjackTraining = () => {
     return;
   };
 
-  const handleDealerAI = () => {
+  const handleDealerAI = async () => {
+    setRevealDealerCard(true);
     while (true) {
       const dealerValue = dealer.current.getHandValue();
       const bestValue = Math.max(...dealerValue.filter((v) => v <= 21));
@@ -167,7 +187,7 @@ const BlackjackTraining = () => {
         handleBust("Dealer");
         Toast.show({
           type: "success",
-          text1: "You win! 🤝",
+          text1: "You win! 🤑",
           text2: `+${player.current.currentBet}`,
         });
         return;
@@ -184,10 +204,10 @@ const BlackjackTraining = () => {
       }
 
       // Dobieramy jedną kartę i aktualizujemy UI
+      await sleep(1600);
       dealer.current.addCard(deck.current.draw()!);
       forceUpdate();
     }
-
     endGame();
 
     // if (!dealer.current.isBusted()) {
@@ -199,7 +219,7 @@ const BlackjackTraining = () => {
     return Math.max(...values.filter((v) => v <= 21));
   };
 
-  const endGame = () => {
+  const endGame = async () => {
     const playerValue = getBestHandValue(player.current.getHandValue());
     const dealerValue = getBestHandValue(dealer.current.getHandValue());
     const bet = player.current.currentBet;
@@ -218,6 +238,7 @@ const BlackjackTraining = () => {
     } else if (playerValue > dealerValue) {
       console.log("player won");
       if (dealer.current.balance < bet * 2) {
+        await sleep(600);
         Toast.show({
           type: "error",
           text1: "Dealer can't pay 😱",
@@ -229,16 +250,18 @@ const BlackjackTraining = () => {
       player.current.give(bet * 2);
       console.log(`Taking dealer: ${bet * 2}`);
       dealer.current.take(bet * 2);
+      await sleep(600);
       Toast.show({
         type: "success",
-        text1: "You win! 🎉",
+        text1: "You win! 🤑",
         text2: `+${bet}`,
       });
     } else {
       console.log("dealer won");
+      await sleep(600);
       Toast.show({
         type: "error",
-        text1: "Dealer wins 😔",
+        text1: "Dealer wins 💔🥀",
         text2: `-${bet}`,
       });
     }
@@ -280,8 +303,8 @@ const BlackjackTraining = () => {
     if (player.current.isBusted()) {
       Toast.show({
         type: "error",
-        text1: "Dealer wins 😔",
-        text2: ``,
+        text1: "Dealer wins 💔🥀",
+        text2: `-${bet}`,
       });
       setPlayerMoveFinished(true);
       return;
@@ -296,7 +319,11 @@ const BlackjackTraining = () => {
 
     const insuranceBet = player.current.currentBet / 2;
     if (player.current.balance < insuranceBet) {
-      Toast.show({ type: "error", text1: "Not enough chips to insure 💸" });
+      Toast.show({
+        type: "error",
+        text1: "Sorry! 😭",
+        text2: "Not enough chips to insure.",
+      });
       return;
     }
 
@@ -335,8 +362,8 @@ const BlackjackTraining = () => {
     } else {
       Toast.show({
         type: "info",
-        text1: "Dealer doesn’t have Blackjack",
-        text2: "Insurance lost 😬",
+        text2: "Dealer doesn’t have Blackjack",
+        text1: "Insurance lost 😬",
       });
       // Gra toczy się dalej, gracz może hit/stand/double…
     }
@@ -375,61 +402,24 @@ const BlackjackTraining = () => {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.container}>
-          {/* SVG background */}
-          <Svg
-            style={styles.background}
-            viewBox="0 0 1800 800"
-            preserveAspectRatio="xMidYMid meet"
-          >
-            <Rect
-              x={0}
-              y={0}
-              width={1200}
-              height={600}
-              rx={180}
-              ry={300}
-              fill="#2E1C1C"
-            />
-            <Rect
-              x={20}
-              y={20}
-              width={1160}
-              height={560}
-              rx={160}
-              ry={280}
-              fill="#4d342f"
-            />
-            <Rect
-              x={40}
-              y={40}
-              width={1120}
-              height={520}
-              rx={140}
-              ry={260}
-              fill="#006400"
-            />
-            <Rect
-              x={200}
-              y={150}
-              width={800}
-              height={300}
-              rx={100}
-              ry={180}
-              fill="none"
-              stroke="#005000"
-              strokeWidth={12}
-            />
-          </Svg>
+      {/* <StatusBar hidden /> */}
+      <View style={styles.safeArea}>
+        {/* Czerwony górny plan — dealer */}
+        <View style={styles.secondPlane}>
+          <Image
+            source={require("../../assets/dealer.png")}
+            style={styles.dealer}
+          />
+          {/* Możesz tu dodać obraz dealera */}
+        </View>
 
-          {/* Game UI */}
-          <View style={styles.uiLayer}>
-            <View
-              style={{ flexDirection: "row", justifyContent: "space-around" }}
-            >
+        {/* Zielony stół — gracz + akcje */}
+        <View style={styles.table}>
+          <View style={[styles.uiLayer, { flexDirection: "row" }]}>
+            {/* Lewa kolumna — PlayerStatus */}
+            <View style={styles.tableSide}>
               <PlayerStatus
-                name="Player"
+                name="You"
                 balance={player.current.balance}
                 hand={player.current.hand}
                 points={player.current.getHandValue().join(" / ")}
@@ -437,6 +427,60 @@ const BlackjackTraining = () => {
                   !playerMoveFinished && dealer.current.hand.length === 2
                 }
               />
+            </View>
+
+            {/* Środkowa kolumna — BetInput LUB ActionBar */}
+            <View style={styles.tableCenter}>
+              {!started ? (
+                <BetInput
+                  max={player.current.balance}
+                  onConfirm={(amount) => {
+                    if (dealer.current.balance < amount * 2.5) {
+                      Toast.show({
+                        type: "error",
+                        text1: "Dealer can't cover this bet 💸",
+                        text2: "Lower your stake or let them recover!",
+                      });
+                      return;
+                    }
+                    if (dealer.current.balance <= 0) {
+                      setStarted(false);
+                      Toast.show({
+                        type: "success",
+                        text1: "You've cleaned out the dealer! 🎉",
+                        text2: "No more chips in the house.",
+                      });
+                      return;
+                    }
+
+                    player.current.take(amount);
+                    player.current.currentBet = amount;
+                    dealer.current.give(amount);
+                    startGame();
+                  }}
+                />
+              ) : (
+                !playerMoveFinished && (
+                  <ActionBar
+                    onHit={() => handleHit("Player")}
+                    onStand={handleStand}
+                    onDouble={handleDouble}
+                    onInsurance={handleInsurance}
+                    canDouble={
+                      doubleEnabled && player.current.hand.length === 2
+                    }
+                    canInsure={
+                      insuranceEnabled &&
+                      dealer.current.hand[0].rank === "A" &&
+                      !insuranceTaken
+                    }
+                  />
+                )
+              )}
+            </View>
+
+            {/* Prawa kolumna — DealerStatus */}
+            <View style={styles.tableSide}>
               <PlayerStatus
                 name="Dealer"
                 balance={dealer.current.balance}
@@ -448,81 +492,13 @@ const BlackjackTraining = () => {
                 }
               />
             </View>
-
-            {!started && (
-              <>
-                <BetInput
-                  max={player.current.balance}
-                  onConfirm={(amount) => {
-                    if (dealer.current.balance < amount * 2.5) {
-                      Toast.show({
-                        type: "error",
-                        text1: "Dealer can't cover this bet 💸",
-                        text2: "Lower your stake or let them recover!",
-                      });
-                      return; // Przerwij start gry
-                    }
-                    if (dealer.current.balance <= 0) {
-                      setStarted(false);
-                      Toast.show({
-                        type: "success",
-                        text1: "🎉 You've cleaned out the dealer!",
-                        text2: "No more chips in the house.",
-                      });
-                      return;
-                    }
-
-                    // console.log("amount" + amount);
-                    console.log(`Taking player: ${amount}`);
-                    player.current.take(amount);
-                    player.current.currentBet = amount;
-                    console.log(`Giving dealer: ${amount}`);
-                    dealer.current.give(amount);
-                    // console.log("bet" + player.current.currentBet);
-                    startGame();
-                    // Twoja logika tutaj:
-                    // - player.current.take(amount)
-                    // - player.current.currentBet = amount
-                    // - rozdaj karty
-                    // - setStarted(true)
-                  }}
-                />
-              </>
-            )}
-            {started && (
-              <>
-                {!playerMoveFinished && (
-                  <ActionBar
-                    onHit={() => {
-                      /* TODO: connect - logic */
-                      handleHit("Player");
-                    }}
-                    onStand={() => {
-                      handleStand();
-                    }}
-                    onDouble={() => {
-                      /* TODO: connect handleDouble */
-                      handleDouble();
-                    }}
-                    onInsurance={() => {
-                      /* TODO: connect handleInsurance */
-                      handleInsurance();
-                    }}
-                    canDouble={
-                      doubleEnabled && player.current.hand.length === 2
-                    }
-                    canInsure={
-                      insuranceEnabled &&
-                      dealer.current.hand[0].rank === "A" &&
-                      !insuranceTaken
-                    }
-                  />
-                )}
-              </>
-            )}
           </View>
         </View>
-      </SafeAreaView>
+      </View>
+      <BlackjackWinModal
+        visible={blackjackWin}
+        onDismiss={() => setBlackjackWin(false)}
+      />
       <Toast config={toastConfig} />
     </SafeAreaProvider>
   );
@@ -531,8 +507,9 @@ const BlackjackTraining = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#0e0e0e",
+    backgroundColor: "transparent",
     position: "relative",
+    zIndex: 1,
   },
   container: {
     flex: 1,
@@ -543,15 +520,51 @@ const styles = StyleSheet.create({
     left: "50%",
     width: "100%",
     height: "80%",
-    transform: [{ translateX: "-50%" }, { translateY: "-50%" }],
+    alignSelf: "flex-end",
+  },
+  backgroundImage: {
+    flex: 1,
+    zIndex: 0,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    // resizeMode: "contain",
   },
   uiLayer: {
-    flex: 1,
+    height: "100%",
     justifyContent: "space-between",
     paddingVertical: 24,
-    paddingHorizontal: 32,
+    // paddingHorizontal: 32,
+    marginTop: 10,
+    zIndex: 2,
   },
-
+  table: {
+    backgroundColor: "green",
+    width: "90%",
+    alignSelf: "center",
+    height: "50%",
+    // alignSelf: "flex-end",
+    top: "50%",
+    zIndex: 1,
+    borderWidth: 7,
+    borderColor: "#4d342f",
+    outlineColor: "#2e1c1c",
+    outlineWidth: 7,
+    borderTopLeftRadius: 150,
+    borderTopRightRadius: 150,
+  },
+  secondPlane: {
+    position: "absolute",
+    width: "100%",
+    height: "45%",
+    top: "15%",
+    backgroundColor: "transparent",
+    // alignSelf: "flex-end",
+    alignItems: "flex-start",
+    // zIndex: 2,
+  },
   button: {
     paddingVertical: 10,
     paddingHorizontal: 20,
@@ -571,6 +584,27 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginTop: 10,
     color: "#fff",
+  },
+  tableSide: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  tableCenter: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  dealer: {
+    width: "50%",
+    height: "105%",
+    resizeMode: "contain",
+    // position: "absolute",
+    zIndex: 5,
+    alignSelf: "center",
+    bottom: 0,
+    left: 0,
   },
 });
 
