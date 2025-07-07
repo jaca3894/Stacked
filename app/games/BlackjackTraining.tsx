@@ -407,7 +407,7 @@ const BlackjackTraining = () => {
         {/* Czerwony górny plan — dealer */}
         <View style={styles.secondPlane}>
           <Image
-            source={require("../../assets/dealer.png")}
+            source={require("../../assets/dealer/dealer.png")}
             style={styles.dealer}
           />
           {/* Możesz tu dodać obraz dealera */}

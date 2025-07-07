@@ -197,7 +197,7 @@ const CreateBlackjack = () => {
                 isVisible={showTrainingTip}
                 from={trainingRef}
                 onRequestClose={() => setShowTrainingTip(false)}
-                text="No chips, pure card gameplay – perfect for learning blackjack basics."
+                text="Perfect for learning blackjack basics."
               />
             </TouchableOpacity>
 

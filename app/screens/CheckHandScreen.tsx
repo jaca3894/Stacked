@@ -7,11 +7,16 @@ import {
   Text,
   TouchableOpacity,
   Modal,
+  FlatList,
+  Dimensions,
+  ScrollView,
 } from "react-native";
 import Toast from "react-native-toast-message";
 import toastConfig from "../../config/ToastConfig";
 import { HandRank, handrank } from "../../utils/Handrank";
 
+const suits = ["♠", "♥", "♣", "♦"];
+const screenWidth = Dimensions.get("screen").width;
 const generateDeck = () => {
   const values = [
     "A",
@@ -96,6 +101,22 @@ const renderCard = (code: string) => {
 const CheckHandScreen = () => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [evaluatedHand, setEvaluatedHand] = useState<HandRank | null>(null);
+  const [activeSuit, setActiveSuit] = useState("♠");
+  const orderedValues = [
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "T",
+    "J",
+    "Q",
+    "K",
+    "A",
+  ];
 
   const [selectedCards, setSelectedCards] = useState([
     "",
@@ -212,46 +233,89 @@ const CheckHandScreen = () => {
           </TouchableOpacity>
         </View>
         <View style={styles.deckPanel}>
-          <View style={styles.deckGrid}>
-            {deck.map((card) => {
-              const value =
-                card.value.toLowerCase() === "t"
-                  ? "t"
-                  : card.value.toLowerCase();
-              const suitCode =
-                card.suit === "♠"
-                  ? "s"
-                  : card.suit === "♥"
-                  ? "h"
-                  : card.suit === "♣"
-                  ? "c"
-                  : "d";
-              const formatted = `${value}${suitCode}`;
-              const isSelected = selectedCards.includes(formatted);
-
-              return (
-                <TouchableOpacity
-                  key={card.id}
-                  style={[styles.cardView, { opacity: isSelected ? 0.5 : 1 }]}
-                  onPress={() => handleCardSelect(card)}
+          {/* Zakładki kolorów */}
+          <View style={styles.tabBar}>
+            {suits.map((s) => (
+              <TouchableOpacity
+                key={s}
+                onPress={() => setActiveSuit(s)}
+                style={[
+                  styles.tabButton,
+                  activeSuit === s && styles.activeTabButton,
+                ]}
+              >
+                <Text
+                  style={{
+                    color: s === "♥" || s === "♦" ? "red" : "white",
+                    fontWeight: "bold",
+                    fontSize: 16,
+                  }}
                 >
-                  <Text style={[styles.cornerLeftText, { color: card.color }]}>
-                    {card.value === "T" ? "10" : card.value}
-                  </Text>
-                  <Text style={[styles.suitSymbol, { color: card.color }]}>
-                    {card.suit}
-                  </Text>
-                  <Text
+                  {s}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          {/* Grid kart aktualnego koloru */}
+          <View style={styles.deckGrid}>
+            {deck
+              .filter((c) => c.suit === activeSuit)
+              .sort(
+                (a, b) =>
+                  orderedValues.indexOf(a.value) -
+                  orderedValues.indexOf(b.value)
+              )
+              .map((card) => {
+                const value =
+                  card.value.toLowerCase() === "t"
+                    ? "t"
+                    : card.value.toLowerCase();
+                const suitCode =
+                  card.suit === "♠"
+                    ? "s"
+                    : card.suit === "♥"
+                    ? "h"
+                    : card.suit === "♣"
+                    ? "c"
+                    : "d";
+                const formatted = `${value}${suitCode}`;
+                const isSelected = selectedCards.includes(formatted);
+
+                return (
+                  <TouchableOpacity
+                    key={card.id}
                     style={[
-                      styles.cornerRightText,
-                      { color: card.color, transform: [{ rotate: "180deg" }] },
+                      styles.cardView,
+                      {
+                        opacity: isSelected ? 0.5 : 1,
+                        margin: 4,
+                      },
                     ]}
+                    onPress={() => handleCardSelect(card)}
                   >
-                    {card.value === "T" ? "10" : card.value}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
+                    <Text
+                      style={[styles.cornerLeftText, { color: card.color }]}
+                    >
+                      {card.value === "T" ? "10" : card.value}
+                    </Text>
+                    <Text style={[styles.suitSymbol, { color: card.color }]}>
+                      {card.suit}
+                    </Text>
+                    <Text
+                      style={[
+                        styles.cornerRightText,
+                        {
+                          color: card.color,
+                          transform: [{ rotate: "180deg" }],
+                        },
+                      ]}
+                    >
+                      {card.value === "T" ? "10" : card.value}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
           </View>
         </View>
       </View>
@@ -286,7 +350,7 @@ const CheckHandScreen = () => {
               borderColor: "#cbbb9c",
             }}
           >
-            <Text
+            {/* <Text
               style={{
                 fontSize: 20,
                 fontWeight: "bold",
@@ -295,8 +359,11 @@ const CheckHandScreen = () => {
               }}
             >
               🃏 Poker Hand Evaluation
-            </Text>
-
+            </Text> */}
+            <Image
+              source={require("../../assets/dealer/dealerCheck.png")}
+              style={styles.dealer}
+            ></Image>
             {evaluatedHand && (
               <>
                 <Text
@@ -390,7 +457,9 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   deckPanel: {
+    alignSelf: "center",
     flex: 1,
+    justifyContent: "space-between",
     // borderWidth: 1,
     // borderColor: "red",
     padding: "7%",
@@ -403,7 +472,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   cardView: {
-    width: "10%", // 9-10 kart w rzędzie zależnie od marginesów
+    width: screenWidth * 0.12, // 9-10 kart w rzędzie zależnie od marginesów
     aspectRatio: 0.66, // standardowy stosunek kart (np. 60x90)
     backgroundColor: "white",
     borderRadius: 6,
@@ -446,6 +515,28 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: "center",
     marginHorizontal: "auto",
+  },
+  dealer: {
+    width: screenWidth * 0.5,
+    height: 250,
+    resizeMode: "contain",
+  },
+  tabBar: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginBottom: 10,
+  },
+  tabButton: {
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+    // borderTopLeftRadius: 6,
+    // borderTopRightRadius: 6,
+    // borderColor: "#cbbb9c",
+  },
+  activeTabButton: {
+    // backgroundColor: "#333",
+    borderBottomWidth: 3,
+    borderBottomColor: "#cbbb9c",
   },
 });
 

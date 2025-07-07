@@ -45,7 +45,7 @@ const BetInput: React.FC<BetInputProps> = ({ max, onConfirm }) => {
           <Text style={styles.buttonText}>–</Text>
         </TouchableOpacity>
 
-        <Text style={styles.valueLabel}>{value} 💰</Text>
+        <Text style={styles.valueLabel}>{value} ⛃</Text>
 
         <TouchableOpacity
           onPressIn={() => startHolding(increase)}
