@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -11,6 +11,8 @@ import {
   Dimensions,
   ScrollView,
 } from "react-native";
+import { Animated } from "react-native";
+
 import Toast from "react-native-toast-message";
 import toastConfig from "../../config/ToastConfig";
 import { HandRank, handrank } from "../../utils/Handrank";
@@ -99,9 +101,15 @@ const renderCard = (code: string) => {
 };
 
 const CheckHandScreen = () => {
+  const tabAnim = useRef(new Animated.Value(0)).current;
+  const [tabMeasurements, setTabMeasurements] = useState<
+    { x: number; width: number }[]
+  >([]);
   const [isModalVisible, setModalVisible] = useState(false);
   const [evaluatedHand, setEvaluatedHand] = useState<HandRank | null>(null);
   const [activeSuit, setActiveSuit] = useState("♠");
+  // const tabAnim = useRef(new Animated.Value(0)).current;
+
   const orderedValues = [
     "2",
     "3",
@@ -151,6 +159,14 @@ const CheckHandScreen = () => {
     const result = handrank(filled);
     setEvaluatedHand(result);
     setModalVisible(true);
+  };
+
+  const handleTabPress = (suit: string, index: number) => {
+    setActiveSuit(suit);
+    Animated.spring(tabAnim, {
+      toValue: index,
+      useNativeDriver: false,
+    }).start();
   };
 
   const handleCardSelect = (card: Card) => {
@@ -235,14 +251,19 @@ const CheckHandScreen = () => {
         <View style={styles.deckPanel}>
           {/* Zakładki kolorów */}
           <View style={styles.tabBar}>
-            {suits.map((s) => (
+            {suits.map((s, index) => (
               <TouchableOpacity
                 key={s}
-                onPress={() => setActiveSuit(s)}
-                style={[
-                  styles.tabButton,
-                  activeSuit === s && styles.activeTabButton,
-                ]}
+                style={styles.tabButton}
+                onPress={() => handleTabPress(s, index)}
+                onLayout={(e) => {
+                  const layout = e.nativeEvent.layout;
+                  setTabMeasurements((prev) => {
+                    const updated = [...prev];
+                    updated[index] = { x: layout.x, width: layout.width };
+                    return updated;
+                  });
+                }}
               >
                 <Text
                   style={{
@@ -255,6 +276,25 @@ const CheckHandScreen = () => {
                 </Text>
               </TouchableOpacity>
             ))}
+
+            {tabMeasurements.length === suits.length && (
+              <Animated.View
+                style={[
+                  styles.underline,
+                  {
+                    width: tabMeasurements[0].width,
+                    transform: [
+                      {
+                        translateX: tabAnim.interpolate({
+                          inputRange: [0, 1, 2, 3],
+                          outputRange: tabMeasurements.map((m) => m.x),
+                        }),
+                      },
+                    ],
+                  },
+                ]}
+              />
+            )}
           </View>
 
           {/* Grid kart aktualnego koloru */}
@@ -525,6 +565,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     marginBottom: 10,
+    position: "relative",
   },
   tabButton: {
     paddingVertical: 6,
@@ -537,6 +578,15 @@ const styles = StyleSheet.create({
     // backgroundColor: "#333",
     borderBottomWidth: 3,
     borderBottomColor: "#cbbb9c",
+  },
+  underline: {
+    position: "absolute",
+    // marginTop: 30,
+    left: 0,
+    bottom: 0,
+    height: 3,
+    backgroundColor: "#cbbb9c",
+    borderRadius: 2,
   },
 });
 
