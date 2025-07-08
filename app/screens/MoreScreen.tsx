@@ -64,7 +64,7 @@ const MoreScreen = () => {
                 flexDirection: "row",
                 justifyContent: "center",
                 alignItems: "center",
-                opacity: hasAnimated ? 1 : 0,
+                opacity: hasAnimated.current ? 1 : 0,
               }}
             >
               <TouchableOpacity
