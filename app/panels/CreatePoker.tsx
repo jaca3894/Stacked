@@ -260,7 +260,7 @@ const CreatePoker = () => {
           <Text style={styles.footerText}>2025 Stacked.</Text>
         </View>
       </SafeAreaView>
-      <Toast config={toastConfig} />
+      <Toast config={toastConfig} swipeable />
     </SafeAreaProvider>
   );
 };

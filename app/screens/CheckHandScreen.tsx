@@ -438,7 +438,7 @@ const CheckHandScreen = () => {
         </View>
       </Modal>
 
-      <Toast config={toastConfig} />
+      <Toast config={toastConfig} swipeable />
     </View>
   );
 };

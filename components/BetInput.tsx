@@ -19,17 +19,26 @@ const BetInput: React.FC<BetInputProps> = ({ max, onConfirm }) => {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const startHolding = (fn: () => void) => {
-    fn(); // od razu wykonaj raz
-    intervalRef.current = setInterval(fn, 30);
+    let delay = 300; // początkowe opóźnienie
+    const minDelay = 30; // minimalne opóźnienie
+    const acceleration = 0.85; // współczynnik przyspieszenia
+
+    const run = () => {
+      fn();
+      delay = Math.max(minDelay, delay * acceleration);
+      intervalRef.current = setTimeout(run, delay);
+    };
+
+    fn(); // wykonaj raz natychmiast
+    intervalRef.current = setTimeout(run, delay);
   };
 
   const stopHolding = () => {
     if (intervalRef.current) {
-      clearInterval(intervalRef.current);
+      clearTimeout(intervalRef.current);
       intervalRef.current = null;
     }
   };
-
   const increase = () => setValue((v) => Math.min(max, v + 1));
   const decrease = () => setValue((v) => Math.max(1, v - 1));
 
