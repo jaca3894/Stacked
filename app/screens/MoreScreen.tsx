@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
+
 import {
   View,
   Text,
@@ -17,6 +19,28 @@ const screenWidth = Math.round(Dimensions.get("window").width);
 
 const MoreScreen = () => {
   const [activePanelIndex, setActivePanelIndex] = useState<number | null>(null);
+  const animRefs = useRef<any>([]);
+  const AnimatableView = Animatable.createAnimatableComponent(View);
+  const [refreshKey] = useState(Date.now());
+  const hasAnimated = useRef(false);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if (hasAnimated.current) return;
+
+      data.forEach((_, index) => {
+        const ref = animRefs.current[index];
+        if (ref) {
+          ref.setNativeProps({ style: { opacity: 0 } });
+          setTimeout(() => {
+            ref.animate("fadeIn", 1000);
+          }, index * 200);
+        }
+      });
+
+      hasAnimated.current = true;
+    }, [])
+  );
 
   return (
     <SafeAreaProvider>
@@ -31,23 +55,22 @@ const MoreScreen = () => {
 
         <View style={styles.flexContainer}>
           {data.map((item, index) => (
-            <TouchableOpacity
-              key={index}
-              style={styles.card}
-              onPress={() => setActivePanelIndex(index)}
-              activeOpacity={0.8}
+            <AnimatableView
+              key={`${refreshKey}-${index}`}
+              ref={(ref) => {
+                if (ref) animRefs.current[index] = ref;
+              }}
+              style={{
+                flexDirection: "row",
+                justifyContent: "center",
+                alignItems: "center",
+                opacity: hasAnimated ? 1 : 0,
+              }}
             >
-              <Animatable.View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-                animation="fadeIn"
-                duration={1500}
-                delay={500}
-                iterationCount={1}
-                useNativeDriver
+              <TouchableOpacity
+                style={styles.card}
+                onPress={() => setActivePanelIndex(index)}
+                activeOpacity={0.7}
               >
                 <Icon
                   name={item.iconName}
@@ -60,8 +83,8 @@ const MoreScreen = () => {
                   <Text style={styles.cardSubtitle}>{item.subtitle}</Text>
                 </View>
                 <Icon name="chevron-forward" size={20} color="#cbbb9c" />
-              </Animatable.View>
-            </TouchableOpacity>
+              </TouchableOpacity>
+            </AnimatableView>
           ))}
         </View>
 
