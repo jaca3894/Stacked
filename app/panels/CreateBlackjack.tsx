@@ -16,6 +16,7 @@ import toastConfig from "../../config/ToastConfig";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import HelpPopover from "../../components/HelpPopover";
 import * as ScreenOrientation from "expo-screen-orientation";
+import * as Animatable from "react-native-animatable";
 
 const CreateBlackjack = () => {
   useEffect(() => {
@@ -35,6 +36,7 @@ const CreateBlackjack = () => {
   const [playersAmount, setPlayersAmount] = useState("");
   const [initialBalance, setInitialBalance] = useState("");
   const [mode, setMode] = useState<"tracking" | "training">("training");
+  const [initialRadioState, setInitialRadioState] = useState(true);
 
   const [allowInsurance, setAllowInsurance] = useState(false);
   const [allowDouble, setAllowDouble] = useState(false);
@@ -118,7 +120,11 @@ const CreateBlackjack = () => {
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
         {/* HEADER */}
-        <View style={styles.header}>
+        <Animatable.View
+          style={styles.header}
+          animation="fadeIn"
+          duration={1000}
+        >
           <TouchableOpacity
             onPress={() => navigation.goBack()}
             style={styles.backButton}
@@ -129,14 +135,19 @@ const CreateBlackjack = () => {
             />
           </TouchableOpacity>
           <Text style={styles.headerText}>Blackjack setup</Text>
-        </View>
+        </Animatable.View>
 
         {/* CONTENT */}
         <View style={styles.content}>
           {/* Players */}
 
           {/* Balance + tooltip */}
-          <View style={{ width: "100%", alignItems: "center" }}>
+          <Animatable.View
+            style={{ width: "100%", alignItems: "center" }}
+            animation="fadeIn"
+            duration={1000}
+            delay={100}
+          >
             <View style={styles.titleRow}>
               <Text style={styles.title}>Balance</Text>
               <TouchableOpacity
@@ -169,12 +180,20 @@ const CreateBlackjack = () => {
               placeholderTextColor="#888"
               maxLength={6}
             />
-          </View>
+          </Animatable.View>
 
-          <View style={styles.radioGroup}>
+          <Animatable.View
+            style={styles.radioGroup}
+            animation="fadeIn"
+            duration={1000}
+            delay={200}
+          >
             {/* Training Mode */}
             <TouchableOpacity
-              onPress={() => setMode("training")}
+              onPress={() => {
+                setMode("training");
+                setInitialRadioState(false);
+              }}
               style={styles.radioOption}
             >
               <Ionicons
@@ -203,7 +222,10 @@ const CreateBlackjack = () => {
 
             {/* Table Tracking */}
             <TouchableOpacity
-              onPress={() => setMode("tracking")}
+              onPress={() => {
+                setMode("tracking");
+                setInitialRadioState(false);
+              }}
               style={styles.radioOption}
             >
               <Ionicons
@@ -229,9 +251,14 @@ const CreateBlackjack = () => {
                 text="Track win/loss and chip flow at the table."
               />
             </TouchableOpacity>
-          </View>
+          </Animatable.View>
           {mode === "tracking" && (
-            <View style={{ width: "100%", alignItems: "center" }}>
+            <Animatable.View
+              style={{ width: "100%", alignItems: "center" }}
+              animation="fadeIn"
+              duration={1000}
+              // delay={100}
+            >
               <View style={styles.titleRow}>
                 <Text style={styles.title}>Players</Text>
               </View>
@@ -252,12 +279,17 @@ const CreateBlackjack = () => {
                 placeholderTextColor="#888"
                 maxLength={1}
               />
-            </View>
+            </Animatable.View>
           )}
           {/* Conditional options */}
           {mode === "training" && (
             <>
-              <View style={styles.switchRow}>
+              <Animatable.View
+                style={styles.switchRow}
+                animation="fadeIn"
+                duration={1000}
+                delay={initialRadioState ? 400 : 0}
+              >
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
                   <Text style={styles.title}>Allow insurance</Text>
                   <TouchableOpacity
@@ -279,9 +311,14 @@ const CreateBlackjack = () => {
                   value={allowInsurance}
                   onValueChange={setAllowInsurance}
                 />
-              </View>
+              </Animatable.View>
 
-              <View style={styles.switchRow}>
+              <Animatable.View
+                style={styles.switchRow}
+                animation="fadeIn"
+                duration={1000}
+                delay={initialRadioState ? 500 : 0}
+              >
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
                   <Text style={styles.title}>Allow double</Text>
                   <TouchableOpacity
@@ -300,9 +337,14 @@ const CreateBlackjack = () => {
                   ></HelpPopover>
                 </View>
                 <Switch value={allowDouble} onValueChange={setAllowDouble} />
-              </View>
+              </Animatable.View>
 
-              <View style={styles.switchRow}>
+              <Animatable.View
+                style={styles.switchRow}
+                animation="fadeIn"
+                duration={1000}
+                delay={initialRadioState ? 600 : 0}
+              >
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
                   <Text style={styles.title}>Auto-hit on 17</Text>
                   <TouchableOpacity
@@ -321,14 +363,21 @@ const CreateBlackjack = () => {
                   />
                 </View>
                 <Switch value={autoHitOn17} onValueChange={setAutoHitOn17} />
-              </View>
+              </Animatable.View>
             </>
           )}
 
           {/* START BUTTON */}
-          <TouchableOpacity onPress={handleStart} style={styles.button}>
-            <Text style={styles.buttonText}>Start Game</Text>
-          </TouchableOpacity>
+          <Animatable.View
+            style={{ width: "100%", alignItems: "center" }}
+            animation="fadeIn"
+            duration={1000}
+            delay={800}
+          >
+            <TouchableOpacity onPress={handleStart} style={styles.button}>
+              <Text style={styles.buttonText}>Start Game</Text>
+            </TouchableOpacity>
+          </Animatable.View>
         </View>
 
         {/* FOOTER */}
