@@ -9,12 +9,14 @@ import {
   TouchableOpacity,
 } from "react-native";
 import RootStackParamList from "../../props/RootStackParamList";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { articlesData as data } from "../../classes/Database";
 import { Image as Gif } from "expo-image";
 import * as Animatable from "react-native-animatable";
+import { useFocusEffect } from "@react-navigation/native";
+import { View as RNView } from "react-native"; // dla createAnimatableComponent
 
 type ArticleScreenProp = RouteProp<RootStackParamList, "Article">;
 
@@ -71,7 +73,7 @@ const ArticleScreen = () => {
           <Animatable.View
             animation="fadeIn"
             duration={1500}
-            delay={300}
+            delay={600}
             iterationCount={1}
             style={styles.introFlexContainer}
           >
@@ -90,7 +92,7 @@ const ArticleScreen = () => {
             <Animatable.Text
               animation="fadeIn"
               duration={1500}
-              delay={300}
+              delay={450}
               iterationCount={1}
               style={styles.titleText}
             >
@@ -100,7 +102,7 @@ const ArticleScreen = () => {
               <Animatable.Text
                 animation="fadeIn"
                 duration={1500}
-                delay={300}
+                delay={600}
                 iterationCount={1}
                 style={styles.videoNote}
               >
@@ -111,7 +113,7 @@ const ArticleScreen = () => {
             <Animatable.View
               animation="fadeIn"
               duration={1500}
-              delay={300}
+              delay={600}
               iterationCount={1}
               style={styles.authorRow}
             >
@@ -153,7 +155,7 @@ const ArticleScreen = () => {
             <Animatable.Text
               animation="fadeIn"
               duration={1500}
-              delay={300}
+              delay={750}
               iterationCount={1}
               style={styles.contentText}
             >
@@ -176,7 +178,7 @@ const ArticleScreen = () => {
                 <Animatable.Text
                   animation="fadeIn"
                   duration={1500}
-                  delay={300}
+                  delay={850}
                   iterationCount={1}
                   style={styles.videoCaption}
                 >
