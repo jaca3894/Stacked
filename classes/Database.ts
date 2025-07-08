@@ -1,5 +1,3 @@
-import SettingsPanel from "../app/panels/SettingsPanel";
-
 export const welcomeCardsData = [
   {
     title: "Host games",
@@ -26,37 +24,37 @@ export const morePanelsData = [
     title: "Glossary",
     subtitle: "Explore definitions of key terms",
     iconName: "book-outline",
-    panel: SettingsPanel,
+    panel: "GlossaryScreen",
   },
   {
     title: "Send feedback",
     subtitle: "Tell us what you think about the app",
     iconName: "chatbubble-ellipses-outline",
-    panel: SettingsPanel,
+    panel: "FeedbackScreen",
   },
   {
     title: "Report a bug",
     subtitle: "Notice something off? Let us know",
     iconName: "bug-outline",
-    panel: SettingsPanel,
+    panel: "BugReportScreen",
   },
   {
     title: "Credits",
     subtitle: "Tools and assets used in this project",
     iconName: "people-outline",
-    panel: SettingsPanel,
+    panel: "CreditsScreen",
   },
   {
     title: "Patch notes",
     subtitle: "See what's new, fixed or improved",
     iconName: "document-text-outline",
-    panel: SettingsPanel,
+    panel: "PatchNotesScreen",
   },
   {
     title: "Settings",
     subtitle: "Customize your experience",
     iconName: "settings-outline",
-    panel: SettingsPanel,
+    panel: "SettingsScreen",
   },
 ];
 

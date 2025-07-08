@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
 import {
   View,
@@ -9,6 +9,7 @@ import {
   Image,
   TouchableOpacity,
   Modal,
+  ScrollView,
 } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { morePanelsData as data } from "../../classes/Database";
@@ -18,6 +19,7 @@ import * as Animatable from "react-native-animatable";
 const screenWidth = Math.round(Dimensions.get("window").width);
 
 const MoreScreen = () => {
+  const navigation = useNavigation<any>();
   const [activePanelIndex, setActivePanelIndex] = useState<number | null>(null);
   const animRefs = useRef<any>([]);
   const AnimatableView = Animatable.createAnimatableComponent(View);
@@ -53,7 +55,7 @@ const MoreScreen = () => {
           />
         </View>
 
-        <View style={styles.flexContainer}>
+        <ScrollView style={styles.flexContainer}>
           {data.map((item, index) => (
             <AnimatableView
               key={`${refreshKey}-${index}`}
@@ -69,7 +71,7 @@ const MoreScreen = () => {
             >
               <TouchableOpacity
                 style={styles.card}
-                onPress={() => setActivePanelIndex(index)}
+                onPress={() => navigation.navigate(item.panel)}
                 activeOpacity={0.7}
               >
                 <Icon
@@ -86,24 +88,11 @@ const MoreScreen = () => {
               </TouchableOpacity>
             </AnimatableView>
           ))}
-        </View>
+        </ScrollView>
 
         <View style={styles.footer}>
           <Text style={styles.footerText}>2025 Stacked.</Text>
         </View>
-
-        {activePanelIndex !== null && data[activePanelIndex] && (
-          <Modal
-            animationType="slide"
-            visible
-            onRequestClose={() => setActivePanelIndex(null)}
-            presentationStyle="fullScreen"
-          >
-            {React.createElement(
-              data[activePanelIndex].panel as React.ComponentType
-            )}
-          </Modal>
-        )}
       </SafeAreaView>
     </SafeAreaProvider>
   );

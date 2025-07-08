@@ -499,7 +499,7 @@ const BlackjackTraining = () => {
         visible={blackjackWin}
         onDismiss={() => setBlackjackWin(false)}
       />
-      <Toast config={toastConfig} />
+      <Toast config={toastConfig} swipeable />
     </SafeAreaProvider>
   );
 };
