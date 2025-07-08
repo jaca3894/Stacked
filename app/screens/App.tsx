@@ -13,6 +13,11 @@ import BlackjackGame from "../games/BlackjackGame";
 import BlackjackTraining from "../games/BlackjackTraining";
 import ArticleScreen from "./ArticleScreen";
 import SettingsScreen from "./More/Settings";
+import CreditsScreen from "./More/Credits";
+import FeedbackScreen from "./More/Feedback";
+import GlossaryScreen from "./More/Glossary";
+import PatchNotesScreen from "./More/PatchNotes";
+import ReportBugScreen from "./More/ReportBug";
 
 const Stack = createStackNavigator();
 
@@ -98,6 +103,31 @@ export default function App() {
           <Stack.Screen
             name="Article"
             component={ArticleScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Credits"
+            component={CreditsScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Feedback"
+            component={FeedbackScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Glossary"
+            component={GlossaryScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="PatchNotes"
+            component={PatchNotesScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="ReportBug"
+            component={ReportBugScreen}
             options={{ headerShown: false }}
           />
           <Stack.Screen

@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useFocusEffect } from "@react-navigation/native";
+import React, { useRef, useState } from "react";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
 import {
   View,
@@ -8,7 +8,6 @@ import {
   Dimensions,
   Image,
   TouchableOpacity,
-  Modal,
 } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { morePanelsData as data } from "../../../classes/Database";
@@ -19,7 +18,7 @@ import { ScrollView } from "react-native-gesture-handler";
 const screenWidth = Math.round(Dimensions.get("window").width);
 
 const MoreScreen = () => {
-  const [activePanelIndex, setActivePanelIndex] = useState<number | null>(null);
+  const navigation = useNavigation();
   const animRefs = useRef<any>([]);
   const AnimatableView = Animatable.createAnimatableComponent(View);
   const [refreshKey] = useState(Date.now());
@@ -70,7 +69,7 @@ const MoreScreen = () => {
             >
               <TouchableOpacity
                 style={styles.card}
-                onPress={() => setActivePanelIndex(index)}
+                onPress={() => (navigation as any).navigate(item.panel)}
                 activeOpacity={0.7}
               >
                 <Icon
@@ -91,18 +90,6 @@ const MoreScreen = () => {
             <Text style={styles.footerText}>2025 Stacked.</Text>
           </View>
         </ScrollView>
-        {activePanelIndex !== null && data[activePanelIndex] && (
-          <Modal
-            animationType="slide"
-            visible
-            onRequestClose={() => setActivePanelIndex(null)}
-            presentationStyle="fullScreen"
-          >
-            {React.createElement(
-              data[activePanelIndex].panel as React.ComponentType
-            )}
-          </Modal>
-        )}
       </SafeAreaView>
     </SafeAreaProvider>
   );

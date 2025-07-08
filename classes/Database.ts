@@ -24,37 +24,37 @@ export const morePanelsData = [
     title: "Glossary",
     subtitle: "Explore definitions of key terms",
     iconName: "book-outline",
-    panel: "GlossaryScreen",
+    panel: "Glossary",
   },
   {
     title: "Send feedback",
     subtitle: "Tell us what you think about the app",
     iconName: "chatbubble-ellipses-outline",
-    panel: "FeedbackScreen",
+    panel: "Feedback",
   },
   {
     title: "Report a bug",
     subtitle: "Notice something off? Let us know",
     iconName: "bug-outline",
-    panel: "BugReportScreen",
+    panel: "ReportBug",
   },
   {
     title: "Credits",
     subtitle: "Tools and assets used in this project",
     iconName: "people-outline",
-    panel: "CreditsScreen",
+    panel: "Credits",
   },
   {
     title: "Patch notes",
     subtitle: "See what's new, fixed or improved",
     iconName: "document-text-outline",
-    panel: "PatchNotesScreen",
+    panel: "PatchNotes",
   },
   {
     title: "Settings",
     subtitle: "Customize your experience",
     iconName: "settings-outline",
-    panel: "SettingsScreen",
+    panel: "Settings",
   },
 ];
 

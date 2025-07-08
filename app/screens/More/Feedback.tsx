@@ -2,12 +2,12 @@ import { StyleSheet, Text } from "react-native"
 import { View } from "react-native-animatable"
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context"
 
-const SettingsScreen = () => {
+const FeedbackScreen = () => {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
         <View>
-          <Text style={{color: '#fff'}}>Settings</Text>
+          <Text style={{color: '#fff'}}>Feedback</Text>
         </View>
       </SafeAreaView>
     </SafeAreaProvider>
@@ -21,4 +21,4 @@ const styles = StyleSheet.create({
   }
 })
 
-export default SettingsScreen;
+export default FeedbackScreen;
