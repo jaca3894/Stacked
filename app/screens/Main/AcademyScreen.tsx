@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, ScrollView, Dimensions, SafeAreaView, Image, FlatList, TouchableHighlight } from 'react-native';
-import { skillsData as data } from '../../classes/Database';
+import { skillsData as data } from '../../../classes/Database';
 import { Image as Gif} from 'expo-image';
 import { useNavigation } from '@react-navigation/native';
 import { useRef } from 'react';
@@ -14,7 +14,7 @@ const AcademyScreen = () => {
     <SafeAreaView style={{ flex: 1, backgroundColor: '#1c1c1c' }}>
       <View style={styles.header}>
         <Image
-          source={require('../../assets/logo/logoAcademy.png')}
+          source={require('../../../assets/logo/logoAcademy.png')}
           style={styles.logo}
           resizeMode="contain"
         />
@@ -47,7 +47,7 @@ const AcademyScreen = () => {
                       <View style={styles.skillName}>
                         <Text style={styles.skillNameText}>{item.name}</Text>
                         <Image
-                          source={require('../../assets/arrowRight.png')}
+                          source={require('../../../assets/arrowRight.png')}
                           style={{ width: 20, height: 20, position: 'absolute', right: 10, top: 15 }}
                           resizeMode="contain"
                         />

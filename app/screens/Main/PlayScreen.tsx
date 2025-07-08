@@ -20,7 +20,7 @@ const PlayScreen = () => {
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
         <Image
-          source={require("../../assets/logo/logo.png")}
+          source={require("../../../assets/logo/logo.png")}
           style={styles.logo}
           resizeMode="contain"
         />
@@ -38,7 +38,7 @@ const PlayScreen = () => {
                 <Text style={styles.buttonText}>Poker</Text>
                 <Image
                   style={styles.arrow}
-                  source={require("../../assets/arrowRight.png")}
+                  source={require("../../../assets/arrowRight.png")}
                   resizeMode="cover"
                 />
               </View>
@@ -52,7 +52,7 @@ const PlayScreen = () => {
                 <Text style={styles.buttonText}>Blackjack</Text>
                 <Image
                   style={styles.arrow}
-                  source={require("../../assets/arrowRight.png")}
+                  source={require("../../../assets/arrowRight.png")}
                   resizeMode="cover"
                 />
               </View>

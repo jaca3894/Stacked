@@ -7,7 +7,7 @@ import {
   Image,
   Dimensions,
 } from "react-native";
-import LoadingPanel from "../panels/LoadingPanel"; // Zakładamy, że masz ten komponent
+import LoadingPanel from "../../panels/LoadingPanel"; // Zakładamy, że masz ten komponent
 import * as NavigationBar from "expo-navigation-bar";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import * as Animatable from "react-native-animatable";
@@ -38,7 +38,7 @@ const HomeScreen = () => {
             duration={1500}
           >
             <Image
-              source={require("../../assets/logo/logo.png")}
+              source={require("../../../assets/logo/logo.png")}
               style={styles.logo}
             />
             <Text style={styles.text}>Hello, betatester!</Text>

@@ -9,14 +9,12 @@ import {
   TouchableOpacity,
 } from "react-native";
 import RootStackParamList from "../../props/RootStackParamList";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { articlesData as data } from "../../classes/Database";
 import { Image as Gif } from "expo-image";
 import * as Animatable from "react-native-animatable";
-import { useFocusEffect } from "@react-navigation/native";
-import { View as RNView } from "react-native"; // dla createAnimatableComponent
 
 type ArticleScreenProp = RouteProp<RootStackParamList, "Article">;
 

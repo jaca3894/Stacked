@@ -1,10 +1,10 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
-import HomeScreen from './HomeScreen';
-import PlayScreen from './PlayScreen';
-import AcademyScreen from './AcademyScreen';
-import MoreScreen from './MoreScreen';
-import CheckHandScreen from './CheckHandScreen';
+import HomeScreen from './Main/HomeScreen';
+import PlayScreen from './Main/PlayScreen';
+import AcademyScreen from './Main/AcademyScreen';
+import MoreScreen from './Main/MoreScreen';
+import CheckHandScreen from './Main/CheckHandScreen';
 
 export default function App() {
   const Tab = createMaterialTopTabNavigator();
