@@ -226,3 +226,210 @@ export const articlesData = [
     isLiked: false,
   },
 ];
+
+// database.tsx
+export const patchNotesData = [
+  {
+    version: "1.3.0",
+    date: "2025-07-09",
+    description: "Duża aktualizacja UX i poprawki wizualne.",
+    changes: [
+      "Dodano animacje przejść zakładek",
+      "Ulepszony ekran podziękowań",
+      "Poprawki w liście kart",
+    ],
+  },
+
+  {
+    version: "1.1.5",
+    date: "2025-06-28",
+    changes: [
+      "Dodano ekran Feedback",
+      "Nowe ilustracje dealera",
+      "Naprawiono błąd z resetowaniem kart",
+    ],
+    description: "",
+  },
+];
+
+export const glossaryData = [
+  {
+    title: "Poker",
+    data: [
+      {
+        term: "Bluff",
+        definition:
+          "A deceptive bet made with a weak hand to mislead opponents.",
+      },
+      {
+        term: "Flop",
+        definition: "The first three community cards dealt in Texas Hold'em.",
+      },
+      {
+        term: "Full House",
+        definition: "A hand with three of a kind and a pair.",
+      },
+      {
+        term: "All-In",
+        definition: "Betting all your remaining chips in a single hand.",
+      },
+      {
+        term: "Check",
+        definition: "Declining to bet while keeping your cards.",
+      },
+      {
+        term: "River",
+        definition:
+          "The fifth and final community card dealt in Texas Hold'em.",
+      },
+      {
+        term: "Turn",
+        definition: "The fourth community card dealt in Texas Hold'em.",
+      },
+      {
+        term: "Call",
+        definition: "Matching the current highest bet.",
+      },
+      {
+        term: "Raise",
+        definition: "Increasing the current bet.",
+      },
+      {
+        term: "Fold",
+        definition: "Discarding your hand and forfeiting the round.",
+      },
+    ],
+  },
+  {
+    title: "Blackjack",
+    data: [
+      {
+        term: "Hit",
+        definition: "Requesting another card to improve your hand.",
+      },
+      {
+        term: "Stand",
+        definition: "Ending your turn without taking more cards.",
+      },
+      {
+        term: "Bust",
+        definition: "Exceeding 21 points, resulting in an automatic loss.",
+      },
+      {
+        term: "Double Down",
+        definition: "Doubling your bet and receiving exactly one more card.",
+      },
+      {
+        term: "Split",
+        definition: "Dividing a pair into two separate hands.",
+      },
+      {
+        term: "Blackjack",
+        definition:
+          "An Ace and a 10-point card on the initial deal — best hand possible.",
+      },
+      {
+        term: "Insurance",
+        definition:
+          "A side bet offered when the dealer shows an Ace, protecting against blackjack.",
+      },
+      {
+        term: "Push",
+        definition: "A tie between player and dealer — no one wins or loses.",
+      },
+    ],
+  },
+  {
+    title: "General Card Terms",
+    data: [
+      {
+        term: "Deck",
+        definition: "A set of 52 playing cards without jokers.",
+      },
+      {
+        term: "Suit",
+        definition:
+          "One of the four categories: Hearts, Diamonds, Clubs, Spades.",
+      },
+      {
+        term: "Face Card",
+        definition: "Any Jack, Queen, or King.",
+      },
+      {
+        term: "Shuffle",
+        definition: "Mixing the cards to randomize their order.",
+      },
+      {
+        term: "Cut",
+        definition:
+          "Dividing the deck into two and rejoining them to finalize shuffle.",
+      },
+      {
+        term: "Draw",
+        definition: "Taking a card from the top of the deck.",
+      },
+      {
+        term: "Discard",
+        definition: "Placing a card into a separate pile, often face-up.",
+      },
+      {
+        term: "Hand",
+        definition: "The collection of cards held by a player.",
+      },
+      {
+        term: "Pile",
+        definition: "A stack of cards, such as draw pile or discard pile.",
+      },
+    ],
+  },
+];
+
+export const creditsData = [
+  {
+    title: "⚖️ About Visual Content Licensing",
+    intro:
+      "All visual materials (images, gifs, and videos) used in this project are either:",
+    items: [
+      "🧠 AI-generated",
+      "🎨 Licensed under Creative Commons (with attribution when required)",
+      "📸 Sourced from platforms like Pixabay under free-use licenses appropriate for educational and non-commercial use",
+    ],
+  },
+  {
+    title: "📺 Media Credits",
+    intro:
+      "We believe in proper attribution. This section contains all media sources. Specific video links are available within the articles where the content appears.",
+    items: [
+      {
+        label: "Josep Vidal",
+        link: "https://www.youtube.com/@JosepVidalMagic",
+        suffix: "'s YouTube Channel.",
+      },
+      {
+        label: "Hester23BearsCH",
+        link: "https://www.youtube.com/@Hester23BearsCHx",
+        suffix: "'s YouTube Channel.",
+      },
+      {
+        label: "Microsoft Copilot",
+        link: "https://copilot.microsoft.com/",
+        suffix: " ",
+      },
+      {
+        label: "Microsoft Designer",
+        link: "https://designer.microsoft.com/",
+        suffix: " ",
+      },
+      {
+        label: "Pixabay",
+        link: "https://pixabay.com/pl/",
+        suffix: " ",
+      },
+    ],
+  },
+  {
+    title: "Acknowledgements",
+    intro: "Special thanks to our developers and betatesters.",
+    // items: ["Our developers", "Our betatesters"],
+  },
+];
