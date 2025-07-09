@@ -5,7 +5,7 @@ type RootStackParamList = {
     smallBlindAmount: number;
     bigBlindAmount: number;
   };
-  Article: { articleId: number };
+  Article: { articleId: string };
   BlackjackTraining: {
     initialBalance: number;
     insuranceEnabled: boolean;

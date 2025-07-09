@@ -30,7 +30,12 @@ const ArticleScreen = () => {
   const navigation = useNavigation();
   const route = useRoute<ArticleScreenProp>();
   const { articleId } = route.params;
-  const article = data[articleId];
+  var article: object | any;
+  console.log(articleId + " article");
+
+  data.forEach((element) => {
+    if (element.id === articleId) article = element;
+  });
   const [liked, setLiked] = useState(article.isLiked);
 
   const toggleLike = () => {

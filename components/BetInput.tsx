@@ -14,7 +14,7 @@ interface BetInputProps {
 }
 
 const BetInput: React.FC<BetInputProps> = ({ max, onConfirm }) => {
-  const [value, setValue] = useState(Math.min(10, max));
+  const [value, setValue] = useState(() => Math.max(1, Math.min(10, max)));
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -40,7 +40,7 @@ const BetInput: React.FC<BetInputProps> = ({ max, onConfirm }) => {
     }
   };
   const increase = () => setValue((v) => Math.min(max, v + 1));
-  const decrease = () => setValue((v) => Math.max(1, v - 1));
+  const decrease = () => setValue((v) => Math.max(0, v - 1));
 
   return (
     <View style={styles.container}>
