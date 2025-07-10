@@ -12,20 +12,47 @@ import {
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Linking } from "react-native";
 import { creditsData as credits } from "../../../classes/Database";
+import * as Animatable from "react-native-animatable";
+import { useNavigation } from "@react-navigation/native";
 
 const screenHeight = Dimensions.get("screen").height;
 
 const CreditsScreen = () => {
+  const navigation = useNavigation();
+
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={{
+            position: "absolute",
+            top: "10%",
+            left: "7%",
+            zIndex: 2,
+          }}
+        >
+          <Image
+            source={require("../../../assets/arrowRight.png")}
+            style={{
+              width: 20,
+              height: 20,
+              transform: [{ scaleX: -1 }],
+            }}
+          />
+        </TouchableOpacity>
         <Image
           source={require("../../../assets/logo/logo.png")}
           style={styles.logo}
         />
         <ScrollView contentContainerStyle={styles.content}>
           {credits.map((section, index) => (
-            <View key={index} style={{ marginTop: 24 }}>
+            <Animatable.View
+              animation="fadeIn"
+              duration={1000}
+              key={index}
+              style={{ marginTop: 24 }}
+            >
               <Text style={styles.sectionTitle}>{section.title}</Text>
               {section.intro && (
                 <Text style={styles.itemText}>{section.intro}</Text>
@@ -49,7 +76,7 @@ const CreditsScreen = () => {
                     </Text>
                   )
                 )}
-            </View>
+            </Animatable.View>
           ))}
 
           <View style={styles.footer}>

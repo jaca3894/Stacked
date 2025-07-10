@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   Modal,
   Dimensions,
-  Animated
+  Animated,
 } from "react-native";
 
 import Toast from "react-native-toast-message";
@@ -220,7 +220,7 @@ const CheckHandScreen = () => {
         <View style={styles.dropZone}>
           {selectedCards.map((card, index) => (
             <TouchableOpacity
-              key={index+1}
+              key={index + 1}
               style={styles.emptyCardSlot}
               onPress={() => handleSlotPress(index)}
               activeOpacity={card !== "" ? 0.6 : 1}
@@ -277,14 +277,15 @@ const CheckHandScreen = () => {
             {tabMeasurements.length === suits.length && (
               <Animated.View
                 style={[
-                  styles.underline,
+                  styles.dotIndicator,
                   {
-                    width: tabMeasurements[0].width,
                     transform: [
                       {
                         translateX: tabAnim.interpolate({
                           inputRange: [0, 1, 2, 3],
-                          outputRange: tabMeasurements.map((m) => m.x),
+                          outputRange: tabMeasurements.map(
+                            (m) => m.x + m.width / 2 - 3.5 // m.x + połowa szerokości zakładki minus połowa kropki
+                          ),
                         }),
                       },
                     ],
@@ -509,7 +510,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   cardView: {
-    width: screenWidth * 0.12, // 9-10 kart w rzędzie zależnie od marginesów
+    width: "15%", // 9-10 kart w rzędzie zależnie od marginesów
     aspectRatio: 0.66, // standardowy stosunek kart (np. 60x90)
     backgroundColor: "white",
     borderRadius: 6,
@@ -576,14 +577,14 @@ const styles = StyleSheet.create({
     borderBottomWidth: 3,
     borderBottomColor: "#cbbb9c",
   },
-  underline: {
+  dotIndicator: {
     position: "absolute",
-    // marginTop: 30,
+    bottom: -5, // nieco niżej niż tekst
     left: 0,
-    bottom: 0,
-    height: 3,
+    width: 7,
+    height: 7,
+    borderRadius: "50%",
     backgroundColor: "#cbbb9c",
-    borderRadius: 2,
   },
 });
 

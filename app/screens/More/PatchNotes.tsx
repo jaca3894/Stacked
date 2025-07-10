@@ -6,17 +6,43 @@ import {
   ScrollView,
   Image,
   Dimensions,
+  TouchableOpacity,
 } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { patchNotesData } from "../../../classes/Database"; // dostosuj ścieżkę
 import * as Animatable from "react-native-animatable";
+import { useNavigation } from "@react-navigation/native";
 
 const screenHeight = Dimensions.get("screen").height;
 
 const PatchNotesScreen = () => {
+  const navigation = useNavigation();
+
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={{
+            position: "absolute",
+            top: "14%",
+            left: "7%",
+            zIndex: 2,
+          }}
+        >
+          <Image
+            source={require("../../../assets/arrowRight.png")}
+            style={{
+              width: 20,
+              height: 20,
+              transform: [{ scaleX: -1 }],
+            }}
+          />
+        </TouchableOpacity>
+        <Image
+          source={require("../../../assets/logo/logo.png")}
+          style={styles.logo}
+        />
         <ScrollView contentContainerStyle={styles.content}>
           <Text style={styles.heading}>📦 Patch Notes</Text>
           {patchNotesData.map((note) => (
@@ -102,6 +128,12 @@ const styles = StyleSheet.create({
     color: "gray",
     fontSize: 16,
     textAlign: "center",
+  },
+  logo: {
+    width: "50%",
+    height: "20%",
+    resizeMode: "contain",
+    alignSelf: "center",
   },
 });
 

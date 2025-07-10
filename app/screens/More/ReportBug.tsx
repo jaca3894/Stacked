@@ -8,35 +8,47 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { View } from "react-native-animatable";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const ReportBugScreen = () => {
   const navigation = useNavigation();
+  const [showContent, setShowContent] = useState(false);
+
   useEffect(() => {
     Linking.openURL("https://www.google.com/");
+
+    const timer = setTimeout(() => {
+      setShowContent(true);
+    }, 1000); // 🕒 2 sekundy opóźnienia
+
+    return () => clearTimeout(timer);
   }, []);
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.backButton}
-        >
-          <Image
-            source={require("../../../assets/arrowRight.png")}
-            style={styles.backIcon}
-          />
-        </TouchableOpacity>
-        <View style={styles.content}>
-          <Image
-            source={require("../../../assets/dealer/dealerThanks.png")}
-            style={styles.image}
-          />
-          <Text style={styles.title}>Bug report submitted!</Text>
-          <Text style={styles.subtitle}>
-            Thanks for spotting that. Our dev team is on it!
-          </Text>
-        </View>
+        {showContent && (
+          <>
+            <TouchableOpacity
+              onPress={() => navigation.goBack()}
+              style={styles.backButton}
+            >
+              <Image
+                source={require("../../../assets/arrowRight.png")}
+                style={styles.backIcon}
+              />
+            </TouchableOpacity>
+            <View style={styles.content}>
+              <Image
+                source={require("../../../assets/dealer/dealerThanks.png")}
+                style={styles.image}
+              />
+              <Text style={styles.title}>Bug report submitted!</Text>
+              <Text style={styles.subtitle}>
+                Thanks for spotting that. Our dev team is on it!
+              </Text>
+            </View>
+          </>
+        )}
       </SafeAreaView>
     </SafeAreaProvider>
   );

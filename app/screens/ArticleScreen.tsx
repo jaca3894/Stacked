@@ -9,12 +9,14 @@ import {
   TouchableOpacity,
 } from "react-native";
 import RootStackParamList from "../../props/RootStackParamList";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { articlesData as data } from "../../classes/Database";
 import { Image as Gif } from "expo-image";
 import * as Animatable from "react-native-animatable";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useEffect } from "react"; // dodaj jeśli jeszcze nie ma
 
 type ArticleScreenProp = RouteProp<RootStackParamList, "Article">;
 
@@ -27,20 +29,52 @@ const extractYouTubeId = (url: string): string => {
 const screenHeight = Dimensions.get("window").height;
 
 const ArticleScreen = () => {
+  const saveLikedItem = async (index: string, value: boolean) => {
+    try {
+      await AsyncStorage.setItem(`article${index}`, JSON.stringify(value));
+    } catch (error) {
+      console.log("Couldn't save data.");
+    }
+  };
+
+  const checkForLike = async (index: string) => {
+    try {
+      const value = await AsyncStorage.getItem(`article${index}`);
+      return value !== null ? JSON.parse(value) : null;
+    } catch (error) {
+      console.log("Couldn't read data.");
+    }
+  };
+
   const navigation = useNavigation();
   const route = useRoute<ArticleScreenProp>();
   const { articleId } = route.params;
   var article: object | any;
   console.log(articleId + " article");
+  const [liked, setLiked] = useState<boolean>(false); // początkowo false
+  const heartRef = useRef<Animatable.View>(null);
+
+  useEffect(() => {
+    const fetchLikeStatus = async () => {
+      const result = await checkForLike(articleId);
+      if (result !== null) setLiked(result);
+    };
+    fetchLikeStatus();
+  }, [articleId]);
 
   data.forEach((element) => {
     if (element.id === articleId) article = element;
   });
-  const [liked, setLiked] = useState(article.isLiked);
+  // const [liked, setLiked] = useState(checkForLike(articleId));
 
-  const toggleLike = () => {
-    setLiked(!liked);
-    article.isLiked = !liked;
+  const toggleLike = async () => {
+    const newValue = !liked;
+    setLiked(newValue);
+    await saveLikedItem(articleId, newValue);
+
+    if (heartRef.current && newValue) {
+      heartRef.current?.bounceIn?.(700); // animacja "odbicia"
+    }
   };
 
   return (
@@ -144,13 +178,15 @@ const ArticleScreen = () => {
                   {article.date}
                 </Animatable.Text>
               </View>
-              <Icon
-                onPress={toggleLike}
-                name={liked ? "heart" : "heart-outline"}
-                color={liked ? "red" : "#cbbb9c"}
-                size={35}
-                style={{ alignSelf: "center" }}
-              />
+              <Animatable.View ref={heartRef} style={{ alignSelf: "center" }}>
+                <Icon
+                  onPress={toggleLike}
+                  name={liked ? "heart" : "heart-outline"}
+                  color={liked ? "red" : "#cbbb9c"}
+                  size={35}
+                  style={{ alignSelf: "center" }}
+                />
+              </Animatable.View>
             </Animatable.View>
           </Animatable.View>
 

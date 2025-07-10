@@ -27,7 +27,7 @@ export default function App() {
   useEffect(() => {
     const checkFlag = async () => {
       if (__DEV__) {
-        setShowWelcome(false);
+        setShowWelcome(true);
         return;
       }
 

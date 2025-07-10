@@ -76,6 +76,10 @@ const BlackjackTraining = () => {
 
   const startGame = async () => {
     console.log("-----------------NEW GAME---------------------");
+    console.log(
+      "balance before endgame and with bet taken: " + player.current.balance
+    );
+
     // player.current.currentBet = 0;
     setPlayerMoveFinished(false);
     setRevealDealerCard(false);
@@ -100,7 +104,7 @@ const BlackjackTraining = () => {
       player.current.getHandValue().includes(21) &&
       player.current.hand.length === 2
     ) {
-      await sleep(600);
+      await sleep(300);
       setBlackjackWin(true);
 
       // Toast.show({
@@ -137,6 +141,7 @@ const BlackjackTraining = () => {
       handleDealerAI();
       return;
     } else {
+      await sleep(500);
       // correct hit
       forceUpdate();
     }
@@ -177,6 +182,7 @@ const BlackjackTraining = () => {
   };
 
   const handleDealerAI = async () => {
+    await sleep(700);
     setRevealDealerCard(true);
     while (true) {
       const dealerValue = dealer.current.getHandValue();
@@ -204,7 +210,7 @@ const BlackjackTraining = () => {
       }
 
       // Dobieramy jedną kartę i aktualizujemy UI
-      await sleep(1600);
+      await sleep(1000);
       dealer.current.addCard(deck.current.draw()!);
       forceUpdate();
     }
@@ -220,6 +226,8 @@ const BlackjackTraining = () => {
   };
 
   const endGame = async () => {
+    await sleep(300); // suspense przed ogłoszeniem wygranej/przegranej
+
     const playerValue = getBestHandValue(player.current.getHandValue());
     const dealerValue = getBestHandValue(dealer.current.getHandValue());
     const bet = player.current.currentBet;
@@ -244,6 +252,7 @@ const BlackjackTraining = () => {
           text1: "Dealer can't pay 😱",
           text2: "You've bankrupted the house!",
         });
+        return;
       }
 
       console.log(`Giving player: ${bet * 2}`);
@@ -278,37 +287,50 @@ const BlackjackTraining = () => {
   //   startGame();
   // };
 
-  const handleStand = () => {
+  const handleStand = async () => {
     setPlayerMoveFinished(true);
+    sleep(300);
     handleDealerAI();
     return;
   };
 
-  const handleDouble = () => {
+  const handleDouble = async () => {
     setIsDoubled(true);
-    const bet = player.current.currentBet - player.current.insuranceBet;
 
+    const bet = player.current.currentBet - player.current.insuranceBet;
     console.log("IM IN DOUBLE");
     console.log(
       `[DEBUG] currentBet before double: ${player.current.currentBet}`
     );
     console.log(`[DEBUG] insuranceBet: ${player.current.insuranceBet}`);
 
+    // Zmiana stanu
     console.log(`Taking player in double: ${bet}`);
     player.current.take(bet);
     console.log(`Giving dealer in double: ${bet}`);
     dealer.current.give(bet);
     player.current.currentBet = bet * 2;
-    handleHit("Player");
-    if (player.current.isBusted()) {
+
+    // Dobierz kartę
+    player.current.addCard(deck.current.draw()!);
+    const value = checkHandValue(player);
+
+    console.log(`Hand value after double hit: ${value}`);
+
+    forceUpdate();
+    await sleep(500); // dla dramaturgii
+
+    if (value > 21) {
       Toast.show({
         type: "error",
-        text1: "Dealer wins 💔🥀",
+        text1: "You busted on double! 💔",
         text2: `-${bet}`,
       });
       setPlayerMoveFinished(true);
+      setStarted(false);
       return;
     }
+
     setPlayerMoveFinished(true);
     handleDealerAI();
   };

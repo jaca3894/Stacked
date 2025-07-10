@@ -15,7 +15,7 @@ export const welcomeCardsData = [
     title: "Check your poker hand",
     description:
       "Not sure if your cards line up into something? Use our tool to find out.",
-    photoPath: require("../assets/logo/logo.png"),
+    photoPath: require("../assets/welcome/ss3.png"),
   },
 ];
 

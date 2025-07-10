@@ -14,6 +14,7 @@ import {
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { glossaryData } from "../../../classes/Database";
 import * as Animatable from "react-native-animatable";
+import { useNavigation } from "@react-navigation/native";
 
 // Expanded glossary data
 
@@ -25,6 +26,8 @@ const GlossaryScreen = () => {
   const animationsRef = useRef<Record<string, Animated.Value>>(
     initializeAnimations()
   );
+
+  const navigation = useNavigation();
 
   function initializeAnimations() {
     const anims: Record<string, Animated.Value> = {};
@@ -67,6 +70,24 @@ const GlossaryScreen = () => {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={{
+            position: "absolute",
+            top: "10%",
+            left: "7%",
+            zIndex: 2,
+          }}
+        >
+          <Image
+            source={require("../../../assets/arrowRight.png")}
+            style={{
+              width: 20,
+              height: 20,
+              transform: [{ scaleX: -1 }],
+            }}
+          />
+        </TouchableOpacity>
         <Image
           source={require("../../../assets/logo/logo.png")}
           style={styles.logo}

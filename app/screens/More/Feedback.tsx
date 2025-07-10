@@ -5,17 +5,25 @@ import {
   Linking,
   TouchableOpacity,
 } from "react-native";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { View } from "react-native-animatable";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 const FeedbackScreen = () => {
   const navigation = useNavigation();
+  const [showContent, setShowContent] = useState(false);
 
   useEffect(() => {
     Linking.openURL("https://www.google.com/");
+
+    const timer = setTimeout(() => {
+      setShowContent(true);
+    }, 1000); // 🕒 2 sekundy opóźnienia
+
+    return () => clearTimeout(timer);
   }, []);
+
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
@@ -37,16 +45,19 @@ const FeedbackScreen = () => {
             }}
           />
         </TouchableOpacity>
-        <View style={styles.content}>
-          <Image
-            source={require("../../../assets/dealer/dealerThanks.png")}
-            style={styles.image}
-          />
-          <Text style={styles.title}>Thank you for your feedback!</Text>
-          <Text style={styles.subtitle}>
-            Your opinion helps us improve the app and make it even better.
-          </Text>
-        </View>
+
+        {showContent && (
+          <View style={styles.content}>
+            <Image
+              source={require("../../../assets/dealer/dealerThanks.png")}
+              style={styles.image}
+            />
+            <Text style={styles.title}>Thank you for your feedback!</Text>
+            <Text style={styles.subtitle}>
+              Your opinion helps us improve the app and make it even better.
+            </Text>
+          </View>
+        )}
       </SafeAreaView>
     </SafeAreaProvider>
   );
