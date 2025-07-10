@@ -23,14 +23,16 @@ export const Tooltip = ({ labels }: TooltipProps) => {
     <View style={styles.wrapper}>
       <View style={styles.tooltipContainer}>
         <CustomStepNumber />
-        <Image
-          source={require("../assets/dealer/dealer.png")}
-          style={styles.image}
-        />
-        <View style={styles.textContainer}>
-          <Text testID="stepDescription" style={styles.tooltipText}>
-            {currentStep?.text ?? "⏳ Ładowanie kroku..."}
-          </Text>
+        <View style={{ flexDirection: "row" }}>
+          <Image
+            source={require("../assets/dealer/dealer.png")}
+            style={styles.image}
+          />
+          <View style={styles.textContainer}>
+            <Text testID="stepDescription" style={styles.tooltipText}>
+              {currentStep?.text ?? "⏳ Ładowanie kroku..."}
+            </Text>
+          </View>
         </View>
       </View>
 
@@ -70,7 +72,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     borderColor: "#cbbb93",
-    maxWidth: 280,
+    maxWidth: "100%",
     maxHeight: 280,
     alignSelf: "center",
   },
@@ -79,14 +81,16 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   image: {
-    width: "50%",
-    height: 80,
+    width: "35%",
+    height: 120,
     // aspectRatio: 1.5,
     resizeMode: "contain",
     marginBottom: 10,
   },
   textContainer: {
+    width: "70%",
     marginBottom: 10,
+    alignSelf: "center",
   },
   tooltipText: {
     color: "#fff",
