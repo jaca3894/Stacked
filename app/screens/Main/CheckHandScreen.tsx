@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -10,10 +10,21 @@ import {
   Dimensions,
   Animated,
 } from "react-native";
-
+import { useFocusEffect } from "@react-navigation/native";
 import Toast from "react-native-toast-message";
 import toastConfig from "../../../config/ToastConfig";
 import { HandRank, handrank } from "../../../utils/Handrank";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  CopilotProvider,
+  CopilotStep,
+  walkthroughable,
+} from "react-native-copilot";
+import { useCopilot } from "react-native-copilot";
+import React from "react";
+
+const CopilotText = walkthroughable(Text);
+const CopilotView = walkthroughable(View);
 
 const suits = ["♠", "♥", "♣", "♦"];
 const screenWidth = Dimensions.get("screen").width;
@@ -99,6 +110,41 @@ const renderCard = (code: string) => {
 };
 
 const CheckHandScreen = () => {
+  const { start } = useCopilot();
+
+  // useFocusEffect(() => {
+  //   const checkTutorialFlag = async () => {
+  //     try {
+  //       const hasSeen = await AsyncStorage.getItem("@hasSeenCheckTutorial");
+  //       // const hasSeen = await AsyncStorage.getItem("@hasSeenCheckTutorial");
+  //       if (!hasSeen) {
+  //         console.log("Pokazuję tutorial! 🚀");
+
+  //         // A potem ustawiamy flagę, żeby nie pokazywać ponownie
+  //         await AsyncStorage.setItem("@hasSeenCheckTutorial", "true");
+  //       }
+  //     } catch (error) {
+  //       console.error("Error checking tutorial flag.", error);
+  //     }
+  //   };
+
+  //   checkTutorialFlag();
+  // });
+  const hasStartedTutorial = useRef(false);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if (!hasStartedTutorial.current) {
+        hasStartedTutorial.current = true;
+        const timer = setTimeout(() => start(), 500);
+
+        return () => clearTimeout(timer);
+      }
+      // jeśli już odpalone — nic nie rób
+      return undefined;
+    }, [start])
+  );
+
   const tabAnim = useRef(new Animated.Value(0)).current;
   const [tabMeasurements, setTabMeasurements] = useState<
     { x: number; width: number }[]
@@ -217,18 +263,24 @@ const CheckHandScreen = () => {
         <Text style={styles.buttonText}>
           Select your cards. See what you've got.
         </Text>
-        <View style={styles.dropZone}>
-          {selectedCards.map((card, index) => (
-            <TouchableOpacity
-              key={index + 1}
-              style={styles.emptyCardSlot}
-              onPress={() => handleSlotPress(index)}
-              activeOpacity={card !== "" ? 0.6 : 1}
-            >
-              {card !== "" && renderCard(card)}
-            </TouchableOpacity>
-          ))}
-        </View>
+        <CopilotStep
+          text="There will be your selected cards. Remove them by pressing directly on card."
+          order={2}
+          name="check2"
+        >
+          <CopilotView style={styles.dropZone}>
+            {selectedCards.map((card, index) => (
+              <TouchableOpacity
+                key={index + 1}
+                style={styles.emptyCardSlot}
+                onPress={() => handleSlotPress(index)}
+                activeOpacity={card !== "" ? 0.6 : 1}
+              >
+                {card !== "" && renderCard(card)}
+              </TouchableOpacity>
+            ))}
+          </CopilotView>
+        </CopilotStep>
         <View
           style={{
             width: "90%",
@@ -238,124 +290,143 @@ const CheckHandScreen = () => {
             justifyContent: "space-around",
           }}
         >
-          <TouchableOpacity style={styles.button} onPress={handleEvaluate}>
-            <Text style={styles.buttonText}>Submit</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.button]} onPress={handleReset}>
-            <Text style={styles.buttonText}>Reset</Text>
-          </TouchableOpacity>
+          <CopilotStep
+            text="Press 'Submit' to check your hand or 'Reset' to remove your cards."
+            order={3}
+            name="check3"
+          >
+            <CopilotView
+              style={{
+                width: "100%",
+                flexDirection: "row",
+                justifyContent: "space-around",
+              }}
+            >
+              <TouchableOpacity style={styles.button} onPress={handleEvaluate}>
+                <Text style={styles.buttonText}>Submit</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.button]} onPress={handleReset}>
+                <Text style={styles.buttonText}>Reset</Text>
+              </TouchableOpacity>
+            </CopilotView>
+          </CopilotStep>
         </View>
-        <View style={styles.deckPanel}>
-          {/* Zakładki kolorów */}
-          <View style={styles.tabBar}>
-            {suits.map((s, index) => (
-              <TouchableOpacity
-                key={s}
-                style={styles.tabButton}
-                onPress={() => handleTabPress(s, index)}
-                onLayout={(e) => {
-                  const layout = e.nativeEvent.layout;
-                  setTabMeasurements((prev) => {
-                    const updated = [...prev];
-                    updated[index] = { x: layout.x, width: layout.width };
-                    return updated;
-                  });
-                }}
-              >
-                <Text
-                  style={{
-                    color: s === "♥" || s === "♦" ? "red" : "white",
-                    fontWeight: "bold",
-                    fontSize: 16,
+        <CopilotStep
+          text="Here you can pick cards by pressing on them. Need card from different suit? Switch the tabs above."
+          order={1}
+          name="check1"
+        >
+          <CopilotView style={styles.deckPanel}>
+            <View style={styles.tabBar}>
+              {suits.map((s, index) => (
+                <TouchableOpacity
+                  key={s}
+                  style={styles.tabButton}
+                  onPress={() => handleTabPress(s, index)}
+                  onLayout={(e) => {
+                    const layout = e.nativeEvent.layout;
+                    setTabMeasurements((prev) => {
+                      const updated = [...prev];
+                      updated[index] = { x: layout.x, width: layout.width };
+                      return updated;
+                    });
                   }}
                 >
-                  {s}
-                </Text>
-              </TouchableOpacity>
-            ))}
-
-            {tabMeasurements.length === suits.length && (
-              <Animated.View
-                style={[
-                  styles.dotIndicator,
-                  {
-                    transform: [
-                      {
-                        translateX: tabAnim.interpolate({
-                          inputRange: [0, 1, 2, 3],
-                          outputRange: tabMeasurements.map(
-                            (m) => m.x + m.width / 2 - 3.5 // m.x + połowa szerokości zakładki minus połowa kropki
-                          ),
-                        }),
-                      },
-                    ],
-                  },
-                ]}
-              />
-            )}
-          </View>
-
-          {/* Grid kart aktualnego koloru */}
-          <View style={styles.deckGrid}>
-            {deck
-              .filter((c) => c.suit === activeSuit)
-              .sort(
-                (a, b) =>
-                  orderedValues.indexOf(a.value) -
-                  orderedValues.indexOf(b.value)
-              )
-              .map((card) => {
-                const value =
-                  card.value.toLowerCase() === "t"
-                    ? "t"
-                    : card.value.toLowerCase();
-                const suitCode =
-                  card.suit === "♠"
-                    ? "s"
-                    : card.suit === "♥"
-                    ? "h"
-                    : card.suit === "♣"
-                    ? "c"
-                    : "d";
-                const formatted = `${value}${suitCode}`;
-                const isSelected = selectedCards.includes(formatted);
-
-                return (
-                  <TouchableOpacity
-                    key={card.id}
-                    style={[
-                      styles.cardView,
-                      {
-                        opacity: isSelected ? 0.5 : 1,
-                        margin: 4,
-                      },
-                    ]}
-                    onPress={() => handleCardSelect(card)}
+                  <Text
+                    style={{
+                      color: s === "♥" || s === "♦" ? "red" : "white",
+                      fontWeight: "bold",
+                      fontSize: 16,
+                    }}
                   >
-                    <Text
-                      style={[styles.cornerLeftText, { color: card.color }]}
-                    >
-                      {card.value === "T" ? "10" : card.value}
-                    </Text>
-                    <Text style={[styles.suitSymbol, { color: card.color }]}>
-                      {card.suit}
-                    </Text>
-                    <Text
-                      style={[
-                        styles.cornerRightText,
+                    {s}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+
+              {tabMeasurements.length === suits.length && (
+                <Animated.View
+                  style={[
+                    styles.dotIndicator,
+                    {
+                      transform: [
                         {
-                          color: card.color,
-                          transform: [{ rotate: "180deg" }],
+                          translateX: tabAnim.interpolate({
+                            inputRange: [0, 1, 2, 3],
+                            outputRange: tabMeasurements.map(
+                              (m) => m.x + m.width / 2 - 3.5 // m.x + połowa szerokości zakładki minus połowa kropki
+                            ),
+                          }),
+                        },
+                      ],
+                    },
+                  ]}
+                />
+              )}
+            </View>
+
+            {/* Grid kart aktualnego koloru */}
+            <View style={styles.deckGrid}>
+              {deck
+                .filter((c) => c.suit === activeSuit)
+                .sort(
+                  (a, b) =>
+                    orderedValues.indexOf(a.value) -
+                    orderedValues.indexOf(b.value)
+                )
+                .map((card) => {
+                  const value =
+                    card.value.toLowerCase() === "t"
+                      ? "t"
+                      : card.value.toLowerCase();
+                  const suitCode =
+                    card.suit === "♠"
+                      ? "s"
+                      : card.suit === "♥"
+                      ? "h"
+                      : card.suit === "♣"
+                      ? "c"
+                      : "d";
+                  const formatted = `${value}${suitCode}`;
+                  const isSelected = selectedCards.includes(formatted);
+
+                  return (
+                    <TouchableOpacity
+                      key={card.id}
+                      style={[
+                        styles.cardView,
+                        {
+                          opacity: isSelected ? 0.5 : 1,
+                          margin: 4,
                         },
                       ]}
+                      onPress={() => handleCardSelect(card)}
                     >
-                      {card.value === "T" ? "10" : card.value}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-          </View>
-        </View>
+                      <Text
+                        style={[styles.cornerLeftText, { color: card.color }]}
+                      >
+                        {card.value === "T" ? "10" : card.value}
+                      </Text>
+                      <Text style={[styles.suitSymbol, { color: card.color }]}>
+                        {card.suit}
+                      </Text>
+                      <Text
+                        style={[
+                          styles.cornerRightText,
+                          {
+                            color: card.color,
+                            transform: [{ rotate: "180deg" }],
+                          },
+                        ]}
+                      >
+                        {card.value === "T" ? "10" : card.value}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+            </View>
+          </CopilotView>
+        </CopilotStep>
       </View>
       <View style={styles.footer}>
         <Text style={styles.footerText}>2025 Stacked.</Text>

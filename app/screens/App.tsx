@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { View, ActivityIndicator } from "react-native";
+import React, { ComponentType, useEffect, useState } from "react";
+import { View, ActivityIndicator, Easing } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -18,6 +18,9 @@ import FeedbackScreen from "./More/Feedback";
 import GlossaryScreen from "./More/Glossary";
 import PatchNotesScreen from "./More/PatchNotes";
 import ReportBugScreen from "./More/ReportBug";
+import { CopilotProvider } from "react-native-copilot";
+import Tooltip from "../../components/CustomTooltip";
+import EmptyStepNumber from "../../components/EmptyStepNumber";
 
 const Stack = createStackNavigator();
 
@@ -27,7 +30,7 @@ export default function App() {
   useEffect(() => {
     const checkFlag = async () => {
       if (__DEV__) {
-        setShowWelcome(true);
+        setShowWelcome(false); // true wyswietli welcome
         return;
       }
 
@@ -54,89 +57,100 @@ export default function App() {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#1c1c1c" }}>
-      <NavigationContainer>
-        <Stack.Navigator
-          initialRouteName={showWelcome ? "Welcome" : "MainTabs"}
-          screenOptions={{
-            headerStyle: { backgroundColor: "black", height: 70 },
-            headerTintColor: "#fff",
-            headerTitleStyle: { fontWeight: "bold", fontSize: 18 },
-            cardStyle: { backgroundColor: "black" },
-          }}
-        >
-          <Stack.Screen
-            name="Welcome"
-            component={WelcomeScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="MainTabs"
-            component={MainTabNavigator}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="CreatePoker"
-            component={CreatePoker}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="CreateBlackjack"
-            component={CreateBlackjack}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="PokerGame"
-            component={PokerGame}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="BlackjackGame"
-            component={BlackjackGame}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="BlackjackTraining"
-            component={BlackjackTraining}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Article"
-            component={ArticleScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Credits"
-            component={CreditsScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Feedback"
-            component={FeedbackScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Glossary"
-            component={GlossaryScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="PatchNotes"
-            component={PatchNotesScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="ReportBug"
-            component={ReportBugScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Settings"
-            component={SettingsScreen}
-            options={{ headerShown: false }}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </View>
+    <CopilotProvider
+      tooltipComponent={Tooltip}
+      tooltipStyle={{ backgroundColor: "transparent" }}
+      arrowColor="transparent"
+      // verticalOffset={10}
+      // arrowSize={28}
+      stepNumberComponent={EmptyStepNumber}
+      overlay="view"
+      backdropColor="rgba(0, 0, 0, 0.85)"
+    >
+      <View style={{ flex: 1, backgroundColor: "#1c1c1c" }}>
+        <NavigationContainer>
+          <Stack.Navigator
+            initialRouteName={showWelcome ? "Welcome" : "MainTabs"}
+            screenOptions={{
+              headerStyle: { backgroundColor: "black", height: 70 },
+              headerTintColor: "#fff",
+              headerTitleStyle: { fontWeight: "bold", fontSize: 18 },
+              cardStyle: { backgroundColor: "black" },
+            }}
+          >
+            <Stack.Screen
+              name="Welcome"
+              component={WelcomeScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="MainTabs"
+              component={MainTabNavigator}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="CreatePoker"
+              component={CreatePoker}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="CreateBlackjack"
+              component={CreateBlackjack}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="PokerGame"
+              component={PokerGame}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="BlackjackGame"
+              component={BlackjackGame}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="BlackjackTraining"
+              component={BlackjackTraining}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Article"
+              component={ArticleScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Credits"
+              component={CreditsScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Feedback"
+              component={FeedbackScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Glossary"
+              component={GlossaryScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="PatchNotes"
+              component={PatchNotesScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="ReportBug"
+              component={ReportBugScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Settings"
+              component={SettingsScreen}
+              options={{ headerShown: false }}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </View>
+    </CopilotProvider>
   );
 }
