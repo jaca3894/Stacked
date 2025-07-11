@@ -22,6 +22,7 @@ import {
 } from "react-native-copilot";
 import { useCopilot } from "react-native-copilot";
 import React from "react";
+import { withCopilotProvider } from "../../../utils/WithCopilotProvider";
 
 const CopilotText = walkthroughable(Text);
 const CopilotView = walkthroughable(View);
@@ -112,36 +113,37 @@ const renderCard = (code: string) => {
 const CheckHandScreen = () => {
   const { start } = useCopilot();
 
-  // useFocusEffect(() => {
-  //   const checkTutorialFlag = async () => {
-  //     try {
-  //       const hasSeen = await AsyncStorage.getItem("@hasSeenCheckTutorial");
-  //       // const hasSeen = await AsyncStorage.getItem("@hasSeenCheckTutorial");
-  //       if (!hasSeen) {
-  //         console.log("Pokazuję tutorial! 🚀");
-
-  //         // A potem ustawiamy flagę, żeby nie pokazywać ponownie
-  //         await AsyncStorage.setItem("@hasSeenCheckTutorial", "true");
-  //       }
-  //     } catch (error) {
-  //       console.error("Error checking tutorial flag.", error);
-  //     }
-  //   };
-
-  //   checkTutorialFlag();
-  // });
   const hasStartedTutorial = useRef(false);
 
   useFocusEffect(
     React.useCallback(() => {
-      if (!hasStartedTutorial.current) {
-        hasStartedTutorial.current = true;
-        const timer = setTimeout(() => start(), 500);
+      const checkTutorialFlag = async () => {
+        try {
+          const hasSeen = await AsyncStorage.getItem("@hasSeenCheckTutorial");
+          await AsyncStorage.clear(); // to zakomentowac jesli nie testujesz
+          // console.log(hasSeen);
+          if (!hasSeen && !hasStartedTutorial.current) {
+            hasStartedTutorial.current = true;
 
-        return () => clearTimeout(timer);
+            // Odpalamy tutorial z opóźnieniem
+            const timer = setTimeout(() => {
+              start();
+              AsyncStorage.setItem("@hasSeenCheckTutorial", "true");
+            }, 500);
+
+            return () => clearTimeout(timer);
+          }
+        } catch (error) {
+          console.error("Error checking tutorial flag.", error);
+        }
+      };
+
+      // ma byc !dev jesli production ready
+      if (__DEV__) {
+        checkTutorialFlag();
       }
-      // jeśli już odpalone — nic nie rób
-      return undefined;
+
+      // return () => {}; // cleanup (opcjonalny)
     }, [start])
   );
 
@@ -266,7 +268,7 @@ const CheckHandScreen = () => {
         <CopilotStep
           text="There will be your selected cards. Remove them by pressing directly on card."
           order={2}
-          name="check2"
+          name="dealerThinking"
         >
           <CopilotView style={styles.dropZone}>
             {selectedCards.map((card, index) => (
@@ -293,7 +295,7 @@ const CheckHandScreen = () => {
           <CopilotStep
             text="Press 'Submit' to check your hand or 'Reset' to remove your cards."
             order={3}
-            name="check3"
+            name="dealerKnows"
           >
             <CopilotView
               style={{
@@ -440,16 +442,17 @@ const CheckHandScreen = () => {
       >
         <View
           style={{
-            flex: 1,
-            backgroundColor: "rgba(0, 0, 0, 0.5)", // półprzezroczyste tło
+            height: "100%",
+            width: "100%",
+            // 28 -> 1c
+            backgroundColor: "rgba(28, 28, 28, 0.7)", // półprzezroczyste tło
             justifyContent: "center", // wyśrodkowanie w pionie
             alignItems: "center", // wyśrodkowanie w poziomie
           }}
         >
           <View
             style={{
-              // width: "75%",
-              // height: "25%",
+              width: "70%",
               backgroundColor: "#222",
               borderRadius: 12,
               padding: 30,
@@ -659,4 +662,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CheckHandScreen;
+export default withCopilotProvider(CheckHandScreen);

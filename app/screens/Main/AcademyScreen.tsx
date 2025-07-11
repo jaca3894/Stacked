@@ -11,24 +11,76 @@ import {
 } from "react-native";
 import { skillsData as data } from "../../../classes/Database";
 import { Image as Gif } from "expo-image";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import {
+  CopilotProvider,
+  CopilotStep,
+  walkthroughable,
+} from "react-native-copilot";
+import { useCopilot } from "react-native-copilot";
 import { useRef } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import React from "react";
+import { withCopilotProvider } from "../../../utils/WithCopilotProvider";
 
 const screenHeight = Math.round(Dimensions.get("window").height);
+const CopilotView = walkthroughable(SafeAreaView);
 
 const AcademyScreen = () => {
   const navigation = useNavigation<any>();
-  let globalIndex = useRef(0).current;
+  // let globalIndex = useRef(0).current;
+
+  const { start } = useCopilot();
+
+  const hasStartedTutorial = useRef(false);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const checkTutorialFlag = async () => {
+        try {
+          const hasSeen = await AsyncStorage.getItem("@hasSeenAcademyTutorial");
+          await AsyncStorage.clear(); // to zakomentowac jesli nie testujesz
+          // console.log(hasSeen);
+          if (!hasSeen && !hasStartedTutorial.current) {
+            hasStartedTutorial.current = true;
+
+            // Odpalamy tutorial z opóźnieniem
+            const timer = setTimeout(() => {
+              start();
+              AsyncStorage.setItem("@hasSeenAcademyTutorial", "true");
+            }, 500);
+
+            return () => clearTimeout(timer);
+          }
+        } catch (error) {
+          console.error("Error checking tutorial flag.", error);
+        }
+      };
+
+      // ma byc !dev jesli production ready
+      if (__DEV__) {
+        checkTutorialFlag();
+      }
+
+      // return () => {}; // cleanup (opcjonalny)
+    }, [start])
+  );
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#1c1c1c" }}>
-      <View style={styles.header}>
-        <Image
-          source={require("../../../assets/logo/logoAcademy.png")}
-          style={styles.logo}
-          resizeMode="contain"
-        />
-      </View>
+    <CopilotView style={{ flex: 1, backgroundColor: "#1c1c1c" }}>
+      <CopilotStep
+        order={1}
+        name="dealerLike"
+        text="Here You can read articles about various topics. Leave a like on it if You enjoyed one!"
+      >
+        <CopilotView style={styles.header}>
+          <Image
+            source={require("../../../assets/logo/logoAcademy.png")}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+        </CopilotView>
+      </CopilotStep>
       <ScrollView
         style={styles.container}
         showsVerticalScrollIndicator={false}
@@ -90,7 +142,7 @@ const AcademyScreen = () => {
           <Text style={styles.footerText}>2025 Stacked.</Text>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </CopilotView>
   );
 };
 
@@ -186,4 +238,4 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 });
-export default AcademyScreen;
+export default withCopilotProvider(AcademyScreen);

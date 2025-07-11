@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import {
   Text,
   TouchableOpacity,
@@ -8,26 +8,46 @@ import {
   Image,
   Dimensions,
 } from "react-native";
-
+import * as Animatable from "react-native-animatable";
 import type { TooltipProps } from "react-native-copilot";
 import { useCopilot } from "react-native-copilot";
 import CustomStepNumber from "./CustomStepNumber";
 
 const screenWidth = Dimensions.get("screen").width;
 
+// Mapa obrazów oparta na name z CopilotStep
+const imageMap: Record<string, number> = {
+  dealerLike: require("../assets/dealer/dealerThanks.png"),
+  dealerCheck: require("../assets/dealer/dealerCheck.png"),
+  dealerThinking: require("../assets/dealer/dealerThinking.png"),
+  dealerKnows: require("../assets/dealer/dealerKnows.png"),
+  dealerHeart: require("../assets/dealer/dealerHeart.png"),
+  dealerExplain: require("../assets/dealer/dealerExplain.png"),
+};
+
 export const Tooltip = ({ labels }: TooltipProps) => {
   const { goToNext, goToPrev, stop, currentStep, isFirstStep, isLastStep } =
     useCopilot();
 
+  const animationRef = useRef<any>(null);
+
+  // Wyzwalaj fadeIn przy każdej zmianie kroku
+  useEffect(() => {
+    if (animationRef.current) {
+      animationRef.current.fadeIn(800);
+    }
+  }, [currentStep?.name]);
+
+  const imageSource =
+    (currentStep?.name && imageMap[currentStep.name]) ||
+    require("../assets/dealer/dealer.png");
+
   return (
-    <View style={styles.wrapper}>
+    <Animatable.View ref={animationRef} useNativeDriver style={styles.wrapper}>
       <View style={styles.tooltipContainer}>
         <CustomStepNumber />
         <View style={{ flexDirection: "row" }}>
-          <Image
-            source={require("../assets/dealer/dealer.png")}
-            style={styles.image}
-          />
+          <Image source={imageSource} style={styles.image} />
           <View style={styles.textContainer}>
             <Text testID="stepDescription" style={styles.tooltipText}>
               {currentStep?.text ?? "⏳ Ładowanie kroku..."}
@@ -47,7 +67,7 @@ export const Tooltip = ({ labels }: TooltipProps) => {
           <TooltipButton onPress={stop} label={labels.finish!} />
         )}
       </View>
-    </View>
+    </Animatable.View>
   );
 };
 
