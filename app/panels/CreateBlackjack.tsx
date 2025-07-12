@@ -35,7 +35,7 @@ const CreateBlackjack = () => {
 
   const [playersAmount, setPlayersAmount] = useState("");
   const [initialBalance, setInitialBalance] = useState("");
-  const [mode, setMode] = useState<"tracking" | "training">("training");
+  const [mode, setMode] = useState<"tracking" | "training">("tracking");
   const [initialRadioState, setInitialRadioState] = useState(true);
 
   const [allowInsurance, setAllowInsurance] = useState(false);
@@ -188,38 +188,6 @@ const CreateBlackjack = () => {
             duration={1000}
             delay={200}
           >
-            {/* Training Mode */}
-            <TouchableOpacity
-              onPress={() => {
-                setMode("training");
-                setInitialRadioState(false);
-              }}
-              style={styles.radioOption}
-            >
-              <Ionicons
-                name={
-                  mode === "training" ? "radio-button-on" : "radio-button-off"
-                }
-                size={20}
-                color="#cbbb9c"
-              />
-              <Text style={styles.radioLabel}>Training mode</Text>
-              <TouchableOpacity
-                ref={trainingRef}
-                onPress={() => setShowTrainingTip(true)}
-              >
-                <View style={styles.iconWrapper}>
-                  <Ionicons name="help-circle" size={20} color="#cbbb9c" />
-                </View>
-              </TouchableOpacity>
-              <HelpPopover
-                isVisible={showTrainingTip}
-                from={trainingRef}
-                onRequestClose={() => setShowTrainingTip(false)}
-                text="Perfect for learning blackjack basics."
-              />
-            </TouchableOpacity>
-
             {/* Table Tracking */}
             <TouchableOpacity
               onPress={() => {
@@ -249,6 +217,38 @@ const CreateBlackjack = () => {
                 from={trackingRef}
                 onRequestClose={() => setShowTrackingTip(false)}
                 text="Track win/loss and chip flow at the table."
+              />
+            </TouchableOpacity>
+
+            {/* Training Mode */}
+            <TouchableOpacity
+              onPress={() => {
+                setMode("training");
+                setInitialRadioState(false);
+              }}
+              style={styles.radioOption}
+            >
+              <Ionicons
+                name={
+                  mode === "training" ? "radio-button-on" : "radio-button-off"
+                }
+                size={20}
+                color="#cbbb9c"
+              />
+              <Text style={styles.radioLabel}>Training mode</Text>
+              <TouchableOpacity
+                ref={trainingRef}
+                onPress={() => setShowTrainingTip(true)}
+              >
+                <View style={styles.iconWrapper}>
+                  <Ionicons name="help-circle" size={20} color="#cbbb9c" />
+                </View>
+              </TouchableOpacity>
+              <HelpPopover
+                isVisible={showTrainingTip}
+                from={trainingRef}
+                onRequestClose={() => setShowTrainingTip(false)}
+                text="Perfect for learning blackjack basics."
               />
             </TouchableOpacity>
           </Animatable.View>

@@ -1,21 +1,16 @@
 import React, { useEffect, useReducer, useRef, useState } from "react";
 import {
-  Text,
   StyleSheet,
   View,
   Dimensions,
-  TouchableOpacity,
   Image,
   Platform,
-  StatusBar,
 } from "react-native";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import * as ScreenOrientation from "expo-screen-orientation";
 
 import RootStackParamList from "../../props/RootStackParamList";
-import Svg, { Circle, Ellipse, Path, Polygon, Rect } from "react-native-svg";
-import Player from "../../classes/Player";
 import Deck from "../../classes/Deck"; // Zakładam, że dodałeś wcześniej
 import Card from "../../classes/Card";
 import BlackjackPlayer from "../../classes/BlackjackPlayer";

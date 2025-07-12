@@ -486,6 +486,7 @@ const PokerGame = () => {
             onAccept={() => {
               raise(sliderValue);
             }}
+            onClose={() => {setIsSliderShown(false)}}
           />
         </View>
       )}
@@ -511,7 +512,7 @@ const PokerGame = () => {
                 underlayColor="transparent"
                 onPress={() => setShowInput([false, -1])}
               >
-                <Svg viewBox="-1 -1 2 2" width={10} height={10}>
+                <Svg viewBox="-1 -1 2 2" width={15} height={15}>
                   <Path
                     d="M -1 -1 L 1 1 M 1 -1 L -1 1"
                     stroke="#fff"

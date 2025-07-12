@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
 import Slider from "@react-native-community/slider";
+import Svg, { Path } from "react-native-svg";
 
 type SliderProps = {
   value: number;
   onValueChange: (value: number) => void;
   onAccept: () => void;
+  onClose: () => void;
   minimumValue: number;
   maximumValue: number;
   step?: number;
@@ -17,11 +19,26 @@ const CustomSlider = ({
   onAccept,
   minimumValue,
   maximumValue,
+  onClose,
   step = 1,
 }: SliderProps) => {
   const [currValue, setCurrValue] = useState(value);
   return (
     <View style={styles.container}>
+      <TouchableHighlight
+        style={styles.closeButton}
+        underlayColor="transparent"
+        onPress={onClose}
+      >
+        <Svg viewBox="-1 -1 2 2" width={10} height={10}>
+          <Path
+            d="M -1 -1 L 1 1 M 1 -1 L -1 1"
+            stroke="#fff"
+            strokeWidth={0.2}
+            strokeLinecap="round"
+          />
+        </Svg>
+      </TouchableHighlight>
       <Text style={styles.label}>Choose your bet: {currValue}</Text>
       <Slider
         style={styles.slider}
@@ -75,6 +92,12 @@ const styles = StyleSheet.create({
   slider: {
     width: "100%",
     height: 40,
+  },
+  closeButton: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    color: "#ccc",
   },
 });
 
