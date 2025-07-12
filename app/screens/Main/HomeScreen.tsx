@@ -1,4 +1,6 @@
+import { getNextUnmarkedItem } from "../../../utils/FindUnlikedArticle";
 import React, { useState, useEffect } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import {
   View,
   Text,
@@ -15,14 +17,19 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import * as Animatable from "react-native-animatable";
 import { Ionicons } from "@expo/vector-icons";
 import { Image as Gif } from "expo-image";
+import { articlesData } from "../../../classes/Database";
 
 const screenWidth = Math.round(Dimensions.get("window").width);
 
 const HomeScreen = () => {
   const [loading, setLoading] = useState(true);
+  type Item = { id: string; date: string };
   const [hasLastGame, setHasLastGame] = useState(true);
-  const [hasNextLesson, setHasNextLesson] = useState(true);
+  // const [hasNextLesson, setHasNextLesson] = useState(true);
   const loaderTime = 1000;
+
+  // const article = getNextUnmarkedItem(articlesData);
+  // setArticle(getNextUnmarkedItem(articlesData));
   const players = [
     { name: "Kon", score: 5200 },
     { name: "Jaca", score: 5100 },
@@ -33,12 +40,28 @@ const HomeScreen = () => {
     { name: "Lukasz", score: 700 },
     { name: "Seweryn", score: 300 },
   ];
+  const [article, setArticle] = useState<any>(null);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchArticle = async () => {
+        const nextArticle = await getNextUnmarkedItem(articlesData);
+        setArticle(nextArticle);
+      };
+      // console.log(article);
+      fetchArticle();
+    }, [])
+  );
 
   if (Platform.OS === "android") {
     NavigationBar.setVisibilityAsync("hidden");
   }
 
   useEffect(() => {
+    // const next = getNextUnmarkedItem(articlesData);
+    // setArticle(next);
+    // console.log(next);
+    // getFirstUnlikedArticle();
     const timer = setTimeout(() => setLoading(false), loaderTime);
     return () => clearTimeout(timer);
   }, []);
@@ -139,10 +162,10 @@ const HomeScreen = () => {
             <View style={styles.lessonPanel}>
               <Text style={styles.panelTitle}>📝 Your next lesson</Text>
 
-              {hasNextLesson && (
+              {article != null && (
                 <>
                   <View style={styles.lessonBody}>
-                    <Text style={styles.lessonDate}>07 Dec, 2023</Text>
+                    <Text style={styles.lessonDate}>{article.date}</Text>
                     <View style={styles.lessonTitleRow}>
                       {/* <Ionicons
                         name="book"
@@ -150,7 +173,7 @@ const HomeScreen = () => {
                         color="#cbbb93"
                         style={{ marginRight: 6 }}
                         /> */}
-                      <Text style={styles.lessonTitle}>Riffle Shuffle</Text>
+                      <Text style={styles.lessonTitle}>{article.title}</Text>
                       {/* <Ionicons
                         name="chevron-down"
                         size={20}
@@ -166,7 +189,7 @@ const HomeScreen = () => {
                       }}
                     >
                       <Gif
-                        source={require("../../../assets/skills/riffleShuffle.gif")}
+                        source={article.bannerPath}
                         style={{
                           width: "90%",
                           height: 200,
@@ -187,22 +210,7 @@ const HomeScreen = () => {
                           marginBottom: 20,
                         }}
                       >
-                        The riffle shuffle is the most recognizable and
-                        satisfying way to mix cards — used by magicians, casino
-                        dealers, and card players alike.\n\n1.
-                        Objective\n\nEvenly interlace two halves of a deck to
-                        randomize the card order and impress with clean
-                        technique.\n\n2. Setup\n\nHold half the deck in each
-                        hand:\n- Thumbs on top edge\n- Fingers supporting the
-                        bottom\n- Backs of the cards facing each other\n\n3. The
-                        shuffle\n\n- Tilt both halves slightly downward\n- Let
-                        the corners drop card by card, interleaving them\n- Push
-                        the two halves together into one deck\n\n4. Optional:
-                        Bridge Finish\n\n- Bend the deck upward slightly\n-
-                        Release the tension and let the cards cascade together
-                        neatly\n\nQuick tip\n\nPractice the release with both
-                        thumbs at the same rhythm — the smoother the fall, the
-                        cleaner the shuffle.
+                        {article.content}
                       </Text>
                       <TouchableOpacity
                         style={[styles.resumeButton, { alignSelf: "center" }]}
@@ -219,7 +227,7 @@ const HomeScreen = () => {
                   </View>
                 </>
               )}
-              {!hasNextLesson && (
+              {article === null && (
                 <View style={{ position: "relative" }}>
                   <Image
                     source={require("../../../assets/dealer/dealerHappy.png")}

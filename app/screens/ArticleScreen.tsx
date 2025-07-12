@@ -32,6 +32,8 @@ const ArticleScreen = () => {
   const saveLikedItem = async (index: string, value: boolean) => {
     try {
       await AsyncStorage.setItem(`article${index}`, JSON.stringify(value));
+      let x = await AsyncStorage.getItem(`article${index}`);
+      console.info(x + `article${index}`);
     } catch (error) {
       console.log("Couldn't save data.");
     }
@@ -40,6 +42,7 @@ const ArticleScreen = () => {
   const checkForLike = async (index: string) => {
     try {
       const value = await AsyncStorage.getItem(`article${index}`);
+      console.log(value);
       return value !== null ? JSON.parse(value) : null;
     } catch (error) {
       console.log("Couldn't read data.");

@@ -120,7 +120,7 @@ const CheckHandScreen = () => {
       const checkTutorialFlag = async () => {
         try {
           const hasSeen = await AsyncStorage.getItem("@hasSeenCheckTutorial");
-          await AsyncStorage.clear(); // to zakomentowac jesli nie testujesz
+          // await AsyncStorage.clear(); // to zakomentowac jesli nie testujesz
           // console.log(hasSeen);
           if (!hasSeen && !hasStartedTutorial.current) {
             hasStartedTutorial.current = true;
@@ -139,7 +139,7 @@ const CheckHandScreen = () => {
       };
 
       // ma byc !dev jesli production ready
-      if (__DEV__) {
+      if (!__DEV__) {
         checkTutorialFlag();
       }
 
