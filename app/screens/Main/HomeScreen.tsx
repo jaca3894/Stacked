@@ -1,6 +1,10 @@
-import { getNextUnmarkedItem } from "../../../utils/FindUnlikedArticle";
+import {
+  getNextUnmarkedItem,
+  getCompletionPercentage,
+} from "../../../utils/FindUnlikedArticle";
+import { getRandomGlossaryTerm } from "../../../utils/GetRandomItem";
 import React, { useState, useEffect } from "react";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import {
   View,
   Text,
@@ -10,6 +14,7 @@ import {
   Dimensions,
   TouchableOpacity,
   ScrollView,
+  DimensionValue,
 } from "react-native";
 import LoadingPanel from "../../panels/LoadingPanel";
 import * as NavigationBar from "expo-navigation-bar";
@@ -23,10 +28,14 @@ const screenWidth = Math.round(Dimensions.get("window").width);
 
 const HomeScreen = () => {
   const [loading, setLoading] = useState(true);
-  type Item = { id: string; date: string };
+  const navigator = useNavigation();
   const [hasLastGame, setHasLastGame] = useState(true);
   // const [hasNextLesson, setHasNextLesson] = useState(true);
   const loaderTime = 1000;
+  const term = getRandomGlossaryTerm();
+  // const percentage = getCompletionPercentage(articlesData);
+  // console.log("Percent: " + percentage);
+  // console.log(term);
 
   // const article = getNextUnmarkedItem(articlesData);
   // setArticle(getNextUnmarkedItem(articlesData));
@@ -41,12 +50,15 @@ const HomeScreen = () => {
     { name: "Seweryn", score: 300 },
   ];
   const [article, setArticle] = useState<any>(null);
+  const [percentage, setPercentage] = useState<any>(null);
 
   useFocusEffect(
     React.useCallback(() => {
       const fetchArticle = async () => {
         const nextArticle = await getNextUnmarkedItem(articlesData);
         setArticle(nextArticle);
+        const nextPercent = await getCompletionPercentage(articlesData);
+        setPercentage(nextPercent);
       };
       // console.log(article);
       fetchArticle();
@@ -153,9 +165,14 @@ const HomeScreen = () => {
               ></Image>
               <Text style={styles.panelTitle}>Total progress</Text>
               <View style={styles.progressBarContainer}>
-                <View style={[styles.progressBar, { width: "68%" }]} />
+                <View
+                  style={[
+                    styles.progressBar,
+                    { width: `${percentage}%` as DimensionValue },
+                  ]}
+                />
               </View>
-              <Text style={styles.panelText}>68% complete</Text>
+              <Text style={styles.panelText}>{`${percentage}%`} complete</Text>
             </View>
 
             {/* 📝 Lesson Panel */}
@@ -214,6 +231,11 @@ const HomeScreen = () => {
                       </Text>
                       <TouchableOpacity
                         style={[styles.resumeButton, { alignSelf: "center" }]}
+                        onPress={() =>
+                          (navigator as any).navigate("Article", {
+                            articleId: article.id,
+                          })
+                        }
                       >
                         <Ionicons name="play" size={16} color="#1c1c1c" />
                         <Text style={styles.buttonText}>Continue</Text>
@@ -261,28 +283,36 @@ const HomeScreen = () => {
 
             <View style={styles.panel}>
               <Text style={styles.panelTitle}>📖 Term of the Day</Text>
-              <Text style={styles.termTitle}>Split</Text>
-              <Text style={styles.termDefinition}>
-                A move in Blackjack where a player divides two cards of equal
-                value into two separate hands.
-              </Text>
+              <Text style={styles.termTitle}>{term.term}</Text>
+              <Text style={styles.termDefinition}>{term.definition}</Text>
             </View>
             {/* ⚡ Quick Links Panel */}
             <View style={styles.quickLinksPanel}>
               <Text style={styles.panelTitle}>Quick Access</Text>
 
               <View style={styles.quickLinksRow}>
-                <TouchableOpacity style={styles.quickLinkButton}>
+                <TouchableOpacity
+                  style={styles.quickLinkButton}
+                  onPress={() => (navigator as any).navigate("Feedback")}
+                >
                   <Ionicons name="chatbubbles" size={20} color="#cbbb93" />
                   <Text style={styles.quickLinkText}>Feedback</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.quickLinkButton}>
+                <TouchableOpacity
+                  style={styles.quickLinkButton}
+                  onPress={() =>
+                    (navigator as any).navigate("MainTabs", { screen: "Play" })
+                  }
+                >
                   <Ionicons name="game-controller" size={20} color="#cbbb93" />
                   <Text style={styles.quickLinkText}>Play</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.quickLinkButton}>
+                <TouchableOpacity
+                  style={styles.quickLinkButton}
+                  onPress={() => (navigator as any).navigate("ReportBug")}
+                >
                   <Ionicons name="bug" size={20} color="#cbbb93" />
                   <Text style={styles.quickLinkText}>Bug report</Text>
                 </TouchableOpacity>
