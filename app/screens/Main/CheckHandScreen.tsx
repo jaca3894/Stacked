@@ -129,7 +129,7 @@ const CheckHandScreen = () => {
             const timer = setTimeout(() => {
               start();
               AsyncStorage.setItem("@hasSeenCheckTutorial", "true");
-            }, 500);
+            }, 250);
 
             return () => clearTimeout(timer);
           }

@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
   footer: {
     paddingVertical: 30,
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
   },
   footerText: {
     color: "gray",

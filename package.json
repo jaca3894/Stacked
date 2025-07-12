@@ -26,6 +26,7 @@
     "react-native": "0.79.3",
     "react-native-animatable": "^1.4.0",
     "react-native-collapsible": "^1.6.2",
+    "react-native-color-matrix-image-filters": "^7.0.2",
     "react-native-draggable": "^3.3.0",
     "react-native-gesture-handler": "^2.24.0",
     "react-native-linear-gradient": "^2.8.3",
