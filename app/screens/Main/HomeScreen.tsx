@@ -3,8 +3,9 @@ import {
   getCompletionPercentage,
 } from "../../../utils/FindUnlikedArticle";
 import { getRandomGlossaryTerm } from "../../../utils/GetRandomItem";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import SystemNavigationBar from "react-native-system-navigation-bar";
 import {
   View,
   Text,
@@ -15,16 +16,27 @@ import {
   TouchableOpacity,
   ScrollView,
   DimensionValue,
+  findNodeHandle,
 } from "react-native";
 import LoadingPanel from "../../panels/LoadingPanel";
 import * as NavigationBar from "expo-navigation-bar";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import * as Animatable from "react-native-animatable";
 import { Ionicons } from "@expo/vector-icons";
 import { Image as Gif } from "expo-image";
 import { articlesData } from "../../../classes/Database";
+import {
+  CopilotProvider,
+  CopilotStep,
+  walkthroughable,
+} from "react-native-copilot";
+import { useCopilot } from "react-native-copilot";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { withCopilotProvider } from "../../../utils/WithCopilotProvider";
 
 const screenWidth = Math.round(Dimensions.get("window").width);
+
+const CopilotView = walkthroughable(View);
+const CopilotText = walkthroughable(Text);
 
 const HomeScreen = () => {
   const [loading, setLoading] = useState(true);
@@ -36,6 +48,41 @@ const HomeScreen = () => {
   // const percentage = getCompletionPercentage(articlesData);
   // console.log("Percent: " + percentage);
   // console.log(term);
+
+  const { start, copilotEvents } = useCopilot();
+
+  const scrollRef = useRef<ScrollView>(null);
+  const hasStartedTutorial = useRef(false);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const checkTutorialFlag = async () => {
+        try {
+          // await AsyncStorage.clear(); // to zakomentowac jesli nie testujesz
+          const hasSeen = await AsyncStorage.getItem("@hasSeenHomTutorial");
+          if (!hasSeen && !hasStartedTutorial.current) {
+            // Odpalamy tutorial z opóźnieniem
+            const timer = setTimeout(() => {
+              hasStartedTutorial.current = true;
+              start();
+              AsyncStorage.setItem("@hasSeenHomTutorial", "true");
+            }, 1250);
+
+            return () => clearTimeout(timer);
+          }
+        } catch (error) {
+          console.error("Error checking tutorial flag.", error);
+        }
+      };
+
+      // ma byc !dev jesli production ready
+      if (!__DEV__) {
+        checkTutorialFlag();
+      }
+
+      // return () => {}; // cleanup (opcjonalny)
+    }, [start])
+  );
 
   // const article = getNextUnmarkedItem(articlesData);
   // setArticle(getNextUnmarkedItem(articlesData));
@@ -67,6 +114,7 @@ const HomeScreen = () => {
 
   if (Platform.OS === "android") {
     NavigationBar.setVisibilityAsync("hidden");
+    SystemNavigationBar.navigationHide();
   }
 
   useEffect(() => {
@@ -82,101 +130,125 @@ const HomeScreen = () => {
     <>
       {loading && <LoadingPanel visible={loading} />}
       <SafeAreaProvider>
-        <SafeAreaView style={styles.container}>
-          <ScrollView contentContainerStyle={styles.scrollContainer}>
-            <Animatable.View
-              style={styles.header}
-              animation="fadeIn"
-              delay={1500}
-              duration={1500}
-            >
+        <SafeAreaView style={[styles.container, { flex: 1 }]}>
+          <ScrollView
+            ref={(ref) => {
+              scrollRef.current = ref;
+              // console.log("✌️ scrollRef.current =", ref);
+              // console.log("scrollTo:", ref?.scrollTo);
+            }}
+            contentContainerStyle={[styles.scrollContainer, { flexGrow: 1 }]}
+          >
+            <View style={styles.header}>
               <Image
                 source={require("../../../assets/logo/logo.png")}
                 style={styles.logo}
               />
-              <Text style={styles.text}>Hello, betatester!</Text>
-            </Animatable.View>
+              <CopilotStep
+                order={1}
+                text="Welcome in Stacked! My name is James and I'll guide you through our app."
+                name="dealerHello"
+              >
+                <CopilotText style={styles.text}>
+                  Hello, betatester!
+                </CopilotText>
+              </CopilotStep>
+            </View>
             {/* Load Saved Game Panel */}
-            <View style={styles.panel}>
-              <View style={styles.gameHeader}>
-                <Text style={styles.gameTitle}>♠ Continue Last Game</Text>
-              </View>
-              {hasLastGame && (
-                <>
-                  {players.map((player, index) => (
-                    <View key={player.name} style={styles.playerRow}>
-                      <Text style={styles.playerIndex}>{index + 1}.</Text>
-                      <Text style={styles.playerName}>{player.name}</Text>
-                      <Text style={styles.playerScore}>{player.score}</Text>
-                    </View>
-                  ))}
-
-                  <TouchableOpacity style={styles.resumeButton}>
-                    <Ionicons name="play" size={16} color="#1c1c1c" />
-                    <Text style={styles.resumeText}>Resume</Text>
-                  </TouchableOpacity>
-                </>
-              )}
-
-              {!hasLastGame && (
-                <View style={{ padding: 10 }}>
-                  <View style={{ position: "relative" }}>
-                    <Image
-                      source={require("../../../assets/dealer/dealerConfused.png")}
-                      style={{
-                        width: "100%",
-                        resizeMode: "contain",
-                        height: 120,
-                      }}
-                    ></Image>
-                    <View
-                      style={{
-                        ...StyleSheet.absoluteFillObject,
-                        backgroundColor: "rgba(42,42,42,0.5)",
-                      }}
-                    ></View>
-                  </View>
-                  <Text
-                    style={[
-                      styles.panelText,
-                      {
-                        textAlign: "center",
-                        marginVertical: 10,
-                        color: "gray",
-                      },
-                    ]}
-                  >
-                    No saved games.
-                  </Text>
+            <CopilotStep
+              name="dealerExplain"
+              text="Here you can continue last saved game. Last games are automatically saved."
+              order={2}
+            >
+              <CopilotView style={styles.panel}>
+                <View style={styles.gameHeader}>
+                  <Text style={styles.gameTitle}>♠ Continue Last Game</Text>
                 </View>
-              )}
-            </View>
+                {hasLastGame && (
+                  <>
+                    {players.map((player, index) => (
+                      <View key={player.name} style={styles.playerRow}>
+                        <Text style={styles.playerIndex}>{index + 1}.</Text>
+                        <Text style={styles.playerName}>{player.name}</Text>
+                        <Text style={styles.playerScore}>{player.score}</Text>
+                      </View>
+                    ))}
 
-            <View style={styles.panel}>
-              <Image
-                source={require("../../../assets/logo/logoAcademy.png")}
-                style={{
-                  width: "50%",
-                  height: 50,
-                  resizeMode: "contain",
-                  alignSelf: "center",
-                  margin: 5,
-                }}
-              ></Image>
-              <Text style={styles.panelTitle}>Total progress</Text>
-              <View style={styles.progressBarContainer}>
-                <View
-                  style={[
-                    styles.progressBar,
-                    { width: `${percentage}%` as DimensionValue },
-                  ]}
-                />
-              </View>
-              <Text style={styles.panelText}>{`${percentage}%`} complete</Text>
-            </View>
+                    <TouchableOpacity style={styles.resumeButton}>
+                      <Ionicons name="play" size={16} color="#1c1c1c" />
+                      <Text style={styles.resumeText}>Resume</Text>
+                    </TouchableOpacity>
+                  </>
+                )}
+
+                {!hasLastGame && (
+                  <View style={{ padding: 10 }}>
+                    <View style={{ position: "relative" }}>
+                      <Image
+                        source={require("../../../assets/dealer/dealerConfused.png")}
+                        style={{
+                          width: "100%",
+                          resizeMode: "contain",
+                          height: 120,
+                        }}
+                      ></Image>
+                      <View
+                        style={{
+                          ...StyleSheet.absoluteFillObject,
+                          backgroundColor: "rgba(42,42,42,0.5)",
+                        }}
+                      ></View>
+                    </View>
+                    <Text
+                      style={[
+                        styles.panelText,
+                        {
+                          textAlign: "center",
+                          marginVertical: 10,
+                          color: "gray",
+                        },
+                      ]}
+                    >
+                      No saved games.
+                    </Text>
+                  </View>
+                )}
+              </CopilotView>
+            </CopilotStep>
+            <CopilotStep
+              name="dealer2"
+              text="This is Your total progress in reading our articles. We count article as read if it's liked."
+              order={3}
+            >
+              <CopilotView style={styles.panel}>
+                <Image
+                  source={require("../../../assets/logo/logoAcademy.png")}
+                  style={{
+                    width: "50%",
+                    height: 50,
+                    resizeMode: "contain",
+                    alignSelf: "center",
+                    margin: 5,
+                  }}
+                ></Image>
+                <Text style={styles.panelTitle}>Total progress</Text>
+                <View style={styles.progressBarContainer}>
+                  <View
+                    style={[
+                      styles.progressBar,
+                      { width: `${percentage}%` as DimensionValue },
+                    ]}
+                  />
+                </View>
+                <Text style={styles.panelText}>
+                  {`${percentage}%`} complete
+                </Text>
+              </CopilotView>
+            </CopilotStep>
 
             {/* 📝 Lesson Panel */}
-            <View style={styles.lessonPanel}>
+
+            <CopilotView style={styles.lessonPanel}>
               <Text style={styles.panelTitle}>📝 Your next lesson</Text>
 
               {article != null && (
@@ -244,7 +316,7 @@ const HomeScreen = () => {
 
                     {/* <View style={styles.progressBarContainer}>
                       <View style={[styles.progressBar, { width: "15%" }]} />
-                    </View> */}
+                      </View> */}
                     {/* <Text style={styles.lessonProgressText}>Progress: 15%</Text> */}
                   </View>
                 </>
@@ -279,7 +351,7 @@ const HomeScreen = () => {
                   ></View>
                 </View>
               )}
-            </View>
+            </CopilotView>
 
             <View style={styles.panel}>
               <Text style={styles.panelTitle}>📖 Random Term</Text>
@@ -287,7 +359,7 @@ const HomeScreen = () => {
               <Text style={styles.termDefinition}>{term.definition}</Text>
             </View>
             {/* ⚡ Quick Links Panel */}
-            <View style={styles.quickLinksPanel}>
+            <CopilotView style={styles.quickLinksPanel}>
               <Text style={styles.panelTitle}>Quick Access</Text>
 
               <View style={styles.quickLinksRow}>
@@ -302,7 +374,9 @@ const HomeScreen = () => {
                 <TouchableOpacity
                   style={styles.quickLinkButton}
                   onPress={() =>
-                    (navigator as any).navigate("MainTabs", { screen: "Play" })
+                    (navigator as any).navigate("MainTabs", {
+                      screen: "Play",
+                    })
                   }
                 >
                   <Ionicons name="game-controller" size={20} color="#cbbb93" />
@@ -325,7 +399,7 @@ const HomeScreen = () => {
                   <Text style={styles.quickLinkText}>Saves</Text>
                 </TouchableOpacity>
               </View>
-            </View>
+            </CopilotView>
 
             <View style={styles.footer}>
               <Text style={styles.footerText}>2025 Stacked.</Text>
@@ -359,6 +433,7 @@ const styles = StyleSheet.create({
   },
   text: {
     color: "white",
+    width: "100%",
     fontSize: 24,
     fontWeight: "bold",
     textAlign: "center",
@@ -612,4 +687,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeScreen;
+export default withCopilotProvider(HomeScreen);

@@ -26,6 +26,7 @@ export default function App() {
   const [showWelcome, setShowWelcome] = useState<boolean | null>(null);
 
   useEffect(() => {
+    // AsyncStorage.clear();
     const checkFlag = async () => {
       if (__DEV__) {
         setShowWelcome(false); // true wyswietli welcome
