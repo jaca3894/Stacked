@@ -18,6 +18,7 @@ import FeedbackScreen from "./More/Feedback";
 import GlossaryScreen from "./More/Glossary";
 import PatchNotesScreen from "./More/PatchNotes";
 import ReportBugScreen from "./More/ReportBug";
+import SavesScreen from "./SavesScreen";
 
 const Stack = createStackNavigator();
 
@@ -25,6 +26,7 @@ export default function App() {
   const [showWelcome, setShowWelcome] = useState<boolean | null>(null);
 
   useEffect(() => {
+    // AsyncStorage.clear();
     const checkFlag = async () => {
       if (__DEV__) {
         setShowWelcome(false); // true wyswietli welcome
@@ -143,6 +145,11 @@ export default function App() {
           <Stack.Screen
             name="Settings"
             component={SettingsScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Saves"
+            component={SavesScreen}
             options={{ headerShown: false }}
           />
         </Stack.Navigator>

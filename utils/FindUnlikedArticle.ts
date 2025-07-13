@@ -44,6 +44,6 @@ export const getCompletionPercentage = async (
   // console.log(
   // `📈 Completed ${completed} out of ${data.length} items → ${percent}%`
   // );
-  console.log("%: " + percent);
+  // console.log("%: " + percent);
   return percent;
 };

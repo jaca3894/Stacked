@@ -23,6 +23,7 @@ const imageMap: Record<string, number> = {
   dealerKnows: require("../assets/dealer/dealerKnows.png"),
   dealerHeart: require("../assets/dealer/dealerHeart.png"),
   dealerExplain: require("../assets/dealer/dealerExplain.png"),
+  dealerHello: require("../assets/dealer/dealerHello.png"),
 };
 
 export const Tooltip = ({ labels }: TooltipProps) => {
