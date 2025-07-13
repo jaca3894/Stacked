@@ -120,12 +120,12 @@ const styles = StyleSheet.create({
   },
   cardsContainer: {
     position: 'absolute',
-    bottom: 0, // Pushes the cards down to peek out from the bottom
+    bottom: 0,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 10,
-    zIndex: 0, // Ensures cards are behind the button (which has zIndex 1)
+    zIndex: 0,
   },
   cardWrapper: {
     height: 70,
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
     top: -20,
     left: -20,
     backgroundColor: "white",
-    borderRadius: 15, // A slightly squared circle can look nice
+    borderRadius: 15,
     width: 30,
     height: 30,
     justifyContent: "center",
