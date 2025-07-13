@@ -1,8 +1,6 @@
-import { Dimensions, StyleSheet, TouchableHighlight, Text } from "react-native";
+import { StyleSheet, TouchableHighlight, Text, useWindowDimensions } from "react-native";
 import { View } from "react-native-animatable";
 import CardBackView from "./CardBackView";
-
-const screenWidth = Dimensions.get("window").width;
 
 interface PlayerButtonProps {
   isGameStarted: boolean;
@@ -19,12 +17,26 @@ interface PlayerButtonProps {
 }
 
 const PlayerButton = ({ isGameStarted, isCurrentPlayer, opacity, isDealer, name, balance, lastAction, showLastAction, cardsCount, addStyles, onPress }: PlayerButtonProps) => {
+  const { width: screenWidth } = useWindowDimensions();
+
+  const dynamicStyles = {
+    button: {
+      minWidth: screenWidth * 0.2,
+      maxWidth: screenWidth * 0.35,
+    },
+    blindView: {
+      minWidth: screenWidth * 0.2,
+      maxWidth: screenWidth * 0.35,
+    },
+  };
+
   return (
     <View style={[styles.buttonContainer, { opacity: opacity ?? 1 }]}>
       <TouchableHighlight
         disabled={isGameStarted}
         style={[
           styles.button,
+          dynamicStyles.button,
           addStyles,
           isCurrentPlayer && styles.currentPlayerHighlight,
         ]}
@@ -39,7 +51,7 @@ const PlayerButton = ({ isGameStarted, isCurrentPlayer, opacity, isDealer, name,
           )}
           <Text style={styles.buttonText} numberOfLines={2} ellipsizeMode="tail">{name ? `${name}\n${balance}` : '+'}</Text>
           {(isGameStarted && showLastAction) && (
-            <View style={styles.blindView}>
+            <View style={[styles.blindView, dynamicStyles.blindView]}>
               <Text style={styles.blindText}>{lastAction}</Text>
             </View>
           )}
@@ -65,8 +77,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   button: {
-    minWidth: screenWidth * 0.2,
-    maxWidth: screenWidth * 0.35,
     backgroundColor: "#cbbb9c",
     borderRadius: 10,
     justifyContent: "center",
@@ -88,20 +98,18 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "#000",
-    fontSize: 18,
+    fontSize: 14,
     textAlign: "center",
   },
   blindView: {
     backgroundColor: "#111",
     padding: 2,
     borderRadius: 5,
-    minWidth: screenWidth * 0.2,
-    maxWidth: screenWidth * 0.35,
   },
   blindText: {
     color: "white",
     textAlign: "center",
-    fontSize: 16,
+    fontSize: 12,
     textTransform: "capitalize",
   },
   currentPlayerHighlight: {
@@ -112,7 +120,7 @@ const styles = StyleSheet.create({
   },
   cardsContainer: {
     position: 'absolute',
-    bottom: '20%', // Pushes the cards down to peek out from the bottom
+    bottom: 0, // Pushes the cards down to peek out from the bottom
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -140,7 +148,7 @@ const styles = StyleSheet.create({
   dealerIconText: {
     color: "black",
     fontWeight: "bold",
-    fontSize: 20,
+    fontSize: 16,
     textAlign: "center",
   },
 })

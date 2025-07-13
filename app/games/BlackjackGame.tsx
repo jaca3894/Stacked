@@ -4,11 +4,11 @@ import {
   StyleSheet,
   View,
   TouchableHighlight,
-  Dimensions,
   TextInput,
   Modal,
   Pressable, // For modal
-  TouchableWithoutFeedback, // For modal
+  TouchableWithoutFeedback,  // For modal
+  useWindowDimensions,
 } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
@@ -25,12 +25,31 @@ import PlayerButton from "../../components/PlayerButton";
 
 type GameRouteProp = RouteProp<RootStackParamList, "Game">;
 
-const { width, height } = Dimensions.get('window');
-
 const BlackjackGame = () => {
   const route = useRoute<GameRouteProp>();
   const navigation = useNavigation<any>();
   const { playersCount } = route.params;
+  const { width, height } = useWindowDimensions();
+
+  const dynamicStyles = StyleSheet.create({
+    playersContainer: {
+      paddingHorizontal: width * 0.1,
+    },
+    column: {
+      paddingBottom: height * 0.1,
+    },
+    popUpInside: {
+      width: width * 0.4,
+    },
+    dealerButton: {
+      top: height * 0.05,
+    },
+    // We can also move the player button styling here to keep it clean
+    playerButtonOverrides: {
+      minWidth: width * 0.1,
+      maxWidth: width * 0.15,
+    }
+  });
 
   const [players, setPlayers] = useState<BlackjackPlayer[]>(
     Array.from({ length: playersCount }, () => new BlackjackPlayer())
@@ -82,6 +101,7 @@ const BlackjackGame = () => {
   function endGame() {
     const insurancePlayerIndex = players.findIndex(player => player.lastAction == 'insurance');
 
+    console.log(insurancePlayerIndex)
     if(insurancePlayerIndex != -1) {
       setShowInsurance(true);
       resetButtons();
@@ -184,24 +204,24 @@ const BlackjackGame = () => {
             <Rect x={200} y={150} width={800} height={300} rx={100} ry={180} fill="none" stroke="#005000" strokeWidth={12} />
           </Svg>
 
-          <View style={styles.dealerButton}>
+          <View style={[styles.dealerButton, dynamicStyles.dealerButton]}>
             <Text style={[styles.buttonText, {color: '#fff'}]} numberOfLines={1} ellipsizeMode="tail">{dealer.current.name}</Text>
           </View>
 
-          <View style={styles.playersContainer}>
-            <View style={[styles.column, { flexDirection: 'column-reverse', alignItems: 'flex-start'}]}>
+          <View style={[styles.playersContainer, dynamicStyles.playersContainer]}>
+            <View style={[styles.column, dynamicStyles.column, { flexDirection: 'column-reverse', alignItems: 'flex-start'}]}>
               {firstColumnPlayers.map((player, index) => (
-                <PlayerButton key={index+1} isGameStarted={isGameStarted} isCurrentPlayer={player === currentPlayer} onPress={() => setShowInput([true, index])} addStyles={{...styles.button, minWidth: width * .1, maxWidth: width * .15}} 
-                  name={player.name} balance={player.balance} cardsCount={player.cardsCount} opacity={player.lastAction == 'busted' ? .6 : 1} />
+                <PlayerButton key={index+1} isGameStarted={isGameStarted} isCurrentPlayer={player === currentPlayer} onPress={() => setShowInput([true, index])} name={player.name} 
+                balance={player.balance} cardsCount={player.cardsCount} opacity={player.lastAction == 'busted' ? .6 : 1}  addStyles={dynamicStyles.playerButtonOverrides} />
               ))}
             </View>
 
-            <View style={[styles.column, { flexDirection: 'column', alignItems: 'flex-start'}]}>
+            <View style={[styles.column, dynamicStyles.column, { flexDirection: 'column', alignItems: 'flex-start'}]}>
               {secondColumnPlayers.map((player, index) => {
                 const originalIndex = index + splitIndex;
                 return (
-                  <PlayerButton key={originalIndex+1} isGameStarted={isGameStarted} isCurrentPlayer={player === currentPlayer} onPress={() => setShowInput([true, originalIndex])} addStyles={{...styles.button, minWidth: width * .1, maxWidth: width * .15}} 
-                    name={player.name} balance={player.balance} cardsCount={player.cardsCount}/>
+                  <PlayerButton key={originalIndex+1} isGameStarted={isGameStarted} isCurrentPlayer={player === currentPlayer} onPress={() => setShowInput([true, originalIndex])} 
+                  name={player.name} balance={player.balance} cardsCount={player.cardsCount} addStyles={dynamicStyles.playerButtonOverrides} />
                 );
               })}
             </View>
@@ -250,7 +270,7 @@ const BlackjackGame = () => {
             <Modal onRequestClose={() => setShowInput([false, -1])} transparent={true} animationType="fade">
               <Pressable style={styles.popUp} onPress={() => setShowInput([false, -1])}>
                 <TouchableWithoutFeedback>
-                  <View style={styles.popUpInside}>
+                  <View style={[styles.popUpInside, dynamicStyles.popUpInside]}>
                     <TouchableHighlight style={styles.closeButton} underlayColor="transparent" onPress={() => setShowInput([false, -1])}>
                       <Text style={[styles.buttonText, {fontSize: 24, color: '#fff'}]}>×</Text>
                     </TouchableHighlight>
@@ -284,7 +304,7 @@ const BlackjackGame = () => {
             <Modal onRequestClose={() => setShowdownVisible(false)} transparent={true} animationType="fade">
               <Pressable style={styles.popUp} onPress={() => setShowdownVisible(false)}>
                 <TouchableWithoutFeedback>
-                  <View style={styles.popUpInside}>
+                  <View style={[styles.popUpInside, dynamicStyles.popUpInside]}>
                     <TouchableHighlight style={styles.closeButton} underlayColor="transparent" onPress={() => setShowdownVisible(false)}>
                       <Text style={[styles.buttonText, {fontSize: 24, color: '#fff'}]}>×</Text>
                     </TouchableHighlight>
@@ -309,7 +329,7 @@ const BlackjackGame = () => {
             <Modal onRequestClose={() => setShowInsurance(false)} transparent={true} animationType="fade">
               <Pressable style={styles.popUp} onPress={() => setShowInsurance(false)}>
                 <TouchableWithoutFeedback>
-                  <View style={styles.popUpInside}>
+                  <View style={[styles.popUpInside, dynamicStyles.popUpInside]}>
                     <TouchableHighlight style={styles.closeButton} underlayColor="transparent" onPress={() => setShowInsurance(false)}>
                       <Text style={[styles.buttonText, {fontSize: 24, color: '#fff'}]}>×</Text>
                     </TouchableHighlight>
@@ -335,8 +355,8 @@ const BlackjackGame = () => {
             <Modal onRequestClose={() => {setShowGameEnded(false); startGame();}} transparent={true} animationType="fade">
               <Pressable style={styles.popUp} onPress={() => {setShowGameEnded(false); startGame();}}>
                 <TouchableWithoutFeedback>
-                  <View style={styles.popUpInside}>
-                    <Text>Does Dealer have blackjack</Text>
+                  <View style={[styles.popUpInside, dynamicStyles.popUpInside]}>
+                    <Text style={{ marginBottom: 20, fontSize: 22, color: '#fff', fontWeight: 'bold' }}>Round Over</Text>
                     <TouchableHighlight style={styles.dodajButton} underlayColor="#948870" onPress={() => {setShowGameEnded(false); startGame();}}>
                       <Text style={styles.buttonText}>New Game</Text>
                     </TouchableHighlight>
@@ -378,12 +398,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-end',
-    paddingHorizontal: width * .1
   },
   column: {
     justifyContent: 'flex-start',
     gap: 30,
-    paddingBottom: height * 0.1,
   },
   button: {
     backgroundColor: '#cbbb9c',
@@ -422,7 +440,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   popUpInside: {
-    width: width * 0.4,
     maxWidth: 400,
     padding: 25,
     backgroundColor: "#212121",
@@ -456,7 +473,6 @@ const styles = StyleSheet.create({
   },
   dealerButton: {
     position: 'absolute',
-    top: height * 0.05,
     backgroundColor: '#1a237e',
     paddingVertical: 8,
     paddingHorizontal: 20,
