@@ -282,7 +282,7 @@ const HomeScreen = () => {
             </View>
 
             <View style={styles.panel}>
-              <Text style={styles.panelTitle}>📖 Term of the Day</Text>
+              <Text style={styles.panelTitle}>📖 Random Term</Text>
               <Text style={styles.termTitle}>{term.term}</Text>
               <Text style={styles.termDefinition}>{term.definition}</Text>
             </View>
@@ -317,7 +317,10 @@ const HomeScreen = () => {
                   <Text style={styles.quickLinkText}>Bug report</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.quickLinkButton}>
+                <TouchableOpacity
+                  style={styles.quickLinkButton}
+                  onPress={() => (navigator as any).navigate("Saves")}
+                >
                   <Ionicons name="folder" size={20} color="#cbbb93" />
                   <Text style={styles.quickLinkText}>Saves</Text>
                 </TouchableOpacity>
