@@ -1,13 +1,18 @@
 import { Image } from "react-native";
 
-const Card = () => {
+interface CardBackViewProps {
+  width?: number;
+  height?: number;
+}
+
+const CardBackView = ({ width, height}: CardBackViewProps) => {
   return (
     <Image
       source={require("../assets/poker/cardBack.png")}
       resizeMode="contain"
-      style={{ width: 35 }}
+      style={{ width: width ?? 35, height: height ?? 50 }}
     />
   );
 };
 
-export default Card;
+export default CardBackView;

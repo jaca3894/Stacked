@@ -9,6 +9,8 @@ export default class BlackjackPlayer {
   public stood: boolean = false;
   public isDealer: boolean = false;
   public insuranceBet: number = 0;
+  public cardsCount: number = 0;
+  public lastAction: "" | "hit" | "stand" | "blackjack" | "double" | "insurance" | "busted" = "";
 
   constructor(name: string = "", balance: number = 1000) {
     this.name = name;
@@ -20,6 +22,7 @@ export default class BlackjackPlayer {
   give(amount: number) {
     if (amount <= 0) return;
     this.balance += amount;
+    this.currentBet = 0;
   }
 
   take(amount: number) {
@@ -48,6 +51,7 @@ export default class BlackjackPlayer {
 
   addCard(card: Card) {
     this.hand.push(card);
+    this.cardsCount++;
   }
 
   getHandValue(): number[] {

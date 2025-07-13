@@ -17,7 +17,7 @@ import RootStackParamList from "../../props/RootStackParamList";
 
 import CustomSlider from "../../components/Slider";
 import RoundButton from "../../components/RoundButton";
-import Card from "../../components/CardBackView";
+import CardBackView from "../../components/CardBackView";
 import PotsShowdown from "../../components/PotsShowdown";
 
 const seatingPlan: Record<number, [number, number, number, number]> = {
@@ -407,7 +407,7 @@ const PokerGame = () => {
             <View style={styles.potsView}>
               <View style={styles.cards}>
                 {Array.from({ length: shownCards }).map((_, index) => (
-                  <Card key={index + 1} />
+                  <CardBackView key={index + 1} />
                 ))}
               </View>
               <Text style={{ color: "#000", fontSize: 24 }}>
