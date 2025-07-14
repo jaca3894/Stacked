@@ -12,7 +12,7 @@ import RootStackParamList from "../../props/RootStackParamList";
 import { useRef, useState, useEffect } from "react";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
-import { articlesData as data } from "../../classes/Database";
+import { getArticlesData } from "../../classes/Database";
 import { Image as Gif } from "expo-image";
 import * as Animatable from "react-native-animatable";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -28,6 +28,28 @@ const extractYouTubeId = (url: string): string => {
 const screenHeight = Dimensions.get("window").height;
 
 const ArticleScreen = () => {
+  type ArticleData = {
+    id: string;
+    bannerPath: any; // lub: ImageSourcePropType z react-native
+    title: string;
+    content: string;
+    category: string;
+    categoryTabColor: string;
+    date: string;
+    videoLink: string;
+    videoAuthor: string;
+  };
+
+  const [articlesData, setArticles] = useState<ArticleData[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await getArticlesData();
+      setArticles(data);
+    };
+    fetchData();
+  }, []);
+
   const saveLikedItem = async (index: string, value: boolean) => {
     try {
       await AsyncStorage.setItem(`article${index}`, JSON.stringify(value));
@@ -50,7 +72,8 @@ const ArticleScreen = () => {
   const navigation = useNavigation();
   const route = useRoute<ArticleScreenProp>();
   const { articleId } = route.params;
-  let article: any;
+
+  console.log(articleId + " article");
   const [liked, setLiked] = useState<boolean>(false); // początkowo false
   const heartRef = useRef<Animatable.View>(null);
 
@@ -62,9 +85,12 @@ const ArticleScreen = () => {
     fetchLikeStatus();
   }, [articleId]);
 
-  data.forEach((element) => {
-    if (element.id === articleId) article = element;
-  });
+  // articlesData.forEach((element) => {
+  //   if (element.id === articleId) article = element;
+  // });
+  // const [liked, setLiked] = useState(checkForLike(articleId));
+
+  const article = articlesData.find((a) => a.id === articleId);
 
   const toggleLike = async () => {
     const newValue = !liked;
@@ -76,164 +102,166 @@ const ArticleScreen = () => {
     }
   };
 
-  return (
-    <View style={{ flex: 1, backgroundColor: "#1c1c1c" }}>
-      <ScrollView>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={{
-            position: "absolute",
-            top: "3%",
-            left: "7%",
-            zIndex: 2,
-          }}
-        >
-          <Image
-            source={require("../../assets/arrowRight.png")}
+  if (article) {
+    return (
+      <View style={{ flex: 1, backgroundColor: "#1c1c1c" }}>
+        <ScrollView>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
             style={{
-              width: 20,
-              height: 20,
-              transform: [{ scaleX: -1 }],
+              position: "absolute",
+              top: "3%",
+              left: "7%",
+              zIndex: 2,
             }}
-          />
-        </TouchableOpacity>
-        <Gif
-          source={article.bannerPath}
-          style={styles.banner}
-          contentFit="cover"
-          transition={300}
-          cachePolicy="memory-disk"
-        />
-
-        <View style={styles.content}>
-          <Animatable.View
-            animation="fadeIn"
-            duration={1500}
-            delay={600}
-            iterationCount={1}
-            style={styles.introFlexContainer}
           >
-            <Animatable.Text
-              animation="fadeIn"
-              duration={1500}
-              delay={300}
-              iterationCount={1}
-              style={[
-                styles.categoryTab,
-                { backgroundColor: article.categoryTabColor || "#cbbb9c" },
-              ]}
-            >
-              {article.category}
-            </Animatable.Text>
-            <Animatable.Text
-              animation="fadeIn"
-              duration={1500}
-              delay={450}
-              iterationCount={1}
-              style={styles.titleText}
-            >
-              {article.title}
-            </Animatable.Text>
-            {article.videoLink !== "null" && (
-              <Animatable.Text
-                animation="fadeIn"
-                duration={1500}
-                delay={600}
-                iterationCount={1}
-                style={styles.videoNote}
-              >
-                Thumbnail sourced from the linked video below.
-              </Animatable.Text>
-            )}
+            <Image
+              source={require("../../assets/arrowRight.png")}
+              style={{
+                width: 20,
+                height: 20,
+                transform: [{ scaleX: -1 }],
+              }}
+            />
+          </TouchableOpacity>
+          <Gif
+            source={article.bannerPath}
+            style={styles.banner}
+            contentFit="cover"
+            transition={300}
+            cachePolicy="memory-disk"
+          />
 
+          <View style={styles.content}>
             <Animatable.View
               animation="fadeIn"
               duration={1500}
               delay={600}
               iterationCount={1}
-              style={styles.authorRow}
+              style={styles.introFlexContainer}
             >
-              <Image
-                source={require("../../assets/icons/logo.png")}
-                style={styles.authorAvatar}
-              />
-              <View style={styles.authorDetails}>
-                <Animatable.Text
-                  // animation="fadeIn"
-                  // duration={1500}
-                  // delay={300}
-                  // iterationCount={1}
-                  style={styles.authorTextTitle}
-                >
-                  Stacked Academy
-                </Animatable.Text>
-                <Animatable.Text
-                  // animation="fadeIn"
-                  // duration={1500}
-                  // delay={300}
-                  // iterationCount={1}
-                  style={styles.dateText}
-                >
-                  {article.date}
-                </Animatable.Text>
-              </View>
-              <Animatable.View ref={heartRef} style={{ alignSelf: "center" }}>
-                <Icon
-                  onPress={toggleLike}
-                  name={liked ? "heart" : "heart-outline"}
-                  color={liked ? "red" : "#cbbb9c"}
-                  size={35}
-                  style={{ alignSelf: "center" }}
-                />
-              </Animatable.View>
-            </Animatable.View>
-          </Animatable.View>
-
-          <View style={{ flex: 1, padding: 20 }}>
-            <Animatable.Text
-              animation="fadeIn"
-              duration={1500}
-              delay={750}
-              iterationCount={1}
-              style={styles.contentText}
-            >
-              {article.content}
-            </Animatable.Text>
-
-            {article.videoLink !== "null" && (
-              <TouchableOpacity
-                style={{ marginTop: 20 }}
-                onPress={() => Linking.openURL(article.videoLink)}
+              <Animatable.Text
+                animation="fadeIn"
+                duration={1500}
+                delay={300}
+                iterationCount={1}
+                style={[
+                  styles.categoryTab,
+                  { backgroundColor: article.categoryTabColor || "#cbbb9c" },
+                ]}
               >
-                <Image
-                  source={{
-                    uri: `https://img.youtube.com/vi/${extractYouTubeId(
-                      article.videoLink
-                    )}/hqdefault.jpg`,
-                  }}
-                  style={styles.videoThumbnail}
-                />
+                {article.category}
+              </Animatable.Text>
+              <Animatable.Text
+                animation="fadeIn"
+                duration={1500}
+                delay={450}
+                iterationCount={1}
+                style={styles.titleText}
+              >
+                {article.title}
+              </Animatable.Text>
+              {article.videoLink !== "null" && (
                 <Animatable.Text
                   animation="fadeIn"
                   duration={1500}
-                  delay={850}
+                  delay={600}
                   iterationCount={1}
-                  style={styles.videoCaption}
+                  style={styles.videoNote}
                 >
-                  Watch the video tutorial — created by {article.videoAuthor},
-                  shared on YouTube under the CC BY 3.0 license.
+                  Thumbnail sourced from the linked video below.
                 </Animatable.Text>
-              </TouchableOpacity>
-            )}
+              )}
 
-            <View style={styles.footer}>
-              <Text style={styles.footerText}>2025 Stacked.</Text>
+              <Animatable.View
+                animation="fadeIn"
+                duration={1500}
+                delay={600}
+                iterationCount={1}
+                style={styles.authorRow}
+              >
+                <Image
+                  source={require("../../assets/icons/logo.png")}
+                  style={styles.authorAvatar}
+                />
+                <View style={styles.authorDetails}>
+                  <Animatable.Text
+                    // animation="fadeIn"
+                    // duration={1500}
+                    // delay={300}
+                    // iterationCount={1}
+                    style={styles.authorTextTitle}
+                  >
+                    Stacked Academy
+                  </Animatable.Text>
+                  <Animatable.Text
+                    // animation="fadeIn"
+                    // duration={1500}
+                    // delay={300}
+                    // iterationCount={1}
+                    style={styles.dateText}
+                  >
+                    {article.date}
+                  </Animatable.Text>
+                </View>
+                <Animatable.View ref={heartRef} style={{ alignSelf: "center" }}>
+                  <Icon
+                    onPress={toggleLike}
+                    name={liked ? "heart" : "heart-outline"}
+                    color={liked ? "red" : "#cbbb9c"}
+                    size={35}
+                    style={{ alignSelf: "center" }}
+                  />
+                </Animatable.View>
+              </Animatable.View>
+            </Animatable.View>
+
+            <View style={{ flex: 1, padding: 20 }}>
+              <Animatable.Text
+                animation="fadeIn"
+                duration={1500}
+                delay={750}
+                iterationCount={1}
+                style={styles.contentText}
+              >
+                {article.content}
+              </Animatable.Text>
+
+              {article.videoLink !== "null" && (
+                <TouchableOpacity
+                  style={{ marginTop: 20 }}
+                  onPress={() => Linking.openURL(article.videoLink)}
+                >
+                  <Image
+                    source={{
+                      uri: `https://img.youtube.com/vi/${extractYouTubeId(
+                        article.videoLink
+                      )}/hqdefault.jpg`,
+                    }}
+                    style={styles.videoThumbnail}
+                  />
+                  <Animatable.Text
+                    animation="fadeIn"
+                    duration={1500}
+                    delay={850}
+                    iterationCount={1}
+                    style={styles.videoCaption}
+                  >
+                    Watch the video tutorial — created by {article.videoAuthor},
+                    shared on YouTube under the CC BY 3.0 license.
+                  </Animatable.Text>
+                </TouchableOpacity>
+              )}
+
+              <View style={styles.footer}>
+                <Text style={styles.footerText}>2025 Stacked.</Text>
+              </View>
             </View>
           </View>
-        </View>
-      </ScrollView>
-    </View>
-  );
+        </ScrollView>
+      </View>
+    );
+  }
 };
 
 const styles = StyleSheet.create({

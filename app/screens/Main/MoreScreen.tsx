@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
 import {
@@ -10,19 +10,32 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { morePanelsData as data } from "../../../classes/Database";
+import { getMorePanelsData } from "../../../classes/Database";
 import Icon from "react-native-vector-icons/Ionicons";
-import * as Animatable from "react-native-animatable";
 import { ScrollView } from "react-native-gesture-handler";
 
 const screenWidth = Math.round(Dimensions.get("window").width);
-
 const MoreScreen = () => {
   const navigation = useNavigation();
   const animRefs = useRef<any>([]);
-  const AnimatableView = Animatable.createAnimatableComponent(View);
   const [refreshKey] = useState(Date.now());
   const hasAnimated = useRef(false);
+  type Panel = {
+    title: string;
+    subtitle: string;
+    iconName: string;
+    panel: string;
+  };
+  const [data, setData] = useState<Panel[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const panelsData = await getMorePanelsData();
+      setData(panelsData);
+    };
+
+    fetchData();
+  }, []);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -55,16 +68,12 @@ const MoreScreen = () => {
 
         <ScrollView style={styles.flexContainer}>
           {data.map((item, index) => (
-            <AnimatableView
+            <View
               key={`${refreshKey}-${index}`}
-              ref={(ref) => {
-                if (ref) animRefs.current[index] = ref;
-              }}
               style={{
                 flexDirection: "row",
                 justifyContent: "center",
                 alignItems: "center",
-                opacity: hasAnimated.current ? 1 : 0,
               }}
             >
               <TouchableOpacity
@@ -84,7 +93,7 @@ const MoreScreen = () => {
                 </View>
                 <Icon name="chevron-forward" size={20} color="#cbbb9c" />
               </TouchableOpacity>
-            </AnimatableView>
+            </View>
           ))}
           <View style={styles.footer}>
             <Text style={styles.footerText}>2025 Stacked.</Text>

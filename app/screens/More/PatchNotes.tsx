@@ -9,14 +9,31 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { patchNotesData } from "../../../classes/Database"; // dostosuj ścieżkę
+import { getPatchNotesData } from "../../../classes/Database"; // dostosuj ścieżkę
 import * as Animatable from "react-native-animatable";
 import { useNavigation } from "@react-navigation/native";
+import { useEffect, useState } from "react";
 
 const screenHeight = Dimensions.get("screen").height;
 
 const PatchNotesScreen = () => {
   const navigation = useNavigation();
+
+  type PatchNoteEntry = {
+    version: string;
+    date: string;
+    description: string;
+    changes: string[];
+  };
+  const [data, setData] = useState<PatchNoteEntry[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await getPatchNotesData();
+      setData(data);
+    };
+    fetchData();
+  }, []);
 
   return (
     <SafeAreaProvider>
@@ -45,7 +62,7 @@ const PatchNotesScreen = () => {
         />
         <ScrollView contentContainerStyle={styles.content}>
           <Text style={styles.heading}>📦 Patch Notes</Text>
-          {patchNotesData.map((note) => (
+          {data.map((note) => (
             <Animatable.View
               animation="fadeIn"
               duration={1500}

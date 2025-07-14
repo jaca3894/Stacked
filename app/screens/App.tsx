@@ -26,6 +26,16 @@ export default function App() {
   const [showWelcome, setShowWelcome] = useState<boolean | null>(null);
 
   useEffect(() => {
+    const initializeLanguage = async () => {
+      const current = await AsyncStorage.getItem("@language");
+      if (current !== "pl" && current !== "eng") {
+        await AsyncStorage.setItem("@language", "eng"); // domyślny język
+      }
+    };
+    initializeLanguage();
+  }, []);
+
+  useEffect(() => {
     // AsyncStorage.clear();
     const checkFlag = async () => {
       if (__DEV__) {

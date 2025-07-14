@@ -9,25 +9,41 @@ import {
   FlatList,
   TouchableHighlight,
 } from "react-native";
-import { skillsData as data } from "../../../classes/Database";
+import { getArticlesData, getSkillsData } from "../../../classes/Database";
 import { Image as Gif } from "expo-image";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import {
-  CopilotStep,
-  walkthroughable,
-  useCopilot
-} from "react-native-copilot";
-import React, { useRef } from "react";
+import { CopilotStep, walkthroughable } from "react-native-copilot";
+import { useCopilot } from "react-native-copilot";
+import { useEffect, useRef, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { withCopilotProvider } from "../../../utils/WithCopilotProvider";
+import React from "react";
 
 const screenHeight = Math.round(Dimensions.get("window").height);
 const CopilotView = walkthroughable(SafeAreaView);
 
 const AcademyScreen = () => {
   const navigation = useNavigation<any>();
+  // let globalIndex = useRef(0).current;
 
   const { start } = useCopilot();
+
+  type SkillItem = {
+    name: string;
+    imagePath: any; // możesz użyć ImageSourcePropType jeśli chcesz precyzyjniej
+  };
+
+  type SkillCategory = {
+    category: string;
+    description: string;
+    items: SkillItem[];
+  };
+
+  const [data, setData] = useState<SkillCategory[]>([]);
+
+  useEffect(() => {
+    getSkillsData().then(setData);
+  }, []);
 
   const hasStartedTutorial = useRef(false);
 

@@ -22,12 +22,13 @@ import * as NavigationBar from "expo-navigation-bar";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { Image as Gif } from "expo-image";
-import { articlesData } from "../../../classes/Database";
+import { getArticlesData } from "../../../classes/Database";
 import {
+  CopilotProvider,
   CopilotStep,
   walkthroughable,
-  useCopilot
 } from "react-native-copilot";
+import { useCopilot } from "react-native-copilot";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { withCopilotProvider } from "../../../utils/WithCopilotProvider";
 
@@ -41,9 +42,48 @@ const HomeScreen = () => {
   const navigator = useNavigation();
   const [hasLastGame, setHasLastGame] = useState(true);
   const loaderTime = 1000;
-  const term = getRandomGlossaryTerm();
+  type GlossaryEntry = { term: string; definition: string };
 
-  const { start } = useCopilot();
+  const [term, setRandomTerm] = useState<GlossaryEntry | null>(null);
+
+  // po załadowaniu ekranu pobierz losowy termin
+  useEffect(() => {
+    const fetchTerm = async () => {
+      try {
+        const term = await getRandomGlossaryTerm();
+        setRandomTerm(term);
+      } catch (e) {
+        console.error("Nie udało się pobrać losowego terminu:", e);
+      }
+    };
+    fetchTerm();
+  }, []);
+  // const percentage = getCompletionPercentage(articlesData);
+  // console.log("Percent: " + percentage);
+  // console.log(term);
+
+  type ArticleData = {
+    id: string;
+    bannerPath: any; // lub: ImageSourcePropType z react-native
+    title: string;
+    content: string;
+    category: string;
+    categoryTabColor: string;
+    date: string;
+    videoLink: string;
+    videoAuthor: string;
+  };
+
+  const [articlesData, setArticles] = useState<ArticleData[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await getArticlesData();
+      setArticles(data);
+    };
+    fetchData();
+  }, []);
+  const { start, copilotEvents } = useCopilot();
 
   const scrollRef = useRef<ScrollView>(null);
   const hasStartedTutorial = useRef(false);
@@ -88,15 +128,33 @@ const HomeScreen = () => {
   const [article, setArticle] = useState<any>(null);
   const [percentage, setPercentage] = useState<any>(null);
 
+  // Zaimportuj u góry:
+  // import { useEffect } from "react";
+
   useFocusEffect(
     React.useCallback(() => {
-      const fetchArticle = async () => {
-        const nextArticle = await getNextUnmarkedItem(articlesData);
-        setArticle(nextArticle);
-        const nextPercent = await getCompletionPercentage(articlesData);
-        setPercentage(nextPercent);
+      let isActive = true;
+
+      const refreshLesson = async () => {
+        // 1) pobierz zawsze aktualne articlesData
+        const freshArticles = await getArticlesData();
+        if (!isActive) return;
+        setArticles(freshArticles);
+
+        // 2) oblicz next lesson i progress
+        const next = await getNextUnmarkedItem(freshArticles);
+        const perc = await getCompletionPercentage(freshArticles);
+
+        if (!isActive) return;
+        setArticle(next);
+        setPercentage(perc);
       };
-      fetchArticle();
+
+      refreshLesson();
+
+      return () => {
+        isActive = false;
+      };
     }, [])
   );
 
@@ -335,9 +393,16 @@ const HomeScreen = () => {
 
             <View style={styles.panel}>
               <Text style={styles.panelTitle}>📖 Random Term</Text>
-              <Text style={styles.termTitle}>{term.term}</Text>
-              <Text style={styles.termDefinition}>{term.definition}</Text>
+              {term ? (
+                <>
+                  <Text style={styles.termTitle}>{term.term}</Text>
+                  <Text style={styles.termDefinition}>{term.definition}</Text>
+                </>
+              ) : (
+                <></>
+              )}
             </View>
+
             {/* ⚡ Quick Links Panel */}
             <CopilotView style={styles.quickLinksPanel}>
               <Text style={styles.panelTitle}>Quick Access</Text>

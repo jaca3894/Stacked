@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Animated,
   StyleSheet,
@@ -12,42 +12,79 @@ import {
   Dimensions,
 } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { glossaryData } from "../../../classes/Database";
+import { getGlossaryData } from "../../../classes/Database";
 import * as Animatable from "react-native-animatable";
 import { useNavigation } from "@react-navigation/native";
 
-// Expanded glossary data
-
 const screenHeight = Dimensions.get("screen").height;
+
+type GlossaryEntry = {
+  term: string;
+  definition: string;
+};
+
+type GlossaryGroup = {
+  title: string;
+  data: GlossaryEntry[];
+};
 
 const GlossaryScreen = () => {
   const [search, setSearch] = useState("");
   const [collapsedSections, setCollapsedSections] = useState<string[]>([]);
-  const animationsRef = useRef<Record<string, Animated.Value>>(
-    initializeAnimations()
+  const [glossaryData, setGlossaryData] = useState<GlossaryGroup[] | null>(
+    null
   );
-
+  const animationsRef = useRef<Record<string, Animated.Value>>({});
   const navigation = useNavigation();
 
-  function initializeAnimations() {
-    const anims: Record<string, Animated.Value> = {};
-    glossaryData.forEach((section) => {
-      anims[section.title] = new Animated.Value(1);
+  // 1. Pobierz dane
+  useEffect(() => {
+    getGlossaryData().then((data) => {
+      setGlossaryData(data);
+      const anims: Record<string, Animated.Value> = {};
+      data.forEach((section) => {
+        anims[section.title] = new Animated.Value(1);
+      });
+      animationsRef.current = anims;
     });
-    return anims;
-  }
+  }, []);
 
+  const isSearching = search.trim().length > 0;
   const handleSearch = (text: string) => setSearch(text);
 
-  const toggleSection = (title: string, count: number) => {
+  // 2. Zbiera ręcznie pasujące pozycje bez flatMap
+  const getFilteredItems = () => {
+    if (!glossaryData) return [];
+    const results: { term: string; definition: string; section: string }[] = [];
+    const lowerSearch = search.toLowerCase();
+
+    glossaryData.forEach((section) => {
+      section.data.forEach((item) => {
+        const term = item.term.toLowerCase();
+        const def = item.definition.toLowerCase();
+        if (term.includes(lowerSearch) || def.includes(lowerSearch)) {
+          results.push({
+            term: item.term,
+            definition: item.definition,
+            section: section.title,
+          });
+        }
+      });
+    });
+
+    return results;
+  };
+
+  const filteredItems = getFilteredItems();
+
+  // 3. Toggle sekcji
+  const toggleSection = (title: string) => {
     const isCollapsed = collapsedSections.includes(title);
     const nextValue = isCollapsed ? 1 : 0;
 
-    if (isCollapsed) {
-      setCollapsedSections((prev) => prev.filter((t) => t !== title));
-    } else {
-      setCollapsedSections((prev) => [...prev, title]);
-    }
+    setCollapsedSections((prev) =>
+      isCollapsed ? prev.filter((t) => t !== title) : [...prev, title]
+    );
 
     Animated.timing(animationsRef.current[title], {
       toValue: nextValue,
@@ -56,42 +93,36 @@ const GlossaryScreen = () => {
     }).start();
   };
 
-  const isSearching = search.trim().length > 0;
-  const filteredFlat = glossaryData.flatMap((section) =>
-    section.data
-      .filter(
-        (item) =>
-          item.term.toLowerCase().includes(search.toLowerCase()) ||
-          item.definition.toLowerCase().includes(search.toLowerCase())
-      )
-      .map((item) => ({ ...item, section: section.title }))
-  );
+  // 4. Loader
+  if (!glossaryData && !isSearching) {
+    return (
+      <SafeAreaProvider>
+        <SafeAreaView style={styles.container}>
+          <Text style={styles.loadingText}>Ładowanie słowniczka…</Text>
+        </SafeAreaView>
+      </SafeAreaProvider>
+    );
+  }
 
+  // 5. Render
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
-          style={{
-            position: "absolute",
-            top: "10%",
-            left: "7%",
-            zIndex: 2,
-          }}
+          style={styles.backButton}
         >
           <Image
             source={require("../../../assets/arrowRight.png")}
-            style={{
-              width: 20,
-              height: 20,
-              transform: [{ scaleX: -1 }],
-            }}
+            style={styles.backIcon}
           />
         </TouchableOpacity>
+
         <Image
           source={require("../../../assets/icons/logo.png")}
           style={styles.logo}
         />
+
         <TextInput
           value={search}
           onChangeText={handleSearch}
@@ -99,10 +130,11 @@ const GlossaryScreen = () => {
           placeholderTextColor="#777"
           style={styles.searchInput}
         />
+
         <ScrollView contentContainerStyle={styles.content}>
           {isSearching ? (
-            filteredFlat.length > 0 ? (
-              filteredFlat.map((item) => (
+            filteredItems.length > 0 ? (
+              filteredItems.map((item) => (
                 <View
                   key={`${item.section}-${item.term}`}
                   style={styles.termBlock}
@@ -116,7 +148,7 @@ const GlossaryScreen = () => {
               <Text style={styles.noResults}>No results found.</Text>
             )
           ) : (
-            glossaryData.map((section) => {
+            glossaryData!.map((section) => {
               const isCollapsed = collapsedSections.includes(section.title);
               const anim = animationsRef.current[section.title];
               const height = anim.interpolate({
@@ -128,12 +160,10 @@ const GlossaryScreen = () => {
                 <Animatable.View
                   key={section.title}
                   animation="fadeIn"
-                  duration={1000}
+                  duration={500}
                 >
                   <TouchableOpacity
-                    onPress={() =>
-                      toggleSection(section.title, section.data.length)
-                    }
+                    onPress={() => toggleSection(section.title)}
                   >
                     <Text style={styles.sectionTitle}>
                       {isCollapsed ? "▶" : "▼"} {section.title}
@@ -173,9 +203,22 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#1c1c1c",
   },
-  content: {
-    padding: 16,
-    paddingTop: 0,
+  loadingText: {
+    color: "#aaa",
+    fontSize: 16,
+    marginTop: 40,
+    textAlign: "center",
+  },
+  backButton: {
+    position: "absolute",
+    top: "10%",
+    left: "7%",
+    zIndex: 2,
+  },
+  backIcon: {
+    width: 20,
+    height: 20,
+    transform: [{ scaleX: -1 }],
   },
   logo: {
     width: "50%",
@@ -192,6 +235,10 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     borderWidth: 1,
     borderColor: "#444",
+  },
+  content: {
+    padding: 16,
+    paddingTop: 0,
   },
   sectionTitle: {
     fontSize: 20,
