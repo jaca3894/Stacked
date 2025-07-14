@@ -78,6 +78,11 @@ export const skillsData = [
         name: "Roulette",
         imagePath: require("../assets/skills/roulette.png"),
       },
+      {
+        id: "0-3",
+        name: "Insurance & Double Down",
+        imagePath: require("../assets/skills/insurance.jpeg"),
+      },
     ],
   },
   {
@@ -122,6 +127,43 @@ export const skillsData = [
       },
     ],
   },
+  {
+    category: "Strategy & decisions",
+    description: "Optimize your play.",
+    items: [
+      {
+        id: "3-0",
+        name: "Dealer's Upcard",
+        imagePath: require("../assets/skills/upcard.jpg"),
+      },
+      {
+        id: "3-1",
+        name: "Risk Tolerance",
+        imagePath: require("../assets/skills/tolerance.jpg"),
+      },
+      {
+        id: "3-2",
+        name: "Poker Strategy",
+        imagePath: require("../assets/skills/strategy.jpg"),
+      },
+    ],
+  },
+  {
+    category: "Cards in Culture",
+    description: "How games shaped stories.",
+    items: [
+      {
+        id: "4-0",
+        name: "Movies & Pop culture",
+        imagePath: require("../assets/skills/movies.jpg"),
+      },
+      {
+        id: "4-1",
+        name: "Famous players",
+        imagePath: require("../assets/skills/wins.jpg"),
+      },
+    ],
+  },
 ];
 
 export const articlesData = [
@@ -137,7 +179,6 @@ export const articlesData = [
     // if empty, type: "null"
     videoLink: "null",
     videoAuthor: "null",
-    isLiked: false,
   },
   {
     id: "0-1",
@@ -150,7 +191,6 @@ export const articlesData = [
     date: "2025-06-26",
     videoLink: "null",
     videoAuthor: "null",
-    isLiked: false,
   },
   {
     id: "0-2",
@@ -163,8 +203,21 @@ export const articlesData = [
     date: "2025-06-26",
     videoLink: "null",
     videoAuthor: "null",
-    isLiked: false,
   },
+  {
+    id: "0-3",
+    bannerPath: require("../assets/skills/insurance.jpeg"),
+    title:
+      "Insurance & Double Down - when to double your bet, and when to protect it",
+    content:
+      "In blackjack, understanding advanced actions like Insurance and Double Down can improve your strategy and help you make smarter decisions at the table.\n\n1. What is Insurance?\n\n- Insurance is a side bet offered when the dealer shows an Ace.\n- It's a bet that the dealer's hidden card is worth 10 — meaning they have Blackjack.\n- The insurance bet costs half your original wager.\n\nIf the dealer has Blackjack:\n- Your insurance bet pays 2:1, softening the loss of your main bet.\n\nIf the dealer doesn't:\n- You lose the insurance bet and continue with the round.\n\nTip: Statistically, insurance is rarely worth taking unless you're card counting.\n\n2. What is Double Down?\n\n- Double Down lets you double your original bet in exchange for committing to receive only **one more card**.\n- It's usually allowed only after your initial two cards.\n\nBest situations to Double Down:\n- You have a total of 10 or 11, and the dealer shows a weak card (2–6).\n- The odds favor you drawing a strong card and beating the dealer.\n\nExample:\n- You’re dealt 6 + 5, and the dealer shows a 4.\n- You double your bet, receive one more card — a King.\n- Your final total is 21. Nice!\n\nQuick tip\n\nDouble Down is high risk but high reward. Learn when it’s statistically smart — and never forget: you only get one card!",
+    category: "Basic rules",
+    categoryTabColor: "lightgreen",
+    date: "2025-07-14",
+    videoLink: "null",
+    videoAuthor: "null",
+  },
+
   {
     id: "1-0",
     bannerPath: require("../assets/skills/riffleShuffle.gif"),
@@ -176,7 +229,6 @@ export const articlesData = [
     date: "2025-06-26",
     videoLink: "https://www.youtube.com/watch?v=-7BYtk1rLpY&",
     videoAuthor: "Josep Vidal",
-    isLiked: false,
   },
   {
     id: "1-1",
@@ -189,7 +241,6 @@ export const articlesData = [
     date: "2025-06-26",
     videoLink: "https://www.youtube.com/watch?v=RXhNA0xLRgY&",
     videoAuthor: "Hester23BearsCH",
-    isLiked: false,
   },
   {
     id: "1-2",
@@ -202,7 +253,6 @@ export const articlesData = [
     date: "2025-06-26",
     videoLink: "https://www.youtube.com/watch?v=dNAkNsbxMcI&",
     videoAuthor: "Josep Vidal",
-    isLiked: false,
   },
   {
     id: "2-0",
@@ -215,7 +265,6 @@ export const articlesData = [
     date: "2025-06-26",
     videoLink: "https://www.youtube.com/watch?v=m01QDhoPhlY&",
     videoAuthor: "Hester23BearsCH",
-    isLiked: false,
   },
   {
     id: "2-1",
@@ -228,7 +277,6 @@ export const articlesData = [
     date: "2025-06-26",
     videoLink: "https://www.youtube.com/watch?v=O-mo1ErJF60&",
     videoAuthor: "Josep Vidal",
-    isLiked: false,
   },
   {
     id: "2-2",
@@ -241,31 +289,82 @@ export const articlesData = [
     date: "2025-06-26",
     videoLink: "https://www.youtube.com/watch?v=GhXxtp27Qhc&",
     videoAuthor: "Josep Vidal",
-    isLiked: false,
+  },
+  {
+    id: "3-0",
+    bannerPath: require("../assets/skills/upcard.jpg"),
+    title: "Dealer’s Upcard — how to read and react",
+    content:
+      "One of the most important elements in blackjack strategy is analyzing the dealer’s face-up card — known as the upcard. It dramatically affects how you should play your hand.\n\n1. Weak vs. Strong Upcards\n\n- Weak: 2 through 6 → high chance the dealer will bust\n- Strong: 7 through Ace → higher odds the dealer will finish strong\n\n2. Adjusting Your Play\n\n- Dealer shows 2–6:\n  → You can stand on lower totals (12–16) and let the dealer risk busting\n  → Avoid risky hits unless necessary\n\n- Dealer shows 7–Ace:\n  → You need to be more aggressive — hitting even on hands like 16\n  → Consider doubling down when your hand totals 10 or 11\n\n3. Mental Model\n\nThink of weak upcards as opportunities to “play it safe.” Strong upcards demand that you fight back.\n\nQuick tip\n\nIf the dealer shows an Ace, don’t panic — but know you’re up against the best possible starting card.",
+    category: "Strategy & Decisions",
+    categoryTabColor: "gold",
+    date: "2025-07-14",
+    videoLink: "null",
+    videoAuthor: "null",
+  },
+  {
+    id: "3-1",
+    bannerPath: require("../assets/skills/tolerance.jpg"),
+    title: "Risk Tolerance — playing to win vs. playing it safe",
+    content:
+      "Every blackjack player has a different approach to risk — some chase big wins, others avoid big losses. Understanding your risk tolerance helps you choose strategies that suit your personality.\n\n1. Risky Players\n\n- Tend to double down and split aggressively\n- Hit more often — even on borderline hands\n- Accept busts as part of long-term gain\n\n2. Conservative Players\n\n- Avoid doubling unless odds are clear\n- Prefer standing on marginal hands\n- Focus on minimizing loss over maximizing gain\n\n3. Adaptation is key\n\n- Shift your approach based on table dynamics\n- Be aggressive when the dealer is weak\n- Tighten up when you’re on a losing streak\n\nQuick tip\n\nThere’s no “perfect” strategy without knowing yourself. Good blackjack is 50% math — and 50% mindset.",
+    category: "Strategy & Decisions",
+    categoryTabColor: "gold",
+    date: "2025-07-14",
+    videoLink: "null",
+    videoAuthor: "null",
+  },
+  {
+    id: "3-2",
+    bannerPath: require("../assets/skills/strategy.jpg"),
+    title: "Poker Strategy — playing the player, not the cards",
+    content:
+      "In poker, knowing the rules is just the beginning. True success comes from applying strategic thinking and psychological tactics — playing opponents, not just your hand.\n\n1. Know your position\n\n- Early position (first to act): play tight\n- Late position (last to act): more freedom to bluff or control\n\n2. Hand selection is everything\n\n- Don’t play every hand — patience is profit\n- Favor suited connectors, high pairs, and hands with post-flop potential\n\n3. Bet sizing\n\n- Small bets: control the pot, induce calls\n- Big bets: pressure opponents, protect strong hands\n- Mixing bet sizes keeps you unpredictable\n\n4. Bluff wisely\n\n- Bluff when the board allows — not randomly\n- Tell a believable story with your actions\n- Know who you can bluff — loose players will call anything\n\n5. Adapt to the table\n\n- Watch opponents' habits — tight, aggressive, passive?\n- Change gears — be tight one round, loose the next\n- Use table image to your advantage (look weak, strike strong)\n\nQuick tip\n\nPoker is 20% cards, 80% information. The real game is in what your opponents think you have — and how you convince them.",
+    category: "Strategy & Decisions",
+    categoryTabColor: "gold",
+    date: "2025-07-14",
+    videoLink: "null",
+    videoAuthor: "null",
+  },
+  {
+    id: "4-0",
+    bannerPath: require("../assets/skills/movies.jpg"),
+    title: "Blackjack & Poker in Movies and Pop Culture",
+    content:
+      "Card games like poker and blackjack have long captured the imagination of filmmakers, writers, and pop culture icons. From dramatic showdowns to clever bluffing scenes — cards often symbolize risk, power, and mind games.\n\n1. Famous Movie Scenes\n\n- *Casino Royale* (2006): James Bond plays high-stakes Texas Hold'em in Montenegro\n- *21* (2008): Based on the MIT Blackjack Team's real story of card counting\n- *Rounders* (1998): A cult poker film showcasing underground games and mind-reading bluffs\n\n2. Symbolism in Pop Culture\n\n- Cards represent chance, rebellion, and control — think of Joker's calling card in *Batman*\n- Poker tables are used to build tension and test characters' intelligence or desperation\n\n3. Real-world Impact\n\n- Popular media has driven millions to try poker and blackjack\n- Tournaments like the WSOP grew after televised poker exploded post-2003\n\nQuick tip\n\nNext time you watch a poker scene, pause and ask: “Is this real strategy or Hollywood drama?” It's usually a bit of both.",
+    category: "Cards in Culture",
+    categoryTabColor: "indianred",
+    date: "2025-07-14",
+    videoLink: "null",
+    videoAuthor: "null",
+  },
+  {
+    id: "4-1",
+    bannerPath: require("../assets/skills/wins.jpg"),
+    title: "Legendary Players — icons of poker and blackjack",
+    content:
+      "Card games don’t just create winners — they forge legends. From analytical geniuses to bold risk-takers, some players reshaped poker and blackjack through skill, style, and sometimes controversy.\n\n1. Edward O. Thorp\n\n- Mathematician and author of *Beat the Dealer*\n- Pioneered card counting and changed blackjack forever\n\n2. Stu Ungar\n\n- Known as “The Kid” — won 3 WSOP Main Events\n- Genius-level memory and instinct, but troubled personal life\n\n3. Annie Duke\n\n- Psychologist turned poker pro\n- Won WSOP bracelet and became a leading voice in decision theory\n\n4. Don Johnson\n\n- Beat Atlantic City casinos for $15+ million\n- Negotiated custom rules and used sharp strategy — not counting\n\n5. Doyle Brunson\n\n- “Texas Dolly” — a true poker pioneer\n- Played professionally for over 50 years and authored *Super System*\n\nQuick tip\n\nWhether calculating odds or playing on feel, great players leave more than bankrolls behind — they leave playbooks, stories, and inspiration.",
+    category: "Cards in Culture",
+    categoryTabColor: "indianred",
+    date: "2025-07-14",
+    videoLink: "null",
+    videoAuthor: "null",
   },
 ];
 
 export const patchNotesData = [
   {
-    version: "1.3.0",
-    date: "2025-07-09",
-    description: "Duża aktualizacja UX i poprawki wizualne.",
+    version: "0.9.0",
+    date: "2025-07-14",
+    description:
+      "We're excited to introduce the first beta release of our project — v0.9.0! This version marks the beginning of our journey and is built with care to lay the groundwork for future development.\n\nWe appreciate your interest in the project and encourage you to share your feedback. Your input will help shape the app as it evolves! \n\nThis version includes:",
     changes: [
-      "Dodano animacje przejść zakładek",
-      "Ulepszony ekran podziękowań",
-      "Poprawki w liście kart",
+      "Blackjack and poker tracking",
+      "Hand checking tool",
+      "Informative articles for learning",
+      "A minimalist interface for a clean experience.",
+      "Feedback channel integration to gather your insights.",
     ],
-  },
-
-  {
-    version: "1.1.5",
-    date: "2025-06-28",
-    changes: [
-      "Dodano ekran Feedback",
-      "Nowe ilustracje dealera",
-      "Naprawiono błąd z resetowaniem kart",
-    ],
-    description: "",
   },
 ];
 
