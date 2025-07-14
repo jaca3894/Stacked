@@ -257,7 +257,7 @@ const CreateBlackjack = () => {
               style={{ width: "100%", alignItems: "center" }}
               animation="fadeIn"
               duration={1000}
-              // delay={100}
+              delay={300}
             >
               <View style={styles.titleRow}>
                 <Text style={styles.title}>Players</Text>
@@ -372,7 +372,7 @@ const CreateBlackjack = () => {
             style={{ width: "100%", alignItems: "center" }}
             animation="fadeIn"
             duration={1000}
-            delay={800}
+            delay={300}
           >
             <TouchableOpacity onPress={handleStart} style={styles.button}>
               <Text style={styles.buttonText}>Start Game</Text>
