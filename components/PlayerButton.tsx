@@ -12,11 +12,12 @@ interface PlayerButtonProps {
   lastAction?: string;
   showLastAction?: boolean;
   addStyles?: any;
+  addPositionStyles?: any;
   cardsCount?: number;
   onPress: () => void;
 }
 
-const PlayerButton = ({ isGameStarted, isCurrentPlayer, opacity, isDealer, name, balance, lastAction, showLastAction, cardsCount, addStyles, onPress }: PlayerButtonProps) => {
+const PlayerButton = ({ isGameStarted, isCurrentPlayer, opacity, isDealer, name, balance, lastAction, showLastAction, cardsCount, addStyles, addPositionStyles, onPress }: PlayerButtonProps) => {
   const { width: screenWidth } = useWindowDimensions();
 
   const dynamicStyles = {
@@ -31,7 +32,7 @@ const PlayerButton = ({ isGameStarted, isCurrentPlayer, opacity, isDealer, name,
   };
 
   return (
-    <View style={[styles.buttonContainer, { opacity: opacity ?? 1 }]}>
+    <View style={[styles.buttonContainer, addPositionStyles, { opacity: opacity ?? 1 }]}>
       <TouchableHighlight
         disabled={isGameStarted}
         style={[
@@ -77,12 +78,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   button: {
-    backgroundColor: "#cbbb9c",
+    backgroundColor: "#121212",
     borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",
     alignSelf: "center",
-    outlineColor: "white",
+    outlineColor: "#cbbb9c",
     outlineWidth: 2,
     padding: 5,
     textAlign: "center",
@@ -97,7 +98,7 @@ const styles = StyleSheet.create({
     position: 'relative'
   },
   buttonText: {
-    color: "#000",
+    color: "hsl(0, 0%, 90%)",
     fontSize: 14,
     textAlign: "center",
   },

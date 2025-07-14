@@ -9,12 +9,13 @@ import {
 } from "react-native";
 
 interface BetInputProps {
+  min?: number;
   max: number;
   onConfirm: (amount: number) => void;
 }
 
-const BetInput: React.FC<BetInputProps> = ({ max, onConfirm }) => {
-  const [value, setValue] = useState(() => Math.max(1, Math.min(10, max)));
+const BetInput: React.FC<BetInputProps> = ({ min, max, onConfirm }) => {
+  const [value, setValue] = useState(() => Math.max(min ?? 1, Math.min(10, max)));
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -40,7 +41,7 @@ const BetInput: React.FC<BetInputProps> = ({ max, onConfirm }) => {
     }
   };
   const increase = () => setValue((v) => Math.min(max, v + 1));
-  const decrease = () => setValue((v) => Math.max(0, v - 1));
+  const decrease = () => setValue((v) => Math.max(min ?? 0, v - 1));
 
   return (
     <View style={styles.container}>

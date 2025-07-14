@@ -388,8 +388,8 @@ const BlackjackTraining = () => {
 
   const checkHandValue = (player: React.RefObject<BlackjackPlayer>) => {
     const playerHand = player.current.hand;
-    var sum = 0;
-    var aces = 0;
+    let sum = 0;
+    let aces = 0;
     playerHand.forEach((card: Card) => {
       switch (card.rank) {
         case "A":
