@@ -2,13 +2,17 @@ import { StyleSheet, TouchableHighlight, Text } from "react-native"
 
 interface ActionButtonProps {
   text: string;
+  disabled?: boolean;
+  opacity?: number;
+  addButtonStyle?: any;
+  addTextStyle?: any;
   onPress: () => void;
 }
 
-const ActionButton = ({ text, onPress }: ActionButtonProps) => {
+const ActionButton = ({ text, disabled, opacity, addButtonStyle, addTextStyle, onPress }: ActionButtonProps) => {
   return (
-    <TouchableHighlight style={styles.button} onPress={onPress}>
-      <Text style={styles.text}>{text}</Text>
+    <TouchableHighlight style={[styles.button, addButtonStyle, { opacity: opacity }]} onPress={onPress} underlayColor="#6e6655ff" disabled={disabled}>
+      <Text style={[styles.text, addTextStyle]}>{text}</Text>
     </TouchableHighlight>
   )
 }

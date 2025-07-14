@@ -6,6 +6,7 @@ interface PlayerButtonProps {
   isGameStarted: boolean;
   isCurrentPlayer: boolean;
   opacity?: number;
+  disabled?: boolean;
   isDealer?: boolean;
   name?: string;
   balance?: number;
@@ -17,7 +18,7 @@ interface PlayerButtonProps {
   onPress: () => void;
 }
 
-const PlayerButton = ({ isGameStarted, isCurrentPlayer, opacity, isDealer, name, balance, lastAction, showLastAction, cardsCount, addStyles, addPositionStyles, onPress }: PlayerButtonProps) => {
+const PlayerButton = ({ isGameStarted, isCurrentPlayer, opacity, disabled, isDealer, name, balance, lastAction, showLastAction, cardsCount, addStyles, addPositionStyles, onPress }: PlayerButtonProps) => {
   const { width: screenWidth } = useWindowDimensions();
 
   const dynamicStyles = {
@@ -34,12 +35,12 @@ const PlayerButton = ({ isGameStarted, isCurrentPlayer, opacity, isDealer, name,
   return (
     <View style={[styles.buttonContainer, addPositionStyles, { opacity: opacity ?? 1 }]}>
       <TouchableHighlight
-        disabled={isGameStarted}
+        disabled={disabled}
         style={[
           styles.button,
           dynamicStyles.button,
-          addStyles,
           isCurrentPlayer && styles.currentPlayerHighlight,
+          addStyles,
         ]}
         underlayColor="#948870"
         onPress={onPress}
@@ -103,18 +104,18 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   blindView: {
-    backgroundColor: "#111",
+    backgroundColor: "#cbbb9c",
     padding: 2,
     borderRadius: 5,
   },
   blindText: {
-    color: "white",
+    color: "#000",
     textAlign: "center",
-    fontSize: 12,
+    fontSize: 13,
     textTransform: "capitalize",
   },
   currentPlayerHighlight: {
-    outlineColor: '#0066ff',
+    outlineColor: '#f00',
     outlineWidth: 3.5,
     transform: [{ scale: 1.05 }],
     elevation: 10,

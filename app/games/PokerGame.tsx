@@ -16,9 +16,10 @@ import { Svg, Path, Rect } from "react-native-svg";
 import RootStackParamList from "../../props/RootStackParamList";
 
 import CustomSlider from "../../components/Slider";
-import RoundButton from "../../components/RoundButton";
+import ActionButton from "../../components/ActionButton";
 import CardBackView from "../../components/CardBackView";
 import PotsShowdown from "../../components/PotsShowdown";
+import PlayerButton from "../../components/PlayerButton";
 
 const seatingPlan: Record<number, [number, number, number, number]> = {
   1: [1, 0, 0, 0],
@@ -72,6 +73,8 @@ const PokerGame = () => {
   const [startNewGame, setStartNewGame] = useState(false);
   const [sliderValue, setSliderValue] = useState(0);
   const [isSliderShown, setIsSliderShown] = useState(false);
+
+  const currentPlayer = players[currentPlayerIndex];
 
   const edges: EdgeConfig[] = [
     { pos: { top: "11%" }, dir: "row", len: top },
@@ -168,18 +171,17 @@ const PokerGame = () => {
 
   function call() {
     if (currentPlayerIndex === -1) return; // No current player
-    const player = players[currentPlayerIndex];
     let amountToCall = 0;
-    if (player.lastAction == "SB")
-      amountToCall = minAmount - smallBlindAmount - player.currentBet;
-    else if (player.lastAction == "BB")
-      amountToCall = minAmount - bigBlindAmount - player.currentBet;
-    else amountToCall = minAmount - player.currentBet;
+    if (currentPlayer.lastAction == "SB")
+      amountToCall = minAmount - smallBlindAmount - currentPlayer.currentBet;
+    else if (currentPlayer.lastAction == "BB")
+      amountToCall = minAmount - bigBlindAmount - currentPlayer.currentBet;
+    else amountToCall = minAmount - currentPlayer.currentBet;
 
     if (amountToCall < 0) amountToCall = 0;
 
-    player.take(amountToCall);
-    player.setLastAction("call");
+    currentPlayer.take(amountToCall);
+    currentPlayer.setLastAction("call");
 
     if (players.every((p) => p.balance === 0 || p.folded)) setIsGameEnded(true);
 
@@ -197,19 +199,18 @@ const PokerGame = () => {
 
   function allIn() {
     if (currentPlayerIndex === -1) return; // No current player
-    const player = players[currentPlayerIndex];
-    const allInAmount = player.balance;
+    const allInAmount = currentPlayer.balance;
     const playersNames = players
       .filter((player) => !player.folded)
       .map((player) => player.name);
     if (playersNames.length === 0) return;
-    player.take(allInAmount);
-    player.setLastAction("All-in");
+    currentPlayer.take(allInAmount);
+    currentPlayer.setLastAction("All-in");
     nextPlayer();
   }
 
   function check() {
-    players[currentPlayerIndex].lastAction = "check";
+    currentPlayer.lastAction = "check";
     const dealerIndex = players.findIndex((player) => player.isDealer);
     if (
       currentPlayerIndex == biggestBetPlayerIndex ||
@@ -233,9 +234,8 @@ const PokerGame = () => {
   }
 
   function raise(amount: number) {
-    const player = players[currentPlayerIndex];
-    player.take(amount);
-    player.setLastAction("raise");
+    currentPlayer.take(amount);
+    currentPlayer.setLastAction("raise");
 
     setMinAmount(amount);
     setBiggestBetPlayerIndex(currentPlayerIndex);
@@ -248,9 +248,9 @@ const PokerGame = () => {
 
   function fold() {
     let playersLeft = 0;
-    players[currentPlayerIndex].fold();
+    currentPlayer.fold();
     players.forEach((player) => (player.folded ? null : playersLeft++));
-    players[currentPlayerIndex].lastAction = "fold";
+    currentPlayer.lastAction = "fold";
     if (playersLeft == 1) {
       // If only one player left, they win the pot
       const winner = players.find((player) => !player.folded);
@@ -326,7 +326,17 @@ const PokerGame = () => {
           <View style={[styles.content]}>
             {edges.map(({ pos, dir, len, addStyle }, index) => (
               <View key={index + 1} style={[styles[dir], pos, addStyle]}>
-                {Array.from({ length: len }).map((_, j) => {
+                {
+                  Array.from({ length: len }).map((_, j) => {
+                    const currentIndex = globalIndex++;
+                    const player = players[currentIndex];
+                    return (
+                      <PlayerButton key={j+1} name={player.name} balance={player.balance} isDealer={player.isDealer} onPress={() => {if (player.name === "") {setShowInput([true, currentIndex])}}}
+                        isCurrentPlayer={currentPlayerIndex == currentIndex} disabled={isGameStarted} isGameStarted={isGameStarted} lastAction={player.lastAction} showLastAction={true} opacity={player.folded ? .5 : 1}
+                        />
+                    )
+                })}
+                {/* {Array.from({ length: len }).map((_, j) => {
                   const currentIndex = globalIndex++;
                   const player = players[currentIndex];
                   try {
@@ -401,7 +411,7 @@ const PokerGame = () => {
                   } catch {
                     return;
                   }
-                })}
+                })} */}
               </View>
             ))}
             <View style={styles.potsView}>
@@ -429,47 +439,43 @@ const PokerGame = () => {
           )}
           {isGameStarted && (
             <View style={styles.buttonsRow}>
-              {players[currentPlayerIndex] &&
-              players[currentPlayerIndex].balance < minAmount &&
-              players[currentPlayerIndex].balance != 0 ? (
-                // Gracz nie ma kasy, żeby sprawdzić — all-in za wszystko, co ma
-                <RoundButton
+              {currentPlayer &&
+              currentPlayer.balance < minAmount &&
+              currentPlayer.balance != 0 ? (
+                <ActionButton
                   text="All-in"
-                  func={() => allIn()}
-                  mainColor="green"
-                  secondColor="#005700"
+                  onPress={() => allIn()}
+                  addButtonStyle={{ height: 50 }}
+                  addTextStyle={{ fontSize: 20 }}
                 />
-              ) : players[currentPlayerIndex] &&
-                players[currentPlayerIndex].currentBet < minAmount &&
-                players[currentPlayerIndex].balance != 0 ? (
-                // Gracz może wyrównać (call)
-                <RoundButton
+              ) : currentPlayer &&
+                currentPlayer.currentBet < minAmount &&
+                currentPlayer.balance != 0 ? (
+                <ActionButton
                   text="Call"
-                  func={() => call()}
-                  mainColor="orange"
-                  secondColor="#b47400"
+                  onPress={() => call()}
+                  addButtonStyle={{ height: 50 }}
+                  addTextStyle={{ fontSize: 20 }}
                 />
               ) : (
-                // Gracz już wyrównał — może tylko przeczekać
-                <RoundButton
+                <ActionButton
                   text="Check"
-                  func={() => check()}
-                  mainColor="green"
-                  secondColor="#005700"
+                  onPress={() => check()}
+                  addButtonStyle={{ height: 50 }}
+                  addTextStyle={{ fontSize: 20 }}
                 />
               )}
-              <RoundButton
+              <ActionButton
                 text="Raise"
-                func={() => setIsSliderShown(true)}
-                mainColor="red"
-                secondColor="#a20000"
+                onPress={() => setIsSliderShown(true)}
                 opacity={canRaise ? 1 : 0.5}
+                addTextStyle={{ fontSize: 20 }}
+                disabled={!canRaise}
               />
-              <RoundButton
+              <ActionButton
                 text="Fold"
-                func={() => fold()}
-                mainColor="blue"
-                secondColor="#0000a9"
+                onPress={() => fold()}
+                addTextStyle={{ fontSize: 20 }}
               />
             </View>
           )}
@@ -479,7 +485,7 @@ const PokerGame = () => {
         <View style={styles.popUp}>
           <CustomSlider
             minimumValue={+minAmount + 1}
-            maximumValue={+players[currentPlayerIndex].balance}
+            maximumValue={+currentPlayer.balance}
             step={1}
             value={+minAmount + 1}
             onValueChange={setSliderValue}
@@ -506,7 +512,7 @@ const PokerGame = () => {
           animationType="fade"
         >
           <View style={styles.popUp}>
-            <View style={styles.popUpInside}>
+            <View style={[styles.popUpInside, { height: 'auto', paddingVertical: 50 }]}>
               <TouchableHighlight
                 style={styles.closeButton}
                 underlayColor="transparent"
@@ -584,7 +590,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     flexDirection: "row",
     justifyContent: "space-around",
-    width: "55%",
+    width: "65%",
     left: "50%",
     transform: [{ translateX: "-50%" }],
   },
@@ -593,7 +599,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "space-around",
     alignItems: "center",
-    height: "70%",
+    height: "60%",
     top: "50%",
     transform: [{ translateY: "-50%" }],
   },
@@ -638,8 +644,8 @@ const styles = StyleSheet.create({
   popUpInside: {
     width: screenWidth * 0.7,
     height: screenWidth * 0.7,
-    backgroundColor: "#121212",
-    borderRadius: 10,
+    backgroundColor: "#151515",
+    borderRadius: 25,
     justifyContent: "center",
     alignItems: "center",
     zIndex: 1000,
@@ -653,7 +659,7 @@ const styles = StyleSheet.create({
   input: {
     width: "80%",
     height: 40,
-    borderColor: "#00c",
+    borderColor: "#f00",
     borderWidth: 2,
     borderRadius: 6,
     paddingHorizontal: 10,

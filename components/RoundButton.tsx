@@ -1,6 +1,15 @@
 import { TouchableHighlight, Text, StyleSheet } from "react-native"
 
-const RoundButton = ({text, func, mainColor, secondColor, opacity, addStyles}: {text: string; func: () => void; mainColor: string; secondColor: string; opacity?: number, addStyles?: any}) => {
+interface RoundButtonProps {
+  text: string;
+  func: () => void;
+  mainColor: string;
+  secondColor: string;
+  opacity?: number;
+  addStyles?: any;
+}
+
+const RoundButton = ({text, func, mainColor, secondColor, opacity, addStyles}: RoundButtonProps) => {
   return (
     <TouchableHighlight style={[styles.roundButton, {backgroundColor: mainColor, opacity: opacity ?? 1 }, addStyles]} underlayColor={secondColor} onPress={func} disabled={opacity != undefined && opacity != 1}>
       <Text style={styles.roundButtonText}>{text}</Text>
