@@ -15,13 +15,22 @@ import { Picker } from "@react-native-picker/picker";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 
+type Language = "pl" | "eng";
+
 const SettingsScreen = () => {
   const navigation = useNavigation();
   const { language, setLanguage } = useLanguage();
+  const [pendingLanguage, setPendingLanguage] = useState<Language>(language);
 
-  type Language = "pl" | "eng";
+  // Synchronizujemy picker z aktualnym językiem
+  useEffect(() => {
+    setPendingLanguage(language);
+  }, [language]);
 
-  const updateLanguage = async (lang: Language) => {
+  // Wywoływane przy zmianie w pickerze
+  const onLanguageChange = (lang: Language) => {
+    setPendingLanguage(lang);
+
     Alert.alert(
       "Change language",
       `Are you sure you want to switch to ${
@@ -31,6 +40,10 @@ const SettingsScreen = () => {
         {
           text: "Cancel",
           style: "cancel",
+          onPress: () => {
+            // Cofamy widok do poprzedniego wyboru
+            setPendingLanguage(language);
+          },
         },
         {
           text: "Yes",
@@ -54,15 +67,13 @@ const SettingsScreen = () => {
   const replayTutorial = async () => {
     await AsyncStorage.removeItem("@hasSeenHomeTutorial");
     Alert.alert("Tutorial will replay next time you open app.");
-    (navigation as any).navigate("Home");
+    // @ts-ignore
+    navigation.navigate("Home");
   };
 
   const resetProgress = async () => {
     Alert.alert("Reset Progress", "Are you sure you want to reset?", [
-      {
-        text: "Cancel",
-        style: "cancel",
-      },
+      { text: "Cancel", style: "cancel" },
       {
         text: "Reset",
         style: "destructive",
@@ -96,19 +107,9 @@ const SettingsScreen = () => {
             transform: [{ scaleX: -1 }],
           }}
         />
-        <Text
-          style={{
-            color: "white",
-            width: "100%",
-            fontWeight: "bold",
-            fontSize: 16,
-            textAlign: "center",
-            position: "absolute",
-          }}
-        >
-          Settings
-        </Text>
+        <Text style={styles.headerText}>Settings</Text>
       </TouchableOpacity>
+
       {/* 🌐 Language Section */}
       <View style={[styles.section, { marginTop: "25%" }]}>
         <View style={styles.sectionTitleRow}>
@@ -120,8 +121,8 @@ const SettingsScreen = () => {
         </Text>
         <View style={styles.pickerContainer}>
           <Picker
-            selectedValue={language}
-            onValueChange={(value: string) => updateLanguage(value as Language)}
+            selectedValue={pendingLanguage}
+            onValueChange={onLanguageChange}
             mode="dropdown"
             style={Platform.OS === "android" ? undefined : styles.picker}
           >
@@ -138,6 +139,7 @@ const SettingsScreen = () => {
           </Picker>
         </View>
       </View>
+
       {/* 🔁 Replay Tutorial Section */}
       <View style={styles.section}>
         <View style={styles.sectionTitleRow}>
@@ -151,6 +153,7 @@ const SettingsScreen = () => {
           <Text style={styles.buttonText}>Replay Home Tutorial</Text>
         </TouchableOpacity>
       </View>
+
       {/* 🧹 Reset Progress Section */}
       <View style={styles.section}>
         <View style={styles.sectionTitleRow}>
@@ -164,6 +167,7 @@ const SettingsScreen = () => {
           <Text style={styles.resetText}>Reset Progress</Text>
         </TouchableOpacity>
       </View>
+
       <View style={styles.footer}>
         <Text style={styles.footerText}>Stacked © 2025</Text>
       </View>
@@ -173,6 +177,15 @@ const SettingsScreen = () => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#1c1c1c", padding: 16 },
+
+  headerText: {
+    color: "white",
+    width: "100%",
+    fontWeight: "bold",
+    fontSize: 16,
+    textAlign: "center",
+    position: "absolute",
+  },
 
   section: {
     backgroundColor: "#2a2a2a",
