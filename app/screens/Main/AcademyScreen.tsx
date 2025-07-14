@@ -13,14 +13,12 @@ import { skillsData as data } from "../../../classes/Database";
 import { Image as Gif } from "expo-image";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import {
-  CopilotProvider,
   CopilotStep,
   walkthroughable,
+  useCopilot
 } from "react-native-copilot";
-import { useCopilot } from "react-native-copilot";
-import { useRef } from "react";
+import React, { useRef } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React from "react";
 import { withCopilotProvider } from "../../../utils/WithCopilotProvider";
 
 const screenHeight = Math.round(Dimensions.get("window").height);
@@ -28,7 +26,6 @@ const CopilotView = walkthroughable(SafeAreaView);
 
 const AcademyScreen = () => {
   const navigation = useNavigation<any>();
-  // let globalIndex = useRef(0).current;
 
   const { start } = useCopilot();
 
@@ -39,8 +36,6 @@ const AcademyScreen = () => {
       const checkTutorialFlag = async () => {
         try {
           const hasSeen = await AsyncStorage.getItem("@hasSeenAcademyTutorial");
-          // await AsyncStorage.clear(); // to zakomentowac jesli nie testujesz
-          // console.log(hasSeen);
           if (!hasSeen && !hasStartedTutorial.current) {
             hasStartedTutorial.current = true;
 
@@ -61,8 +56,6 @@ const AcademyScreen = () => {
       if (!__DEV__) {
         checkTutorialFlag();
       }
-
-      // return () => {}; // cleanup (opcjonalny)
     }, [start])
   );
 
@@ -75,7 +68,7 @@ const AcademyScreen = () => {
       >
         <CopilotView style={styles.header}>
           <Image
-            source={require("../../../assets/logo/logoAcademy.png")}
+            source={require("../../../assets/icons/logoAcademy.png")}
             style={styles.logo}
             resizeMode="contain"
           />
@@ -103,7 +96,6 @@ const AcademyScreen = () => {
                   <TouchableHighlight
                     underlayColor={"transparent"}
                     onPress={() => {
-                      console.log(articleId);
                       navigation.navigate("Article", {
                         articleId,
                       });

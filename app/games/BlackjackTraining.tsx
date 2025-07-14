@@ -2,7 +2,6 @@ import React, { useEffect, useReducer, useRef, useState } from "react";
 import {
   StyleSheet,
   View,
-  Dimensions,
   Image,
   Platform,
 } from "react-native";
@@ -35,16 +34,14 @@ const BlackjackTraining = () => {
     doubleEnabled,
     autoHitOnSeventeenEnabled,
   } = route.params;
-  const { width, height } = Dimensions.get("window");
 
-  // console.log(`double: ${doubleEnabled}, insurance: ${insuranceEnabled}`);
   const player = useRef<BlackjackPlayer>(
     new BlackjackPlayer("Player", initialBalance)
   );
   const dealer = useRef<BlackjackPlayer>(
     new BlackjackPlayer("Dealer", initialBalance * 10)
   );
-  // const [dealer, setDealer] = useState<Player>(new Player("Krupier"));
+
   const deck = useRef<Deck>(new Deck());
   const [started, setStarted] = useState(false);
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
@@ -75,14 +72,12 @@ const BlackjackTraining = () => {
       "balance before endgame and with bet taken: " + player.current.balance
     );
 
-    // player.current.currentBet = 0;
     setPlayerMoveFinished(false);
     setRevealDealerCard(false);
     setInsuranceTaken(false);
     setIsDoubled(false);
     deck.current.reset();
     deck.current.shuffle();
-    // player.current.currentBet = 0;
 
     player.current.resetHand();
     dealer.current.resetHand();
@@ -102,19 +97,12 @@ const BlackjackTraining = () => {
       await sleep(300);
       setBlackjackWin(true);
 
-      // Toast.show({
-      //   type: "success",
-      //   text1: "Blackjack!",
-      //   text2: "3:2 payout 💰",
-      // });
       console.log(`Giving player: ${player.current.currentBet * 2.5}`);
       player.current.give(player.current.currentBet * 2.5); // 3:2
       console.log(`Taking dealer: ${player.current.currentBet * 2.5}`);
       dealer.current.take(player.current.currentBet * 2.5); // 3:2
       setStarted(false);
-      return;
     }
-    // setPlayer(player);
   };
 
   const handleHit = async (_player: string) => {
@@ -123,10 +111,9 @@ const BlackjackTraining = () => {
     console.log(`Hand value: ${checkHandValue(player)}`);
 
     const value = checkHandValue(player);
-    if (value > 21) {
+    if (value > 21)
       handleBust(_player);
-      return;
-    } else if (value === 21) {
+    else if (value === 21) {
       Toast.show({
         type: "info",
         text1: "You hit 21!",
@@ -156,8 +143,8 @@ const BlackjackTraining = () => {
         text2: `-${player.current.currentBet - player.current.insuranceBet}`,
       });
       setStarted(false);
-      // player.current.busted = true;
-    } else {
+    } 
+    else {
       console.log("dealer busted");
       Toast.show({
         type: "success",
@@ -171,9 +158,7 @@ const BlackjackTraining = () => {
       console.log(`Taking dealer: ${player.current.currentBet}`);
       dealer.current.take(player.current.currentBet * 2);
       setStarted(false);
-      return;
     }
-    return;
   };
 
   const handleDealerAI = async () => {
@@ -210,10 +195,6 @@ const BlackjackTraining = () => {
       forceUpdate();
     }
     endGame();
-
-    // if (!dealer.current.isBusted()) {
-    //   endGame();
-    // }
   };
 
   const getBestHandValue = (values: number[]) => {
@@ -274,19 +255,10 @@ const BlackjackTraining = () => {
     setStarted(false);
   };
 
-  // const resetGame = () => {
-  //   dealer.current.resetHand();
-  //   player.current.resetHand();
-  //   setInsuranceTaken(false);
-  //   setIsDoubled(false);
-  //   startGame();
-  // };
-
   const handleStand = async () => {
     setPlayerMoveFinished(true);
     sleep(300);
     handleDealerAI();
-    return;
   };
 
   const handleDouble = async () => {
@@ -393,10 +365,8 @@ const BlackjackTraining = () => {
     playerHand.forEach((card: Card) => {
       switch (card.rank) {
         case "A":
-          {
-            sum += 11;
-            aces++;
-          }
+          sum += 11;
+          aces++;
           break;
         case "J":
         case "K":

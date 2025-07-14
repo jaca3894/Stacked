@@ -40,7 +40,7 @@ const PatchNotesScreen = () => {
           />
         </TouchableOpacity>
         <Image
-          source={require("../../../assets/logo/logo.png")}
+          source={require("../../../assets/icons/logo.png")}
           style={styles.logo}
         />
         <ScrollView contentContainerStyle={styles.content}>

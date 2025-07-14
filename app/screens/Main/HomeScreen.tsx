@@ -16,7 +16,6 @@ import {
   TouchableOpacity,
   ScrollView,
   DimensionValue,
-  findNodeHandle,
 } from "react-native";
 import LoadingPanel from "../../panels/LoadingPanel";
 import * as NavigationBar from "expo-navigation-bar";
@@ -25,11 +24,10 @@ import { Ionicons } from "@expo/vector-icons";
 import { Image as Gif } from "expo-image";
 import { articlesData } from "../../../classes/Database";
 import {
-  CopilotProvider,
   CopilotStep,
   walkthroughable,
+  useCopilot
 } from "react-native-copilot";
-import { useCopilot } from "react-native-copilot";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { withCopilotProvider } from "../../../utils/WithCopilotProvider";
 
@@ -42,14 +40,10 @@ const HomeScreen = () => {
   const [loading, setLoading] = useState(true);
   const navigator = useNavigation();
   const [hasLastGame, setHasLastGame] = useState(true);
-  // const [hasNextLesson, setHasNextLesson] = useState(true);
   const loaderTime = 1000;
   const term = getRandomGlossaryTerm();
-  // const percentage = getCompletionPercentage(articlesData);
-  // console.log("Percent: " + percentage);
-  // console.log(term);
 
-  const { start, copilotEvents } = useCopilot();
+  const { start } = useCopilot();
 
   const scrollRef = useRef<ScrollView>(null);
   const hasStartedTutorial = useRef(false);
@@ -58,7 +52,6 @@ const HomeScreen = () => {
     React.useCallback(() => {
       const checkTutorialFlag = async () => {
         try {
-          // await AsyncStorage.clear(); // to zakomentowac jesli nie testujesz
           const hasSeen = await AsyncStorage.getItem("@hasSeenHomTutorial");
           if (!hasSeen && !hasStartedTutorial.current) {
             // Odpalamy tutorial z opóźnieniem
@@ -79,13 +72,9 @@ const HomeScreen = () => {
       if (!__DEV__) {
         checkTutorialFlag();
       }
-
-      // return () => {}; // cleanup (opcjonalny)
     }, [start])
   );
 
-  // const article = getNextUnmarkedItem(articlesData);
-  // setArticle(getNextUnmarkedItem(articlesData));
   const players = [
     { name: "Kon", score: 5200 },
     { name: "Jaca", score: 5100 },
@@ -107,7 +96,6 @@ const HomeScreen = () => {
         const nextPercent = await getCompletionPercentage(articlesData);
         setPercentage(nextPercent);
       };
-      // console.log(article);
       fetchArticle();
     }, [])
   );
@@ -118,10 +106,6 @@ const HomeScreen = () => {
   }
 
   useEffect(() => {
-    // const next = getNextUnmarkedItem(articlesData);
-    // setArticle(next);
-    // console.log(next);
-    // getFirstUnlikedArticle();
     const timer = setTimeout(() => setLoading(false), loaderTime);
     return () => clearTimeout(timer);
   }, []);
@@ -134,14 +118,12 @@ const HomeScreen = () => {
           <ScrollView
             ref={(ref) => {
               scrollRef.current = ref;
-              // console.log("✌️ scrollRef.current =", ref);
-              // console.log("scrollTo:", ref?.scrollTo);
             }}
             contentContainerStyle={[styles.scrollContainer, { flexGrow: 1 }]}
           >
             <View style={styles.header}>
               <Image
-                source={require("../../../assets/logo/logo.png")}
+                source={require("../../../assets/icons/logo.png")}
                 style={styles.logo}
               />
               <CopilotStep
@@ -222,7 +204,7 @@ const HomeScreen = () => {
             >
               <CopilotView style={styles.panel}>
                 <Image
-                  source={require("../../../assets/logo/logoAcademy.png")}
+                  source={require("../../../assets/icons/logoAcademy.png")}
                   style={{
                     width: "50%",
                     height: 50,
@@ -252,74 +234,72 @@ const HomeScreen = () => {
               <Text style={styles.panelTitle}>📝 Your next lesson</Text>
 
               {article != null && (
-                <>
-                  <View style={styles.lessonBody}>
-                    <Text style={styles.lessonDate}>{article.date}</Text>
-                    <View style={styles.lessonTitleRow}>
-                      {/* <Ionicons
-                        name="book"
-                        size={20}
-                        color="#cbbb93"
-                        style={{ marginRight: 6 }}
-                        /> */}
-                      <Text style={styles.lessonTitle}>{article.title}</Text>
-                      {/* <Ionicons
-                        name="chevron-down"
-                        size={20}
-                        color="#777"
-                        style={{ marginLeft: 6 }}
-                        /> */}
-                    </View>
-                    <View
+                <View style={styles.lessonBody}>
+                  <Text style={styles.lessonDate}>{article.date}</Text>
+                  <View style={styles.lessonTitleRow}>
+                    {/* <Ionicons
+                      name="book"
+                      size={20}
+                      color="#cbbb93"
+                      style={{ marginRight: 6 }}
+                      /> */}
+                    <Text style={styles.lessonTitle}>{article.title}</Text>
+                    {/* <Ionicons
+                      name="chevron-down"
+                      size={20}
+                      color="#777"
+                      style={{ marginLeft: 6 }}
+                      /> */}
+                  </View>
+                  <View
+                    style={{
+                      width: "100%",
+                      // height: 200,
+                      // backgroundColor: "red",
+                    }}
+                  >
+                    <Gif
+                      source={article.bannerPath}
                       style={{
-                        width: "100%",
-                        // height: 200,
-                        // backgroundColor: "red",
+                        width: "90%",
+                        height: 200,
+                        alignSelf: "center",
+                        borderRadius: 12,
+                      }}
+                      // contentFit="contain"
+                    ></Gif>
+                    <Text
+                      ellipsizeMode="tail"
+                      numberOfLines={3}
+                      style={{
+                        width: "90%",
+                        textAlign: "center",
+                        alignSelf: "center",
+                        margin: 10,
+                        color: "white",
+                        marginBottom: 20,
                       }}
                     >
-                      <Gif
-                        source={article.bannerPath}
-                        style={{
-                          width: "90%",
-                          height: 200,
-                          alignSelf: "center",
-                          borderRadius: 12,
-                        }}
-                        // contentFit="contain"
-                      ></Gif>
-                      <Text
-                        ellipsizeMode="tail"
-                        numberOfLines={3}
-                        style={{
-                          width: "90%",
-                          textAlign: "center",
-                          alignSelf: "center",
-                          margin: 10,
-                          color: "white",
-                          marginBottom: 20,
-                        }}
-                      >
-                        {article.content}
-                      </Text>
-                      <TouchableOpacity
-                        style={[styles.resumeButton, { alignSelf: "center" }]}
-                        onPress={() =>
-                          (navigator as any).navigate("Article", {
-                            articleId: article.id,
-                          })
-                        }
-                      >
-                        <Ionicons name="play" size={16} color="#1c1c1c" />
-                        <Text style={styles.buttonText}>Continue</Text>
-                      </TouchableOpacity>
-                    </View>
-
-                    {/* <View style={styles.progressBarContainer}>
-                      <View style={[styles.progressBar, { width: "15%" }]} />
-                      </View> */}
-                    {/* <Text style={styles.lessonProgressText}>Progress: 15%</Text> */}
+                      {article.content}
+                    </Text>
+                    <TouchableOpacity
+                      style={[styles.resumeButton, { alignSelf: "center" }]}
+                      onPress={() =>
+                        (navigator as any).navigate("Article", {
+                          articleId: article.id,
+                        })
+                      }
+                    >
+                      <Ionicons name="play" size={16} color="#1c1c1c" />
+                      <Text style={styles.buttonText}>Continue</Text>
+                    </TouchableOpacity>
                   </View>
-                </>
+
+                  {/* <View style={styles.progressBarContainer}>
+                    <View style={[styles.progressBar, { width: "15%" }]} />
+                    </View> */}
+                  {/* <Text style={styles.lessonProgressText}>Progress: 15%</Text> */}
+                </View>
               )}
               {article === null && (
                 <View style={{ position: "relative" }}>

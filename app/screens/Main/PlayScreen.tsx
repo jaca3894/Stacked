@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import {
   Text,
   Image,
@@ -11,13 +11,11 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { withCopilotProvider } from "../../../utils/WithCopilotProvider";
 import {
-  CopilotProvider,
   CopilotStep,
   walkthroughable,
+  useCopilot
 } from "react-native-copilot";
-import { useCopilot } from "react-native-copilot";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useRef } from "react";
 
 const CopilotView = walkthroughable(View);
 
@@ -35,8 +33,6 @@ const PlayScreen = () => {
       const checkTutorialFlag = async () => {
         try {
           const hasSeen = await AsyncStorage.getItem("@hasSeenPlayTutorial");
-          // await AsyncStorage.clear(); // to zakomentowac jesli nie testujesz
-          // console.log(hasSeen);
           if (!hasSeen && !hasStartedTutorial.current) {
             hasStartedTutorial.current = true;
 
@@ -57,8 +53,6 @@ const PlayScreen = () => {
       if (!__DEV__) {
         checkTutorialFlag();
       }
-
-      // return () => {}; // cleanup (opcjonalny)
     }, [start])
   );
 
@@ -66,7 +60,7 @@ const PlayScreen = () => {
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
         <Image
-          source={require("../../../assets/logo/logo.png")}
+          source={require("../../../assets/icons/logo.png")}
           style={styles.logo}
           resizeMode="contain"
         />

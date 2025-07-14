@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -16,12 +16,10 @@ import toastConfig from "../../../config/ToastConfig";
 import { HandRank, handrank } from "../../../utils/Handrank";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
-  CopilotProvider,
   CopilotStep,
   walkthroughable,
+  useCopilot
 } from "react-native-copilot";
-import { useCopilot } from "react-native-copilot";
-import React from "react";
 import { withCopilotProvider } from "../../../utils/WithCopilotProvider";
 
 const CopilotText = walkthroughable(Text);
@@ -120,8 +118,6 @@ const CheckHandScreen = () => {
       const checkTutorialFlag = async () => {
         try {
           const hasSeen = await AsyncStorage.getItem("@hasSeenCheckTutorial");
-          // await AsyncStorage.clear(); // to zakomentowac jesli nie testujesz
-          // console.log(hasSeen);
           if (!hasSeen && !hasStartedTutorial.current) {
             hasStartedTutorial.current = true;
 
@@ -142,8 +138,6 @@ const CheckHandScreen = () => {
       if (!__DEV__) {
         checkTutorialFlag();
       }
-
-      // return () => {}; // cleanup (opcjonalny)
     }, [start])
   );
 
@@ -257,7 +251,7 @@ const CheckHandScreen = () => {
     <View style={styles.container}>
       <SafeAreaView style={styles.header}>
         <Image
-          source={require("../../../assets/logo/logo.png")}
+          source={require("../../../assets/icons/logo.png")}
           style={styles.logo}
         />
       </SafeAreaView>

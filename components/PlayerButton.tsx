@@ -54,16 +54,16 @@ const PlayerButton = ({ isGameStarted, isCurrentPlayer, opacity, disabled, isDea
           <Text style={styles.buttonText} numberOfLines={2} ellipsizeMode="tail">{name ? `${name}\n${balance}` : '+'}</Text>
           {(isGameStarted && showLastAction) && (
             <View style={[styles.blindView, dynamicStyles.blindView]}>
-              <Text style={styles.blindText}>{lastAction}</Text>
+              <Text style={styles.blindText}>{lastAction ?? ""}</Text>
             </View>
           )}
         </View>
       </TouchableHighlight>
-      {cardsCount && (
-        <View style={styles.cardsContainer} pointerEvents="none">
+      {!!cardsCount && (
+        <View style={[styles.cardsContainer, { transform: [{ scale: isCurrentPlayer ? 1.2 : 1 }] }]} pointerEvents="none">
           {Array.from({ length: cardsCount }).map((_, index) => (
             <View key={index+1} style={[styles.cardWrapper, { marginLeft: -5 }]}>
-              <CardBackView width={20} height={40}/>
+              <CardBackView width={20 * (isCurrentPlayer ? 1.2 : 1)} height={40 * (isCurrentPlayer ? 1.2 : 1)}/>
             </View>
           ))}
         </View>
@@ -117,12 +117,12 @@ const styles = StyleSheet.create({
   currentPlayerHighlight: {
     outlineColor: '#f00',
     outlineWidth: 3.5,
-    transform: [{ scale: 1.05 }],
+    transform: [{ scale: 1.2 }],
     elevation: 10,
   },
   cardsContainer: {
     position: 'absolute',
-    bottom: 0,
+    bottom: '-4%',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',

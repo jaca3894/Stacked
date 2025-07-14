@@ -90,7 +90,6 @@ const BlackjackGame = () => {
   function endGame() {
     const insurancePlayerIndex = players.findIndex(player => player.lastAction == 'insurance');
 
-    console.log('Insurance Index' + insurancePlayerIndex)
     if(insurancePlayerIndex != -1) {
       setShowInsurance(true);
       resetButtons();
@@ -100,14 +99,12 @@ const BlackjackGame = () => {
     let firstPlayerIndex = 0;
     while(SKIPPED_ACTIONS.includes(players[firstPlayerIndex].lastAction)) {
       firstPlayerIndex++;
-      console.log('New First Player Index' + firstPlayerIndex);
       if(firstPlayerIndex == players.length) {
         setIsGameStarted(false);
         setCurrentPlayerIndex(-1);
         return;
       }
     }
-    console.log('Final First Player Index' + firstPlayerIndex);
     setCurrentPlayerIndex(firstPlayerIndex);
     setShowdownVisible(true);
     setIsGameStarted(false);
@@ -133,23 +130,25 @@ const BlackjackGame = () => {
       }
     }
 
-    if(newIndex == 0) {
-      if(didEveryoneBet) {
-        let newIndex = 0;
-        while(SKIPPED_ACTIONS.includes(players[newIndex].lastAction)) {
-          newIndex++;
-          if(newIndex == players.length) {
-            setShowGameEnded(true);
-            return;
-          }
-        }
-        setCurrentPlayerIndex(newIndex);
-        endGame();
-        return;
-      }
-      setDidEveryoneBet(true);
+    if(newIndex != 0) {
+      setCurrentPlayerIndex(newIndex);
+      return;
     }
 
+    if(didEveryoneBet) {
+      let newIndex = 0;
+      while(SKIPPED_ACTIONS.includes(players[newIndex].lastAction)) {
+        newIndex++;
+        if(newIndex == players.length) {
+          setShowGameEnded(true);
+          return;
+        }
+      }
+      setCurrentPlayerIndex(newIndex);
+      endGame();
+      return;
+    }
+    setDidEveryoneBet(true);
     setCurrentPlayerIndex(newIndex);
   }
 
@@ -208,8 +207,7 @@ const BlackjackGame = () => {
             const isLast = index == players.length-1;
             if(isFirst || isLast)
               return;
-            const scaleValue = currentPlayer == player ? 1.2 : 1;
-            let addStyles = { backgroundColor: '#121212', transform: [{ scale: scaleValue }] };
+            let addStyles = { backgroundColor: '#121212' };
             return (
               <PlayerButton key={index+1} isGameStarted={isGameStarted} isCurrentPlayer={player === currentPlayer} onPress={() => setShowInput([true, index])}
                 name={player.name} balance={player.balance} cardsCount={player.cardsCount} disabled={isGameStarted} opacity={['busted', 'blackjack'].includes(player.lastAction) ? .5 : 1} addStyles={[dynamicStyles.playerButtonOverrides, addStyles]} />
@@ -218,8 +216,6 @@ const BlackjackGame = () => {
         </View>
         <View style={[styles.playersContainer, { paddingHorizontal: 0, justifyContent: 'space-between', }]}>
           {firstAndLastPlayer.map((player, index) => {
-            const scaleValue = currentPlayer == player ? 1.2 : 1;
-            console.log(scaleValue);
             const isFirst = index == 0;
             const rightLeft = isFirst ? { left: '2%' } : { right: '2%' }
             const addPositionStyles = [rightLeft, {
@@ -229,7 +225,7 @@ const BlackjackGame = () => {
             return (
               <PlayerButton key={index+1} isGameStarted={isGameStarted} isCurrentPlayer={player === currentPlayer} onPress={() => setShowInput([true, index])} 
                 name={player.name} balance={player.balance} cardsCount={player.cardsCount} disabled={isGameStarted} addPositionStyles={addPositionStyles} opacity={['busted', 'blackjack'].includes(player.lastAction) ? .5 : 1}
-                addStyles={[dynamicStyles.playerButtonOverrides, { transform: [{ scale: scaleValue }] }]} />
+                addStyles={dynamicStyles.playerButtonOverrides} />
             );
           })}
         </View>
@@ -311,7 +307,7 @@ const BlackjackGame = () => {
             <TouchableWithoutFeedback>
               <View style={[styles.popUpInside, dynamicStyles.popUpInside]}>
                 <View>
-                  <Text style={{fontSize: 18, color: '#fff'}}>{currentPlayer.name}</Text>
+                  <Text style={{fontSize: 18, color: '#fff'}}>{currentPlayer.name ?? ""}</Text>
                 </View>
                 <View style={{ flexDirection: 'row', gap: 15 }}>
                   <TouchableHighlight style={styles.dodajButton} underlayColor="#948870" onPress={() => {currentPlayer.give(currentPlayer.currentBet * 2); nextPlayer();}}>
@@ -428,7 +424,7 @@ const styles = StyleSheet.create({
   },
   playersContainer: {
     position: 'absolute',
-    bottom: 0,
+    bottom: '2%',
     width: '100%',
     height: '75%',
     flexDirection: 'row',

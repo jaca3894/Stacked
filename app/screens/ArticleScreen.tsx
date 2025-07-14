@@ -9,14 +9,13 @@ import {
   TouchableOpacity,
 } from "react-native";
 import RootStackParamList from "../../props/RootStackParamList";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { articlesData as data } from "../../classes/Database";
 import { Image as Gif } from "expo-image";
 import * as Animatable from "react-native-animatable";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useEffect } from "react"; // dodaj jeśli jeszcze nie ma
 
 type ArticleScreenProp = RouteProp<RootStackParamList, "Article">;
 
@@ -35,25 +34,23 @@ const ArticleScreen = () => {
       let x = await AsyncStorage.getItem(`article${index}`);
       console.info(x + `article${index}`);
     } catch (error) {
-      console.log("Couldn't save data.");
+      console.error(error ?? "Couldn't save data.");
     }
   };
 
   const checkForLike = async (index: string) => {
     try {
       const value = await AsyncStorage.getItem(`article${index}`);
-      console.log(value);
       return value !== null ? JSON.parse(value) : null;
     } catch (error) {
-      console.log("Couldn't read data.");
+      console.error(error ?? "Couldn't read data.");
     }
   };
 
   const navigation = useNavigation();
   const route = useRoute<ArticleScreenProp>();
   const { articleId } = route.params;
-  var article: object | any;
-  console.log(articleId + " article");
+  let article: any;
   const [liked, setLiked] = useState<boolean>(false); // początkowo false
   const heartRef = useRef<Animatable.View>(null);
 
@@ -68,7 +65,6 @@ const ArticleScreen = () => {
   data.forEach((element) => {
     if (element.id === articleId) article = element;
   });
-  // const [liked, setLiked] = useState(checkForLike(articleId));
 
   const toggleLike = async () => {
     const newValue = !liked;
@@ -158,7 +154,7 @@ const ArticleScreen = () => {
               style={styles.authorRow}
             >
               <Image
-                source={require("../../assets/logo/logo.png")}
+                source={require("../../assets/icons/logo.png")}
                 style={styles.authorAvatar}
               />
               <View style={styles.authorDetails}>

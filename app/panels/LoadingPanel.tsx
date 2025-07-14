@@ -56,7 +56,7 @@ const LoadingPanel = ({ visible }: LoadingPanelProps) => {
     <Modal animationType="fade" transparent visible={visible} statusBarTranslucent>
       <View style={styles.overlay}>
         <Image
-          source={require('../../assets/logo/logo.png')} // 🖼️ Upewnij się, że ta ścieżka prowadzi do Twojego logo
+          source={require('../../assets/icons/logo.png')} // 🖼️ Upewnij się, że ta ścieżka prowadzi do Twojego logo
           style={styles.logo}
           resizeMode="contain"
         />
