@@ -35,4 +35,19 @@ export default class Player {
   setLastAction(action: "" | "call" | "check" | "raise" | "fold" | "SB" | "BB" | "All-in") {
     this.lastAction = action
   }
+
+  static fromPlainObject(obj: any): Player {
+    // 1. Create a new, real instance of the class
+    const playerInstance = new Player(obj.name, obj.balance);
+
+    // 2. Copy the saved data onto the new instance
+    playerInstance.currentBet = obj.currentBet || 0;
+    playerInstance.isDealer = obj.isDealer || false;
+    playerInstance.folded = obj.folded || false;
+    playerInstance.lastAmount = obj.lastAmount || 0;
+    playerInstance.lastAction = obj.lastAction || '';
+    
+    // 3. Return the fully-functional instance
+    return playerInstance;
+  }
 }

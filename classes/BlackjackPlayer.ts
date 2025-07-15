@@ -85,4 +85,18 @@ export default class BlackjackPlayer {
   stand() {
     this.stood = true;
   }
+
+  static fromPlainObject(obj: any): BlackjackPlayer {
+    // 1. Create a new, real instance of the class
+    const playerInstance = new BlackjackPlayer(obj.name, obj.balance);
+
+    // 2. Copy the saved data onto the new instance
+    playerInstance.cardsCount = obj.cardsCount || 0;
+    playerInstance.currentBet = obj.currentBet || 0;
+    playerInstance.isDealer = obj.isDealer || false;
+    playerInstance.lastAction = obj.lastAction || '';
+    
+    // 3. Return the fully-functional instance
+    return playerInstance;
+  }
 }

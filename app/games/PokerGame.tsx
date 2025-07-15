@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Text,
   StyleSheet,
@@ -7,6 +7,8 @@ import {
   Dimensions,
   TextInput,
   Modal,
+  Pressable,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { RouteProp, useRoute } from "@react-navigation/native";
@@ -21,6 +23,8 @@ import CardBackView from "../../components/CardBackView";
 import PotsShowdown from "../../components/PotsShowdown";
 import PlayerButton from "../../components/PlayerButton";
 import { useLanguage } from "../../hooks/useLanguage";
+
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const seatingPlan: Record<number, [number, number, number, number]> = {
   1: [1, 0, 0, 0],
@@ -44,6 +48,18 @@ type EdgeConfig = {
   addStyle?: object;
 };
 
+interface PokerGameSaveState {
+  players: Player[];
+  currentPlayerIndex: number;
+  minAmount: number;
+  shownCards: number;
+  biggestBetPlayerIndex: number;
+  canRaise: boolean;
+  isGameStarted: boolean;
+  isGameEnded: boolean;
+  date: number;
+}
+
 const screenWidth = Dimensions.get("window").width;
 
 type GameRouteProp = RouteProp<RootStackParamList, "Game">;
@@ -51,8 +67,7 @@ type GameRouteProp = RouteProp<RootStackParamList, "Game">;
 const PokerGame = () => {
   const { language } = useLanguage();
   const route = useRoute<GameRouteProp>();
-  const { playersCount, initialBalance, smallBlindAmount, bigBlindAmount } =
-    route.params;
+  const { playersCount, initialBalance, smallBlindAmount, bigBlindAmount, loadGame } = route.params;
 
   const [players, setPlayers] = useState<Player[]>(
     Array.from(
@@ -76,6 +91,20 @@ const PokerGame = () => {
   const [sliderValue, setSliderValue] = useState(0);
   const [isSliderShown, setIsSliderShown] = useState(false);
 
+  const [showLoadGame, setShowLoadGame] = useState(false);
+
+  const stateToSaveRef = useRef<PokerGameSaveState>({
+      players,
+      currentPlayerIndex,
+      minAmount,
+      shownCards,
+      biggestBetPlayerIndex,
+      canRaise,
+      isGameStarted,
+      isGameEnded,
+      date: Date.now()
+    });
+
   const currentPlayer = players[currentPlayerIndex];
 
   const edges: EdgeConfig[] = [
@@ -98,6 +127,30 @@ const PokerGame = () => {
   let globalIndex = 0;
 
   useEffect(() => {
+    if(loadGame)
+      loadLastGame();
+
+    const checkSave = async () => {
+      const save = await AsyncStorage.getItem("@pokerGameSave");
+      if(save && !loadGame) {
+        const saveData = JSON.parse(save);
+        if(!saveData.players.find((p: Player) => p.name === ''))
+          setShowLoadGame(true);
+      }
+    }
+    if(!loadGame)
+      checkSave();
+
+    const saveGame = async () => {
+      if(isGameStarted && players.find(p => p.name === '')) return;
+      await AsyncStorage.setItem("@pokerGameSave", JSON.stringify(stateToSaveRef.current));
+    }
+    return () => {
+      saveGame();
+    };
+  }, []);
+
+  useEffect(() => {
     if (players.length === 1) {
       endGame();
       return;
@@ -106,6 +159,46 @@ const PokerGame = () => {
       startGame();
     }
   }, [players.length, startNewGame]);
+
+  useEffect(() => {
+    stateToSaveRef.current = {
+      players,
+      currentPlayerIndex,
+      minAmount,
+      shownCards,
+      biggestBetPlayerIndex,
+      canRaise,
+      isGameStarted,
+      isGameEnded,
+      date: Date.now()
+    };
+  }, [players, currentPlayerIndex, minAmount, shownCards, biggestBetPlayerIndex, canRaise, isGameStarted, isGameEnded])
+
+  const loadLastGame = async () => {
+    const lastGame = await AsyncStorage.getItem("@pokerGameSave");
+    if(lastGame) {
+      try {
+        const lastGameInfo: PokerGameSaveState = JSON.parse(lastGame);
+
+        const rehydratedPlayers = lastGameInfo.players.map(playerObject => 
+          Player.fromPlainObject(playerObject)
+        );
+
+        setPlayers(rehydratedPlayers);
+        setCurrentPlayerIndex(lastGameInfo.currentPlayerIndex);
+        setMinAmount(lastGameInfo.minAmount);
+        setShownCards(lastGameInfo.shownCards);
+        setBiggestBetPlayerIndex(lastGameInfo.biggestBetPlayerIndex);
+        setCanRaise(lastGameInfo.canRaise);
+        setIsGameStarted(lastGameInfo.isGameStarted);
+        setIsGameEnded(lastGameInfo.isGameEnded);
+        setShowLoadGame(false);
+      }
+      catch(err) {
+        console.error(err)
+      }
+    }
+  };
 
   function startGame() {
     if (players.length < 2) {
@@ -449,6 +542,34 @@ const PokerGame = () => {
           </View>
         </Modal>
       )}
+      {showLoadGame && (
+        <Modal
+          style={styles.absoluteCenter}
+          onRequestClose={() => setShowLoadGame(false)}
+          transparent={true}
+          animationType="fade"
+          statusBarTranslucent={true}
+        >
+          <Pressable style={[styles.popUp, { backgroundColor: "transparent" }]} onPress={() => setShowLoadGame(false)}>
+            <TouchableWithoutFeedback>
+              <View style={[styles.popUpInside]}>
+                <Text style={{color: '#fff'}}>{language === "pl" ? "Czy chcesz wczytać ostatnią grę?" : "Do you want to load last game?"}</Text>
+                <View style={{ flexDirection: 'row', gap: 15 }}>
+                  <TouchableHighlight style={styles.dodajButton} underlayColor="#948870" onPress={() => {
+                    
+                    loadLastGame();
+                  }}>
+                    <Text style={styles.buttonText}>{language === "pl" ? "Tak" : "Yes"}</Text>
+                  </TouchableHighlight>
+                  <TouchableHighlight style={styles.dodajButton} underlayColor="#948870" onPress={() => setShowLoadGame(false)}>
+                    <Text style={styles.buttonText}>{language === "pl" ? "Nie" : "No"}</Text>
+                  </TouchableHighlight>
+                </View>
+              </View>
+            </TouchableWithoutFeedback>
+          </Pressable>
+        </Modal>
+      )}
     </SafeAreaProvider>
   );
 };
@@ -599,6 +720,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     gap: 10,
+  },
+  absoluteCenter: {
+    position: "absolute",
+    left: "50%",
+    top: "50%",
+    transform: [{ translateX: "-50%" }, { translateY: "-50%" }],
   },
 });
 

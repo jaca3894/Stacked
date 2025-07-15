@@ -23,14 +23,31 @@ import ActionButton from "../../components/ActionButton";
 import PlayerButton from "../../components/PlayerButton";
 import { Image } from "react-native-animatable";
 import { useLanguage } from "../../hooks/useLanguage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type GameRouteProp = RouteProp<RootStackParamList, "Game">;
+type ButtonAction = "hit" | "stand" | "blackjack" | "double" | "insurance" | "busted";
+type SkippedAction = "" | "hit" | "stand" | "blackjack" | "double" | "insurance" | "busted";
+
+interface BlackjackGameSaveState {
+  players: BlackjackPlayer[];
+  dealer: BlackjackPlayer;
+  currentPlayerIndex: number;
+  isGameStarted: boolean;
+  didEveryoneBet: boolean;
+  showdownVisible: boolean;
+  afterInsurance: boolean;
+  showInsurance: boolean;
+  buttons: ButtonAction[];
+  SKIPPED_ACTIONS: SkippedAction[];
+  date: number;
+}
 
 const BlackjackGame = () => {
   const { language } = useLanguage();
   const route = useRoute<GameRouteProp>();
   const navigation = useNavigation<any>();
-  const { playersCount, initialBalance } = route.params;
+  const { playersCount, initialBalance, loadGame } = route.params;
   const { width } = useWindowDimensions();
 
   const dynamicStyles = StyleSheet.create({
@@ -59,26 +76,98 @@ const BlackjackGame = () => {
 
   const [didEveryoneBet, setDidEveryoneBet] = useState(false);
   // tego nie tlumacz tych guzikow
-  const [buttons, setButtons] = useState([
-    "hit",
-    "stand",
-    "blackjack",
-    "double",
-    "insurance",
-  ]);
+  const [buttons, setButtons] = useState<ButtonAction[]>(["hit", "stand", "blackjack", "double", "insurance"]);
   const [showdownVisible, setShowdownVisible] = useState(false);
   const [afterInsurance, setAfterInsurance] = useState(false);
   const [showInsurance, setShowInsurance] = useState(false);
   const [showGameEnded, setShowGameEnded] = useState(false);
 
-  const [SKIPPED_ACTIONS, setSKIPPED_ACTIONS] = useState(['blackjack', 'busted']);
+  const [SKIPPED_ACTIONS, setSKIPPED_ACTIONS] = useState<SkippedAction[]>(['blackjack', 'busted']);
+  const [showLoadGame, setShowLoadGame] = useState(false);
+
+  const stateToSaveRef = useRef<BlackjackGameSaveState>({
+    players,
+    dealer: dealer.current,
+    currentPlayerIndex,
+    isGameStarted,
+    didEveryoneBet,
+    showdownVisible,
+    afterInsurance,
+    showInsurance,
+    buttons,
+    SKIPPED_ACTIONS,
+    date: Date.now()
+  });
+
+  useEffect(() => {
+    stateToSaveRef.current = {
+      players,
+      dealer: dealer.current,
+      currentPlayerIndex,
+      isGameStarted,
+      didEveryoneBet,
+      showdownVisible,
+      afterInsurance,
+      showInsurance,
+      buttons,
+      SKIPPED_ACTIONS,
+      date: Date.now()
+    };
+  }, [players, dealer, currentPlayerIndex, isGameStarted, didEveryoneBet, showdownVisible, afterInsurance, showInsurance, buttons, SKIPPED_ACTIONS])
 
   useEffect(() => {
     ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
+    if(loadGame)
+      loadLastGame();
+
+    const checkSave = async () => {
+      const save = await AsyncStorage.getItem("@blackjackGameSave");
+      if(save) {
+        const saveData = JSON.parse(save);
+        if(!saveData.players.find((p: BlackjackPlayer) => p.name === ''))
+          setShowLoadGame(true);
+      }
+    }
+    if(!loadGame)
+      checkSave();
+
+    const saveGame = async () => {
+      if(isGameStarted && players.find(p => p.name === '')) return;
+      await AsyncStorage.setItem("@blackjackGameSave", JSON.stringify(stateToSaveRef.current));
+    }
     return () => {
+      saveGame();
       ScreenOrientation.unlockAsync();
     };
   }, []);
+
+  const loadLastGame = async () => {
+    const lastGame = await AsyncStorage.getItem("@blackjackGameSave");
+    if(lastGame) {
+      try {
+        const lastGameInfo: BlackjackGameSaveState = JSON.parse(lastGame);
+
+        const rehydratedPlayers = lastGameInfo.players.map(playerObject => 
+          BlackjackPlayer.fromPlainObject(playerObject)
+        );
+
+        setPlayers(rehydratedPlayers);
+        dealer.current = lastGameInfo.dealer;
+        setCurrentPlayerIndex(lastGameInfo.currentPlayerIndex);
+        setIsGameStarted(lastGameInfo.isGameStarted);
+        setDidEveryoneBet(lastGameInfo.didEveryoneBet);
+        setShowdownVisible(lastGameInfo.showdownVisible);
+        setAfterInsurance(lastGameInfo.afterInsurance);
+        setShowInsurance(lastGameInfo.showInsurance);
+        setButtons(lastGameInfo.buttons);
+        setSKIPPED_ACTIONS(lastGameInfo.SKIPPED_ACTIONS);
+        setShowLoadGame(false);
+      }
+      catch(err) {
+        console.error(err)
+      }
+    }
+  };
 
   function resetButtons() {
     setButtons(["hit", "stand", "blackjack", "double", "insurance"]);
@@ -113,11 +202,10 @@ const BlackjackGame = () => {
     }
 
     let firstPlayerIndex = 0;
-    while (SKIPPED_ACTIONS.includes(players[firstPlayerIndex].lastAction)) {
+    while(players[firstPlayerIndex].lastAction && SKIPPED_ACTIONS.includes(players[firstPlayerIndex].lastAction)) {
       firstPlayerIndex++;
       if (firstPlayerIndex == players.length) {
         setIsGameStarted(false);
-        setCurrentPlayerIndex(-1);
         return;
       }
     }
@@ -238,7 +326,7 @@ const BlackjackGame = () => {
             let addStyles = { backgroundColor: "#121212" };
             return (
               <PlayerButton key={index+1} isCurrentPlayer={player === currentPlayer} onPress={() => setShowInput([true, index])} name={player.name} balance={player.balance}
-                cardsCount={player.cardsCount} disabled={isGameStarted} opacity={['busted', 'blackjack'].includes(player.lastAction) ? .5 : 1} isGameStarted={isGameStarted}
+                cardsCount={player.cardsCount} disabled={isGameStarted} opacity={[...SKIPPED_ACTIONS, 'busted', 'blackjack'].includes(player.lastAction) ? .5 : 1} isGameStarted={isGameStarted}
                 addStyles={[dynamicStyles.playerButtonOverrides, addStyles]} />
             );
           })}
@@ -350,31 +438,41 @@ const BlackjackGame = () => {
           </View>
         )}
       </View>
-      {showInput[0] && (
+      {showLoadGame && (
         <Modal
-          onRequestClose={() => setShowInput([false, -1])}
+          style={styles.absoluteCenter}
+          onRequestClose={() => setShowLoadGame(false)}
           transparent={true}
           animationType="fade"
           statusBarTranslucent={true}
         >
-          <Pressable
-            style={styles.popUp}
-            onPress={() => setShowInput([false, -1])}
-          >
+          <Pressable style={[styles.popUp, { backgroundColor: "transparent" }]} onPress={() => setShowLoadGame(false)}>
             <TouchableWithoutFeedback>
               <View style={[styles.popUpInside, dynamicStyles.popUpInside]}>
-                <TouchableHighlight
-                  style={styles.closeButton}
-                  underlayColor="transparent"
-                  onPress={() => setShowInput([false, -1])}
-                >
-                  <Text
-                    style={[styles.buttonText, { fontSize: 24, color: "#fff" }]}
-                  >
-                    ×
-                  </Text>
+                <Text style={{color: '#fff'}}>{language === "pl" ? "Czy chcesz wczytać ostatnią grę?" : "Do you want to load last game?"}</Text>
+                <View style={{ flexDirection: 'row', gap: 15 }}>
+                  <TouchableHighlight style={styles.dodajButton} underlayColor="#948870" onPress={() => {
+                    loadLastGame();
+                  }}>
+                    <Text style={styles.buttonText}>{language === "pl" ? "Tak" : "Yes"}</Text>
+                  </TouchableHighlight>
+                  <TouchableHighlight style={styles.dodajButton} underlayColor="#948870" onPress={() => setShowLoadGame(false)}>
+                    <Text style={styles.buttonText}>{language === "pl" ? "Nie" : "No"}</Text>
+                  </TouchableHighlight>
+                </View>
+              </View>
+            </TouchableWithoutFeedback>
+          </Pressable>
+        </Modal>
+      )}
+      {showInput[0] && (
+        <Modal onRequestClose={() => setShowInput([false, -1])} transparent={true} animationType="fade" statusBarTranslucent={true}>
+          <Pressable style={styles.popUp} onPress={() => setShowInput([false, -1])}>
+            <TouchableWithoutFeedback>
+              <View style={[styles.popUpInside, dynamicStyles.popUpInside]}>
+                <TouchableHighlight style={styles.closeButton} underlayColor="transparent" onPress={() => setShowInput([false, -1])}>
+                  <Text style={[styles.buttonText, { fontSize: 24, color: "#fff" }]}>×</Text>
                 </TouchableHighlight>
-
                 <Text style={{ marginBottom: 15, fontSize: 18, color: '#fff' }}>{language === "pl" ? "Edytuj Nazwę Gracza" : "Edit Player Name"}</Text>
                 <TextInput
                   placeholder="Player Name"
@@ -382,9 +480,7 @@ const BlackjackGame = () => {
                   placeholderTextColor="#999"
                   onChangeText={setInputValue}
                 />
-                <TouchableHighlight
-                  style={styles.dodajButton}
-                  underlayColor="#948870"
+                <TouchableHighlight style={styles.dodajButton} underlayColor="#948870" 
                   onPress={() => {
                     if (inputValue.trim() !== "") {
                       setPlayers((currentPlayers) =>

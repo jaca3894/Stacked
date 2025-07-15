@@ -3,7 +3,7 @@ import {
   getCompletionPercentage,
 } from "../../../utils/FindUnlikedArticle";
 import { getRandomGlossaryTerm } from "../../../utils/GetRandomItem";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import SystemNavigationBar from "react-native-system-navigation-bar";
 import {
@@ -23,15 +23,12 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { Image as Gif } from "expo-image";
 import { getArticlesData } from "../../../classes/Database";
-import {
-  CopilotProvider,
-  CopilotStep,
-  walkthroughable,
-} from "react-native-copilot";
-import { useCopilot } from "react-native-copilot";
+import { CopilotStep, walkthroughable, useCopilot } from "react-native-copilot";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { withCopilotProvider } from "../../../utils/WithCopilotProvider";
 import { useLanguage } from "../../../hooks/useLanguage";
+import Player from "../../../classes/Player";
+import BlackjackPlayer from "../../../classes/BlackjackPlayer";
 
 const screenWidth = Math.round(Dimensions.get("window").width);
 
@@ -42,7 +39,7 @@ const HomeScreen = () => {
   const { language } = useLanguage();
   const [loading, setLoading] = useState(true);
   const navigator = useNavigation();
-  const [hasLastGame, setHasLastGame] = useState(true);
+  const [hasLastGame, setHasLastGame] = useState(false);
   const loaderTime = 1000;
   type GlossaryEntry = { term: string; definition: string };
 
@@ -60,6 +57,38 @@ const HomeScreen = () => {
     };
     fetchTerm();
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchLastGame = async () => {
+        try {
+          const lastPokerGame = await AsyncStorage.getItem("@pokerGameSave");
+          const lastBlackjackGame = await AsyncStorage.getItem("@blackjackGameSave");
+          let lastPokerGameDate = 0, lastBlackjackGameDate = 0;
+
+          if(lastPokerGame)
+            lastPokerGameDate = JSON.parse(lastPokerGame).date;
+          if(lastBlackjackGame)
+            lastBlackjackGameDate = JSON.parse(lastBlackjackGame).date;
+
+          const gameType = lastPokerGameDate > lastBlackjackGameDate ? 'Poker' : 'Blackjack';
+          const lastGameJSON = gameType == 'Poker' ? lastPokerGame : lastBlackjackGame;
+          if(typeof lastGameJSON == 'string') {
+            const players = JSON.parse(lastGameJSON).players;
+            setLastGame({gameType, players});
+            if(players.length > 0)
+              setHasLastGame(true);
+          }
+        }
+        catch(err) {
+          console.error(err);
+        }
+      }
+      fetchLastGame();
+
+    }, [])
+  );
+
   // const percentage = getCompletionPercentage(articlesData);
   // console.log("Percent: " + percentage);
   // console.log(term);
@@ -117,16 +146,11 @@ const HomeScreen = () => {
     }, [start])
   );
 
-  const players = [
-    { name: "Kon", score: 5200 },
-    { name: "Jaca", score: 5100 },
-    { name: "Qczer", score: 5000 },
-    { name: "Burkard", score: 3750 },
-    { name: "Fran", score: 2590 },
-    { name: "Fryc", score: 1600 },
-    { name: "Lukasz", score: 700 },
-    { name: "Seweryn", score: 300 },
-  ];
+  const [lastGame, setLastGame] = useState<any>({});
+
+  const players = lastGame?.players
+    ?.map((player: ( Player | BlackjackPlayer)) => ({ name: player.name, balance: player.balance }))
+    .sort((a: any, b: any) => b.balance - a.balance);
   const [article, setArticle] = useState<any>(null);
   const [percentage, setPercentage] = useState<any>(null);
 
@@ -216,21 +240,21 @@ const HomeScreen = () => {
                 <View style={styles.gameHeader}>
                   <Text style={styles.gameTitle}>
                     {language === "pl"
-                      ? "♠ Kontynuuj ostatnią grę"
-                      : "♠ Continue Last Game"}
+                      ? `♠ Kontynuuj ostatnią grę: ${lastGame.gameType}`
+                      : `♠ Continue Last Game: ${lastGame.gameType}`}
                   </Text>
                 </View>
                 {hasLastGame && (
                   <>
-                    {players.map((player, index) => (
+                    {players?.map((player: (Player | BlackjackPlayer), index: number) => (
                       <View key={player.name} style={styles.playerRow}>
                         <Text style={styles.playerIndex}>{index + 1}.</Text>
                         <Text style={styles.playerName}>{player.name}</Text>
-                        <Text style={styles.playerScore}>{player.score}</Text>
+                        <Text style={styles.playerScore}>{player.balance}</Text>
                       </View>
                     ))}
 
-                    <TouchableOpacity style={styles.resumeButton}>
+                    <TouchableOpacity style={styles.resumeButton} onPress={() => {(navigator as any).navigate(lastGame.gameType == 'Poker' ? "PokerGame" : "BlackjackGame", { playersCount: lastGame.players.length, loadGame: true})}}>
                       <Ionicons name="play" size={16} color="#1c1c1c" />
                       <Text style={styles.resumeText}>
                         {language === "pl" ? "Wznów" : "Resume"}

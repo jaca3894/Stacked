@@ -73,7 +73,6 @@ const ArticleScreen = () => {
   const route = useRoute<ArticleScreenProp>();
   const { articleId } = route.params;
 
-  console.log(articleId + " article");
   const [liked, setLiked] = useState<boolean>(false); // początkowo false
   const heartRef = useRef<Animatable.View>(null);
 
