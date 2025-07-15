@@ -1,10 +1,12 @@
 import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
+import { useLanguage } from "../../hooks/useLanguage";
 
 const SavesScreen = () => {
   const navigation = useNavigation();
   const [savesAmount, setSavesAmount] = useState(0);
+  const { language } = useLanguage();
   return (
     <View style={{ flex: 1, backgroundColor: "#1c1c1c", position: "relative" }}>
       <TouchableOpacity
@@ -64,7 +66,7 @@ const SavesScreen = () => {
               fontSize: 16,
             }}
           >
-            No saved games.
+            {language === "pl" ? "Brak zapisanych gier." : "No saved games."}
           </Text>
         </View>
       )}

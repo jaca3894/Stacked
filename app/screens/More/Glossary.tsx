@@ -15,6 +15,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { getGlossaryData } from "../../../classes/Database";
 import * as Animatable from "react-native-animatable";
 import { useNavigation } from "@react-navigation/native";
+import { useLanguage } from "../../../hooks/useLanguage";
 
 const screenHeight = Dimensions.get("screen").height;
 
@@ -29,6 +30,7 @@ type GlossaryGroup = {
 };
 
 const GlossaryScreen = () => {
+  const { language } = useLanguage();
   const [search, setSearch] = useState("");
   const [collapsedSections, setCollapsedSections] = useState<string[]>([]);
   const [glossaryData, setGlossaryData] = useState<GlossaryGroup[] | null>(
@@ -126,7 +128,9 @@ const GlossaryScreen = () => {
         <TextInput
           value={search}
           onChangeText={handleSearch}
-          placeholder="Search terms..."
+          placeholder={
+            language === "pl" ? "Szukaj pojęć..." : "Search terms..."
+          }
           placeholderTextColor="#777"
           style={styles.searchInput}
         />
@@ -145,7 +149,7 @@ const GlossaryScreen = () => {
                 </View>
               ))
             ) : (
-              <Text style={styles.noResults}>No results found.</Text>
+              <Text style={styles.noResults}>{"Brak wyników."}</Text>
             )
           ) : (
             glossaryData!.map((section) => {

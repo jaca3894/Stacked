@@ -1,3 +1,4 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useState, useRef } from "react";
 import {
   View,
@@ -13,10 +14,15 @@ interface BetInputProps {
   max: number;
   onConfirm: (amount: number) => void;
 }
-
-const BetInput: React.FC<BetInputProps> = ({ min, max, onConfirm }) => {
-  const [value, setValue] = useState(() => Math.max(min ?? 1, Math.min(10, max)));
-
+const getLanguage = async (): Promise<"pl" | "eng"> => {
+  const lang = await AsyncStorage.getItem("@language");
+  return lang === "pl" || lang === "eng" ? lang : "eng";
+};
+const BetInput: React.FC<BetInputProps> = async ({ min, max, onConfirm }) => {
+  const [value, setValue] = useState(() =>
+    Math.max(min ?? 1, Math.min(10, max))
+  );
+  const language = await getLanguage();
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const startHolding = (fn: () => void) => {
@@ -45,7 +51,9 @@ const BetInput: React.FC<BetInputProps> = ({ min, max, onConfirm }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Choose your bet:</Text>
+      <Text style={styles.label}>
+        {language === "pl" ? "Wybierz stawkę:" : "Choose your bet:"}
+      </Text>
       <View style={styles.stepperRow}>
         <TouchableOpacity
           onPressIn={() => startHolding(decrease)}
@@ -78,7 +86,13 @@ const BetInput: React.FC<BetInputProps> = ({ min, max, onConfirm }) => {
               borderRadius: 10,
             }}
           >
-            {value < 1 ? "Insufficient chips" : "Confirm bet"}
+            {value < 1
+              ? language === "pl"
+                ? "Zbyt mało żetonów"
+                : "Insufficient chips"
+              : language === "pl"
+              ? "Potwierdź zakład"
+              : "Confirm bet"}
           </Text>
         </Pressable>
       </View>

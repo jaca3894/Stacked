@@ -17,6 +17,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import HelpPopover from "../../components/HelpPopover";
 import * as ScreenOrientation from "expo-screen-orientation";
 import * as Animatable from "react-native-animatable";
+import { useLanguage } from "../../hooks/useLanguage";
 
 const CreateBlackjack = () => {
   useEffect(() => {
@@ -58,6 +59,8 @@ const CreateBlackjack = () => {
   const balanceRef = useRef<any>(null);
   const navigation = useNavigation<any>();
 
+  const { language } = useLanguage();
+
   const finalPlayersAmount =
     playersAmount === "" ? 2 : parseInt(playersAmount, 10);
 
@@ -65,8 +68,11 @@ const CreateBlackjack = () => {
     if (!mode) {
       Toast.show({
         type: "error",
-        text1: "Select a game mode",
-        text2: "Please choose Training or Table Tracking first.",
+        text1: language === "pl" ? "Wybierz tryb gry" : "Select a game mode",
+        text2:
+          language === "pl"
+            ? "Wybierz Trening lub Śledzenie stołu."
+            : "Please choose Training or Table Tracking first.",
         position: "top",
         text1Style: {
           fontSize: 20,
@@ -98,10 +104,17 @@ const CreateBlackjack = () => {
     } else {
       Toast.show({
         type: "error",
-        text1: "Invalid game parameters",
+        text1:
+          language === "pl"
+            ? "Nieprawidłowe parametry gry"
+            : "Invalid game parameters",
         text2:
           mode === "training"
-            ? "Balance must be at least 100"
+            ? language === "pl"
+              ? "Saldo gracza musi wynosić co najmniej 100."
+              : "Balance must be at least 100"
+            : language === "pl"
+            ? "Wpisz poprawną ilośc graczy lub saldo."
             : "Insert correct players and balance value.",
         position: "top",
         text1Style: {
@@ -134,7 +147,9 @@ const CreateBlackjack = () => {
               style={styles.backIcon}
             />
           </TouchableOpacity>
-          <Text style={styles.headerText}>Blackjack setup</Text>
+          <Text style={styles.headerText}>
+            {language === "pl" ? "Konfiguracja blackjacka" : "Blackjack setup"}
+          </Text>
         </Animatable.View>
 
         {/* CONTENT */}
@@ -149,7 +164,9 @@ const CreateBlackjack = () => {
             delay={100}
           >
             <View style={styles.titleRow}>
-              <Text style={styles.title}>Balance</Text>
+              <Text style={styles.title}>
+                {language === "pl" ? "Saldo" : "Balance"}
+              </Text>
               <TouchableOpacity
                 ref={balanceRef}
                 onPress={() => setShowBalanceTip(true)}
@@ -163,7 +180,11 @@ const CreateBlackjack = () => {
               isVisible={showBalanceTip}
               from={balanceRef}
               onRequestClose={() => setShowBalanceTip(false)}
-              text="Initial money per player"
+              text={
+                language === "pl"
+                  ? "Początkowa ilość żetonów każdego gracza"
+                  : "Initial money per player"
+              }
             />
             <TextInput
               style={styles.input}
@@ -203,7 +224,11 @@ const CreateBlackjack = () => {
                 size={20}
                 color="#cbbb9c"
               />
-              <Text style={styles.radioLabel}>Table tracking mode</Text>
+              <Text style={styles.radioLabel}>
+                {language === "pl"
+                  ? "Tryb śledzenia stołu"
+                  : "Table tracking mode"}
+              </Text>
               <TouchableOpacity
                 ref={trackingRef}
                 onPress={() => setShowTrackingTip(true)}
@@ -216,7 +241,11 @@ const CreateBlackjack = () => {
                 isVisible={showTrackingTip}
                 from={trackingRef}
                 onRequestClose={() => setShowTrackingTip(false)}
-                text="Track win/loss and chip flow at the table."
+                text={
+                  language === "pl"
+                    ? "Śledź wygrane/przegrane i przepływ żetonów na stole"
+                    : "Track win/loss and chip flow at the table."
+                }
               />
             </TouchableOpacity>
 
@@ -235,7 +264,9 @@ const CreateBlackjack = () => {
                 size={20}
                 color="#cbbb9c"
               />
-              <Text style={styles.radioLabel}>Training mode</Text>
+              <Text style={styles.radioLabel}>
+                {language === "pl" ? "Tryb treningowy" : "Training mode"}
+              </Text>
               <TouchableOpacity
                 ref={trainingRef}
                 onPress={() => setShowTrainingTip(true)}
@@ -248,7 +279,11 @@ const CreateBlackjack = () => {
                 isVisible={showTrainingTip}
                 from={trainingRef}
                 onRequestClose={() => setShowTrainingTip(false)}
-                text="Perfect for learning blackjack basics."
+                text={
+                  language === "pl"
+                    ? "Idealny do nauki podstaw blackjacka."
+                    : "Perfect for learning blackjack basics."
+                }
               />
             </TouchableOpacity>
           </Animatable.View>
@@ -260,7 +295,9 @@ const CreateBlackjack = () => {
               delay={300}
             >
               <View style={styles.titleRow}>
-                <Text style={styles.title}>Players</Text>
+                <Text style={styles.title}>
+                  {language === "pl" ? "Gracze" : "Players"}
+                </Text>
               </View>
               <TextInput
                 style={styles.input}
@@ -291,7 +328,11 @@ const CreateBlackjack = () => {
                 delay={initialRadioState ? 400 : 0}
               >
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
-                  <Text style={styles.title}>Allow insurance</Text>
+                  <Text style={styles.title}>
+                    {language === "pl"
+                      ? "Zezwól na Insurance"
+                      : "Allow insurance"}
+                  </Text>
                   <TouchableOpacity
                     ref={insuranceRef}
                     onPress={() => setShowInsuranceTip(true)}
@@ -304,7 +345,11 @@ const CreateBlackjack = () => {
                     isVisible={showInsuranceTip}
                     from={insuranceRef}
                     onRequestClose={() => setShowInsuranceTip(false)}
-                    text="Side bet protecting against dealer's blackjack."
+                    text={
+                      language === "pl"
+                        ? "Zakład poboczny chroniący przed blackjackiem krupiera."
+                        : "Side bet protecting against dealer's blackjack."
+                    }
                   />
                 </View>
                 <Switch
@@ -320,7 +365,9 @@ const CreateBlackjack = () => {
                 delay={initialRadioState ? 500 : 0}
               >
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
-                  <Text style={styles.title}>Allow double</Text>
+                  <Text style={styles.title}>
+                    {language === "pl" ? "Zezwól na Double" : "Allow double"}
+                  </Text>
                   <TouchableOpacity
                     ref={doubleRef}
                     onPress={() => setShowDoubleTip(true)}
@@ -333,7 +380,11 @@ const CreateBlackjack = () => {
                     isVisible={showDoubleTip}
                     from={doubleRef}
                     onRequestClose={() => setShowDoubleTip(false)}
-                    text="Double your initial bet and receive one final card."
+                    text={
+                      language === "pl"
+                        ? "Podwój swoją początkową stawkę i otrzymaj jedną ostateczną kartę."
+                        : "Double your initial bet and receive one final card."
+                    }
                   ></HelpPopover>
                 </View>
                 <Switch value={allowDouble} onValueChange={setAllowDouble} />
@@ -346,7 +397,7 @@ const CreateBlackjack = () => {
                 delay={initialRadioState ? 600 : 0}
               >
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
-                  <Text style={styles.title}>Auto-hit on 17</Text>
+                  <Text style={styles.title}>{"Auto-hit przy 17"}</Text>
                   <TouchableOpacity
                     ref={autoHitRef}
                     onPress={() => setShowAutoHitTip(true)}
@@ -359,7 +410,11 @@ const CreateBlackjack = () => {
                     isVisible={showAutoHitTip}
                     from={autoHitRef}
                     onRequestClose={() => setShowAutoHitTip(false)}
-                    text="Automatically draw cards to soft 17 in training games (dealer behavior simulation)."
+                    text={
+                      language === "pl"
+                        ? "Krupier automatycznie dobierze kartę przy soft 17."
+                        : "Dealer will automatically draw cards to soft 17."
+                    }
                   />
                 </View>
                 <Switch value={autoHitOn17} onValueChange={setAutoHitOn17} />
@@ -375,7 +430,9 @@ const CreateBlackjack = () => {
             delay={300}
           >
             <TouchableOpacity onPress={handleStart} style={styles.button}>
-              <Text style={styles.buttonText}>Start Game</Text>
+              <Text style={styles.buttonText}>
+                {language === "pl" ? "Rozpocznij grę" : "Start Game"}
+              </Text>
             </TouchableOpacity>
           </Animatable.View>
         </View>

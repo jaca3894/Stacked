@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { View, Text, StyleSheet, Animated, Image } from "react-native";
 import CardView from "./CardView";
 import Card from "../classes/Card";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface PlayerStatusProps {
   name: string;
@@ -12,7 +13,12 @@ interface PlayerStatusProps {
   isFirstDeal: boolean;
 }
 
-const AnimatedCardBack: React.FC<{ shouldAnimate: boolean }> = ({
+const getLanguage = async (): Promise<"pl" | "eng"> => {
+  const lang = await AsyncStorage.getItem("@language");
+  return lang === "pl" || lang === "eng" ? lang : "eng";
+};
+
+const AnimatedCardBack: React.FC<{ shouldAnimate: boolean }> = async ({
   shouldAnimate,
 }) => {
   const opacity = useRef(new Animated.Value(shouldAnimate ? 0 : 1)).current;
@@ -89,7 +95,7 @@ const AnimatedCard: React.FC<{
   );
 };
 
-const PlayerStatus: React.FC<PlayerStatusProps> = ({
+const PlayerStatus: React.FC<PlayerStatusProps> = async ({
   name,
   balance,
   hand,
@@ -99,6 +105,7 @@ const PlayerStatus: React.FC<PlayerStatusProps> = ({
 }) => {
   const prevHandRef = useRef<Card[]>([]);
 
+  const language = await getLanguage();
   useEffect(() => {
     // Update previous hand on the next tick to keep current `prevHandRef` valid during render
     requestAnimationFrame(() => {
@@ -109,11 +116,17 @@ const PlayerStatus: React.FC<PlayerStatusProps> = ({
   return (
     <View style={styles.wrapper}>
       <Text style={styles.name}>{name}</Text>
-      <Text style={styles.balance}>Balance: {balance}</Text>
+      <Text style={styles.balance}>
+        {language === "pl" ? "Saldo" : "Balance:"} {balance}
+      </Text>
       {!(name === "Dealer" && hideSecondCard) ? (
-        <Text style={styles.points}>Points: {points}</Text>
+        <Text style={styles.points}>
+          {language === "pl" ? "Punkty:" : "Points:"} {points}
+        </Text>
       ) : (
-        <Text style={styles.points}>Points: ???</Text>
+        <Text style={styles.points}>
+          {language === "pl" ? "Punkty: " : "Points: "} ???
+        </Text>
       )}
 
       <View style={styles.hand}>

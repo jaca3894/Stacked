@@ -10,11 +10,8 @@ import {
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { withCopilotProvider } from "../../../utils/WithCopilotProvider";
-import {
-  CopilotStep,
-  walkthroughable,
-  useCopilot
-} from "react-native-copilot";
+import { CopilotStep, walkthroughable, useCopilot } from "react-native-copilot";
+import { useLanguage } from "../../../hooks/useLanguage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const CopilotView = walkthroughable(View);
@@ -25,6 +22,7 @@ const screenHeight = Math.round(Dimensions.get("window").height);
 const PlayScreen = () => {
   const navigation = useNavigation();
   const { start } = useCopilot();
+  const { language } = useLanguage();
 
   const hasStartedTutorial = useRef(false);
 
@@ -67,11 +65,17 @@ const PlayScreen = () => {
         <View style={styles.content}>
           <View style={styles.mainContainer}>
             <Text style={styles.title}>
-              What do you want to{"\n"}track today?
+              {language === "pl"
+                ? "Czym chcesz dziś się zająć?"
+                : "What do you want to\ntrack today?"}
             </Text>
             <CopilotStep
               order={1}
-              text="There it is, the heart of our app. Table tracking for Poker (Blackjack has one too). Check this out!"
+              text={
+                language === "pl"
+                  ? "Oto serce naszej aplikacji - śledzenie stołu dla pokera i blackjacka. Sprawdź to!"
+                  : "There it is, the heart of our app. Table tracking for poker and blackjack. Check this out!"
+              }
               name="dealerHeart"
             >
               <CopilotView>
@@ -94,7 +98,11 @@ const PlayScreen = () => {
             <CopilotStep
               order={2}
               name="dealerExplain"
-              text="Additionally, besides tracking for Blackjack, You can play basic game with me as a Dealer."
+              text={
+                language === "pl"
+                  ? "Dodatkowo, poza śledzeniem stołu, możesz również zagrać zwykłą grę w blackjacka ze mną jako krupierem!"
+                  : "Additionally, besides tracking for Blackjack, You can play basic game with me as a Dealer."
+              }
             >
               <CopilotView>
                 <TouchableHighlight

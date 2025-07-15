@@ -9,10 +9,12 @@ import { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { View } from "react-native-animatable";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { useLanguage } from "../../../hooks/useLanguage";
 
 const FeedbackScreen = () => {
   const navigation = useNavigation();
   const [showContent, setShowContent] = useState(false);
+  const { language } = useLanguage();
 
   useEffect(() => {
     Linking.openURL("https://www.google.com/");
@@ -52,9 +54,15 @@ const FeedbackScreen = () => {
               source={require("../../../assets/dealer/dealerThanks.png")}
               style={styles.image}
             />
-            <Text style={styles.title}>Thank you for your feedback!</Text>
+            <Text style={styles.title}>
+              {language === "pl"
+                ? "Dziękujemy za Twoją opinię!"
+                : "Thank you for your feedback!"}
+            </Text>
             <Text style={styles.subtitle}>
-              Your opinion helps us improve the app and make it even better.
+              {language === "pl"
+                ? "Pomoże nam ona poprawić naszą aplikację i uczynić ją jeszcze lepszą!"
+                : "Your opinion helps us improve the app and make it even better."}
             </Text>
           </View>
         )}

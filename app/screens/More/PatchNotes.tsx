@@ -13,11 +13,12 @@ import { getPatchNotesData } from "../../../classes/Database"; // dostosuj ście
 import * as Animatable from "react-native-animatable";
 import { useNavigation } from "@react-navigation/native";
 import { useEffect, useState } from "react";
-
+import { useLanguage } from "../../../hooks/useLanguage";
 const screenHeight = Dimensions.get("screen").height;
 
 const PatchNotesScreen = () => {
   const navigation = useNavigation();
+  const { language } = useLanguage();
 
   type PatchNoteEntry = {
     version: string;
@@ -61,7 +62,9 @@ const PatchNotesScreen = () => {
           style={styles.logo}
         />
         <ScrollView contentContainerStyle={styles.content}>
-          <Text style={styles.heading}>📦 Patch Notes</Text>
+          <Text style={styles.heading}>
+            {language === "pl" ? "📦 Lista zmian" : "📦 Patch Notes"}
+          </Text>
           {data.map((note) => (
             <Animatable.View
               animation="fadeIn"
@@ -70,7 +73,7 @@ const PatchNotesScreen = () => {
               style={styles.noteBlock}
             >
               <Text style={styles.version}>
-                Version {note.version}{" "}
+                {language === "pl" ? "Wersja" : "Version"} {note.version}{" "}
                 <Text style={styles.date}>{note.date}</Text>
               </Text>
 

@@ -18,12 +18,14 @@ import { useEffect, useRef, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { withCopilotProvider } from "../../../utils/WithCopilotProvider";
 import React from "react";
+import { useLanguage } from "../../../hooks/useLanguage";
 
 const screenHeight = Math.round(Dimensions.get("window").height);
 const CopilotView = walkthroughable(SafeAreaView);
 
 const AcademyScreen = () => {
   const navigation = useNavigation<any>();
+  const { language } = useLanguage();
   // let globalIndex = useRef(0).current;
 
   const { start } = useCopilot();
@@ -80,7 +82,11 @@ const AcademyScreen = () => {
       <CopilotStep
         order={1}
         name="dealerLike"
-        text="Here You can read articles about various topics. Leave a like on it if You enjoyed one!"
+        text={
+          language === "pl"
+            ? "Tutaj możesz przeczytać artykuły z różnych kategorii. Zostaw polubienie na nich jeśli któryś ci się spodobał!"
+            : "Here You can read articles about various topics. Leave a like on it if You enjoyed one!"
+        }
       >
         <CopilotView style={styles.header}>
           <Image

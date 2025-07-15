@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { Modal, StyleSheet, View, Text, Image } from 'react-native';
-import * as NavigationBar from 'expo-navigation-bar';
+import React, { useEffect, useState } from "react";
+import { Modal, StyleSheet, View, Text, Image } from "react-native";
+import * as NavigationBar from "expo-navigation-bar";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -8,7 +8,8 @@ import Animated, {
   withTiming,
   withRepeat,
   withDelay,
-} from 'react-native-reanimated';
+} from "react-native-reanimated";
+import { useLanguage } from "../../hooks/useLanguage";
 
 const Dot = ({ delay }: { delay: number }) => {
   const scale = useSharedValue(1);
@@ -38,8 +39,12 @@ type LoadingPanelProps = {
 };
 
 const LoadingPanel = ({ visible }: LoadingPanelProps) => {
+  const { language } = useLanguage();
   const [messageIndex, setMessageIndex] = useState(0);
-  const messages = ['You are nearly there...', 'One more sec..'];
+  const messages = [
+    language === "pl" ? "Już prawie..." : "You are nearly there...",
+    "One more sec..",
+  ];
 
   useEffect(() => {
     if (visible) {
@@ -53,10 +58,15 @@ const LoadingPanel = ({ visible }: LoadingPanelProps) => {
   }, [visible]);
 
   return (
-    <Modal animationType="fade" transparent visible={visible} statusBarTranslucent>
+    <Modal
+      animationType="fade"
+      transparent
+      visible={visible}
+      statusBarTranslucent
+    >
       <View style={styles.overlay}>
         <Image
-          source={require('../../assets/icons/logo.png')} // 🖼️ Upewnij się, że ta ścieżka prowadzi do Twojego logo
+          source={require("../../assets/icons/logo.png")} // 🖼️ Upewnij się, że ta ścieżka prowadzi do Twojego logo
           style={styles.logo}
           resizeMode="contain"
         />
@@ -74,9 +84,9 @@ const LoadingPanel = ({ visible }: LoadingPanelProps) => {
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: '#000',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#000",
+    justifyContent: "center",
+    alignItems: "center",
   },
   logo: {
     width: 120,
@@ -84,22 +94,22 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   message: {
-    color: 'white',
+    color: "white",
     fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontWeight: "bold",
+    textAlign: "center",
     marginBottom: 16,
     paddingBottom: 20,
   },
   dotRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 12,
   },
   dot: {
     width: 12,
     height: 12,
     borderRadius: 6,
-    backgroundColor: '#ccbb9c',
+    backgroundColor: "#ccbb9c",
   },
 });
 

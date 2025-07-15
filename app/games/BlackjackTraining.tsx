@@ -1,10 +1,5 @@
 import React, { useEffect, useReducer, useRef, useState } from "react";
-import {
-  StyleSheet,
-  View,
-  Image,
-  Platform,
-} from "react-native";
+import { StyleSheet, View, Image, Platform } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import * as ScreenOrientation from "expo-screen-orientation";
@@ -21,12 +16,14 @@ import Toast from "react-native-toast-message";
 import toastConfig from "../../config/ToastConfig";
 import * as NavigationBar from "expo-navigation-bar";
 import BlackjackWinModal from "../panels/BlackjackWinModal";
+import { useLanguage } from "../../hooks/useLanguage";
 
 type GameRouteProp = RouteProp<RootStackParamList, "BlackjackTraining">;
 
 const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
 const BlackjackTraining = () => {
+  const { language, setLanguage } = useLanguage();
   const route = useRoute<GameRouteProp>();
   const {
     initialBalance,
@@ -36,10 +33,13 @@ const BlackjackTraining = () => {
   } = route.params;
 
   const player = useRef<BlackjackPlayer>(
-    new BlackjackPlayer("Player", initialBalance)
+    new BlackjackPlayer(language === "pl" ? "Gracz" : "Player", initialBalance)
   );
   const dealer = useRef<BlackjackPlayer>(
-    new BlackjackPlayer("Dealer", initialBalance * 10)
+    new BlackjackPlayer(
+      language === "pl" ? "Krupier" : "Dealer",
+      initialBalance * 10
+    )
   );
 
   const deck = useRef<Deck>(new Deck());
@@ -106,18 +106,18 @@ const BlackjackTraining = () => {
   };
 
   const handleHit = async (_player: string) => {
-    let playerObj = _player === "Dealer" ? dealer : player;
+    let playerObj =
+      _player === (language === "pl" ? "Krupier" : "Dealer") ? dealer : player;
     playerObj.current.addCard(deck.current.draw()!);
     console.log(`Hand value: ${checkHandValue(player)}`);
 
     const value = checkHandValue(player);
-    if (value > 21)
-      handleBust(_player);
+    if (value > 21) handleBust(_player);
     else if (value === 21) {
       Toast.show({
         type: "info",
-        text1: "You hit 21!",
-        text2: "Dealer’s turn!",
+        text1: language === "pl" ? "Trafiłeś 21!" : "You hit 21!",
+        text2: language === "pl" ? "Tura krupiera!" : "Dealer's turn!",
       });
       setPlayerMoveFinished(true);
       handleDealerAI();
@@ -130,7 +130,7 @@ const BlackjackTraining = () => {
   };
 
   const handleBust = (_player: string) => {
-    if (_player != "Dealer") {
+    if (_player != (language === "pl" ? "Krupier" : "Dealer")) {
       setPlayerMoveFinished(true);
       // kasa juz jest u dealera wiec nie trzeba mu dawac
       // dealer.current.give(
@@ -139,16 +139,16 @@ const BlackjackTraining = () => {
       console.log("you busted");
       Toast.show({
         type: "error",
-        text1: "You busted! 💔🥀",
+        text1:
+          language === "pl" ? "Przekroczyłeś 21! 💔🥀" : "You busted! 💔🥀",
         text2: `-${player.current.currentBet - player.current.insuranceBet}`,
       });
       setStarted(false);
-    } 
-    else {
+    } else {
       console.log("dealer busted");
       Toast.show({
         type: "success",
-        text1: "You win! 🤑",
+        text1: language === "pl" ? "Wygrałeś! 🤑" : "You win! 🤑",
         text2: `+${player.current.currentBet}`,
       });
       console.log(`player: ${player.current.name}`);
@@ -173,7 +173,7 @@ const BlackjackTraining = () => {
         handleBust("Dealer");
         Toast.show({
           type: "success",
-          text1: "You win! 🤑",
+          text1: language === "pl" ? "Wygrałeś 🤑" : "You win! 🤑",
           text2: `+${player.current.currentBet}`,
         });
         return;
@@ -216,8 +216,11 @@ const BlackjackTraining = () => {
       dealer.current.take(bet);
       Toast.show({
         type: "info",
-        text1: "Push 🤝",
-        text2: "Your bet has been returned",
+        text1: language === "pl" ? "Remis 🤝" : "Push 🤝",
+        text2:
+          language === "pl"
+            ? "Twój zakład został zwrócony."
+            : "Your bet has been returned",
       });
     } else if (playerValue > dealerValue) {
       console.log("player won");
@@ -225,8 +228,14 @@ const BlackjackTraining = () => {
         await sleep(600);
         Toast.show({
           type: "error",
-          text1: "Dealer can't pay 😱",
-          text2: "You've bankrupted the house!",
+          text1:
+            language === "pl"
+              ? "Krupier nie może wypłacić 😱"
+              : "Dealer can't pay 😱",
+          text2:
+            language === "pl"
+              ? "Zbankrutowałeś krupiera!"
+              : "You've bankrupted the house!",
         });
         return;
       }
@@ -238,7 +247,7 @@ const BlackjackTraining = () => {
       await sleep(600);
       Toast.show({
         type: "success",
-        text1: "You win! 🤑",
+        text1: language === "pl" ? "Wygrałeś! 🤑" : "You win! 🤑",
         text2: `+${bet}`,
       });
     } else {
@@ -246,7 +255,7 @@ const BlackjackTraining = () => {
       await sleep(600);
       Toast.show({
         type: "error",
-        text1: "Dealer wins 💔🥀",
+        text1: language === "pl" ? "Krupier wygrywa 💔🥀" : "Dealer wins 💔🥀",
         text2: `-${bet}`,
       });
     }
@@ -290,7 +299,10 @@ const BlackjackTraining = () => {
     if (value > 21) {
       Toast.show({
         type: "error",
-        text1: "You busted on double! 💔",
+        text1:
+          language === "pl"
+            ? "Przekroczyłeś 21 na double! 💔🥀"
+            : "You busted on double! 💔",
         text2: `-${bet}`,
       });
       setPlayerMoveFinished(true);
@@ -310,8 +322,11 @@ const BlackjackTraining = () => {
     if (player.current.balance < insuranceBet) {
       Toast.show({
         type: "error",
-        text1: "Sorry! 😭",
-        text2: "Not enough chips to insure.",
+        text1: language === "pl" ? "Przepraszamy! 😭" : "Sorry! 😭",
+        text2:
+          language === "pl"
+            ? "Zbyt mało żetonów na ubezpieczenie."
+            : "Not enough chips to insure.",
       });
       return;
     }
@@ -339,8 +354,14 @@ const BlackjackTraining = () => {
       dealer.current.take(insuranceBet * 3);
       Toast.show({
         type: "success",
-        text1: "Dealer has Blackjack!",
-        text2: "Insurance paid off 💰",
+        text1:
+          language === "pl"
+            ? "Krupier ma Blackjacka!"
+            : "Dealer has Blackjack!",
+        text2:
+          language === "pl"
+            ? "Ubezpieczenie się opłaciło! 💰"
+            : "Insurance paid off 💰",
       });
 
       // Główna stawka: gracz ją już utracił przy licytacji,
@@ -351,8 +372,14 @@ const BlackjackTraining = () => {
     } else {
       Toast.show({
         type: "info",
-        text2: "Dealer doesn’t have Blackjack",
-        text1: "Insurance lost 😬",
+        text2:
+          language === "pl"
+            ? "Krupier nie ma Blackjacka."
+            : "Dealer doesn't have Blackjack",
+        text1:
+          language === "pl"
+            ? "Ubezpieczenie nietrafione 😬"
+            : "Insurance lost 😬",
       });
       // Gra toczy się dalej, gracz może hit/stand/double…
     }
@@ -406,7 +433,7 @@ const BlackjackTraining = () => {
             {/* Lewa kolumna — PlayerStatus */}
             <View style={styles.tableSide}>
               <PlayerStatus
-                name="You"
+                name={language === "pl" ? "Ty" : "You"}
                 balance={player.current.balance}
                 hand={player.current.hand}
                 points={player.current.getHandValue().join(" / ")}
@@ -425,8 +452,14 @@ const BlackjackTraining = () => {
                     if (dealer.current.balance < amount * 2.5) {
                       Toast.show({
                         type: "error",
-                        text1: "Dealer can't cover this bet 💸",
-                        text2: "Lower your stake or let them recover!",
+                        text1:
+                          language === "pl"
+                            ? "Krupier nie potrafi wypłacić tego zakładu 💸"
+                            : "Dealer can't cover this bet 💸",
+                        text2:
+                          language === "pl"
+                            ? "Zmniejsz stawkę lub zrestartuj stół."
+                            : "Lower your stake or reset table.",
                       });
                       return;
                     }
@@ -434,8 +467,14 @@ const BlackjackTraining = () => {
                       setStarted(false);
                       Toast.show({
                         type: "success",
-                        text1: "You've cleaned out the dealer! 🎉",
-                        text2: "No more chips in the house.",
+                        text1:
+                          language === "pl"
+                            ? "Ograłeś krupiera do zera! 🎉"
+                            : "You've cleaned out the dealer! 🎉",
+                        text2:
+                          language === "pl"
+                            ? "Krupier nie ma już żetonów."
+                            : "No more chips in the house.",
                       });
                       return;
                     }
@@ -449,7 +488,9 @@ const BlackjackTraining = () => {
               ) : (
                 !playerMoveFinished && (
                   <ActionBar
-                    onHit={() => handleHit("Player")}
+                    onHit={() =>
+                      handleHit(language === "pl" ? "Gracz" : "Player")
+                    }
                     onStand={handleStand}
                     onDouble={handleDouble}
                     onInsurance={handleInsurance}
@@ -469,7 +510,7 @@ const BlackjackTraining = () => {
             {/* Prawa kolumna — DealerStatus */}
             <View style={styles.tableSide}>
               <PlayerStatus
-                name="Dealer"
+                name={language === "pl" ? "Krupier" : "Dealer"}
                 balance={dealer.current.balance}
                 hand={dealer.current.hand}
                 points={dealer.current.getHandValue().join(" / ")}

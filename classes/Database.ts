@@ -5,6 +5,37 @@ const getLanguage = async (): Promise<"pl" | "eng"> => {
   return lang === "pl" || lang === "eng" ? lang : "eng";
 };
 
+export const getWelcomeCardsData = async () => {
+  const lang = await getLanguage();
+
+  return [
+    {
+      title: lang === "pl" ? "Twórz rozgrywki" : "Host games",
+      description:
+        lang === "pl"
+          ? "Masz tylko talię kart? Symuluj planszę grając na wirtualne pieniądze."
+          : "You've got only a deck of cards? Simulate a game board by playing with virtual money.",
+      photoPath: require("../assets/welcome/ss1.png"),
+    },
+    {
+      title: lang === "pl" ? "Poznaj podstawy" : "Learn basics and more",
+      description:
+        lang === "pl"
+          ? "Od zasad gier po efekty karciane - mamy samouczki do wszystkiego."
+          : "We've got tutorials for everything: from game rules to card flourishes.",
+      photoPath: require("../assets/welcome/ss2.png"),
+    },
+    {
+      title: lang === "pl" ? "Sprawdź układ" : "Check your poker hand",
+      description:
+        lang === "pl"
+          ? "Nie wiesz, czy Twoje karty coś znaczą? Skorzystaj z naszego narzędzia."
+          : "Not sure if your cards line up into something? Use our tool to find out.",
+      photoPath: require("../assets/welcome/ss3.png"),
+    },
+  ];
+};
+
 export const getMorePanelsData = async () => {
   const lang = await getLanguage();
 
@@ -765,52 +796,70 @@ export const getGlossaryData = async () => {
   ];
 };
 
-export const creditsData = [
-  {
-    title: "⚖️ About Visual Content Licensing",
-    intro:
-      "All visual materials (images, gifs, and videos) used in this project are either:",
-    items: [
-      "🧠 AI-generated",
-      "🎨 Licensed under Creative Commons (with attribution when required)",
-      "📸 Sourced from platforms like Pixabay under free-use licenses appropriate for educational and non-commercial use",
-    ],
-  },
-  {
-    title: "📺 Media Credits",
-    intro:
-      "We believe in proper attribution. This section contains all media sources. Specific video links are available within the articles where the content appears.",
-    items: [
-      {
-        label: "Josep Vidal",
-        link: "https://www.youtube.com/@JosepVidalMagic",
-        suffix: "'s YouTube Channel.",
-      },
-      {
-        label: "Hester23BearsCH",
-        link: "https://www.youtube.com/@Hester23BearsCHx",
-        suffix: "'s YouTube Channel.",
-      },
-      {
-        label: "Microsoft Copilot",
-        link: "https://copilot.microsoft.com/",
-        suffix: " ",
-      },
-      {
-        label: "Microsoft Designer",
-        link: "https://designer.microsoft.com/",
-        suffix: " ",
-      },
-      {
-        label: "Pixabay",
-        link: "https://pixabay.com/pl/",
-        suffix: " ",
-      },
-    ],
-  },
-  {
-    title: "Acknowledgements",
-    intro: "Special thanks to our developers and betatesters.",
-    // items: ["Our developers", "Our betatesters"],
-  },
-];
+export const getCreditsData = async () => {
+  const lang = await getLanguage();
+
+  return [
+    {
+      title:
+        lang === "pl"
+          ? "⚖️ Licencje wizualne"
+          : "⚖️ About Visual Content Licensing",
+      intro:
+        lang === "pl"
+          ? "Wszystkie materiały wizualne (obrazy, gify, filmy) użyte w projekcie pochodzą z:"
+          : "All visual materials (images, gifs, and videos) used in this project are either:",
+      items: [
+        lang === "pl" ? "🧠 Generowane przez AI" : "🧠 AI-generated",
+        lang === "pl"
+          ? "🎨 Licencjonowane na podstawie Creative Commons (z atrybucją gdy wymagane)"
+          : "🎨 Licensed under Creative Commons (with attribution when required)",
+        lang === "pl"
+          ? "📸 Pozyskane z platform takich jak Pixabay na licencjach darmowych do użytku edukacyjnego i niekomercyjnego"
+          : "📸 Sourced from platforms like Pixabay under free-use licenses appropriate for educational and non-commercial use",
+      ],
+    },
+    {
+      title: lang === "pl" ? "📺 Źródła multimediów" : "📺 Media Credits",
+      intro:
+        lang === "pl"
+          ? "Wierzymy w właściwe przypisywanie autorów. Ta sekcja zawiera źródła multimediów. Konkretne linki do filmów znajdują się w artykułach, w których treść występuje."
+          : "We believe in proper attribution. This section contains all media sources. Specific video links are available within the articles where the content appears.",
+      items: [
+        {
+          label: "Josep Vidal",
+          link: "https://www.youtube.com/@JosepVidalMagic",
+          suffix: lang === "pl" ? " – kanał na YouTube" : "'s YouTube Channel.",
+        },
+        {
+          label: "Hester23BearsCH",
+          link: "https://www.youtube.com/@Hester23BearsCHx",
+          suffix: lang === "pl" ? " – kanał na YouTube" : "'s YouTube Channel.",
+        },
+        {
+          label: "Microsoft Copilot",
+          link: "https://copilot.microsoft.com/",
+          suffix: "",
+        },
+        {
+          label: "Microsoft Designer",
+          link: "https://designer.microsoft.com/",
+          suffix: "",
+        },
+        {
+          label: "Pixabay",
+          link: "https://pixabay.com/pl/",
+          suffix: "",
+        },
+      ],
+    },
+    {
+      title: lang === "pl" ? "Podziękowania" : "Acknowledgements",
+      intro:
+        lang === "pl"
+          ? "Specjalne podziękowania dla naszych developerów i testerów."
+          : "Special thanks to our developers and beta testers.",
+      items: [],
+    },
+  ];
+};

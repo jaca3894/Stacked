@@ -38,7 +38,7 @@ const SettingsScreen = () => {
       }?`,
       [
         {
-          text: "Cancel",
+          text: language === "pl" ? "Anuluj" : "Cancel",
           style: "cancel",
           onPress: () => {
             // Cofamy widok do poprzedniego wyboru
@@ -46,7 +46,7 @@ const SettingsScreen = () => {
           },
         },
         {
-          text: "Yes",
+          text: language === "pl" ? "Tak" : "Yes",
           onPress: async () => {
             setLanguage(lang);
             Alert.alert(
@@ -66,25 +66,37 @@ const SettingsScreen = () => {
 
   const replayTutorial = async () => {
     await AsyncStorage.removeItem("@hasSeenHomeTutorial");
-    Alert.alert("Tutorial will replay next time you open app.");
+    Alert.alert(
+      language === "pl"
+        ? "Przewodnik powtórzy się przy następnym otwarciu aplikacji."
+        : "Tutorial will replay next time you open app."
+    );
     // @ts-ignore
     navigation.navigate("Home");
   };
 
   const resetProgress = async () => {
-    Alert.alert("Reset Progress", "Are you sure you want to reset?", [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Reset",
-        style: "destructive",
-        onPress: async () => {
-          const keys = await AsyncStorage.getAllKeys();
-          const articleKeys = keys.filter((k) => k.startsWith("article"));
-          await AsyncStorage.multiRemove(articleKeys);
-          Alert.alert("Progress reset.");
+    Alert.alert(
+      language === "pl" ? "Zresetuj postęp" : "Reset Progress",
+      language === "pl"
+        ? "Czy na pewno chcesz zresetować?"
+        : "Are you sure you want to reset?",
+      [
+        { text: language === "pl" ? "Anuluj" : "Cancel", style: "cancel" },
+        {
+          text: language === "pl" ? "Resetuj" : "Reset",
+          style: "destructive",
+          onPress: async () => {
+            const keys = await AsyncStorage.getAllKeys();
+            const articleKeys = keys.filter((k) => k.startsWith("article"));
+            await AsyncStorage.multiRemove(articleKeys);
+            Alert.alert(
+              language === "pl" ? "Progres zresetowany." : "Progress reset."
+            );
+          },
         },
-      },
-    ]);
+      ]
+    );
   };
 
   return (

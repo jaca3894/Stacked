@@ -15,11 +15,8 @@ import Toast from "react-native-toast-message";
 import toastConfig from "../../../config/ToastConfig";
 import { HandRank, handrank } from "../../../utils/Handrank";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {
-  CopilotStep,
-  walkthroughable,
-  useCopilot
-} from "react-native-copilot";
+import { CopilotStep, walkthroughable, useCopilot } from "react-native-copilot";
+import { useLanguage } from "../../../hooks/useLanguage";
 import { withCopilotProvider } from "../../../utils/WithCopilotProvider";
 
 const CopilotText = walkthroughable(Text);
@@ -110,6 +107,7 @@ const renderCard = (code: string) => {
 
 const CheckHandScreen = () => {
   const { start } = useCopilot();
+  const { language } = useLanguage();
 
   const hasStartedTutorial = useRef(false);
 
@@ -192,7 +190,11 @@ const CheckHandScreen = () => {
   const handleEvaluate = () => {
     const filled = selectedCards.filter((c) => c !== "");
     if (filled.length < 2) {
-      showToast("Pick at least 2 cards.");
+      showToast(
+        language === "pl"
+          ? "Wybierz co najmniej 2 karty."
+          : "Pick at least 2 cards."
+      );
       return;
     }
     const result = handrank(filled);
@@ -227,12 +229,20 @@ const CheckHandScreen = () => {
     const nextSlot = selectedCards.findIndex((c) => c === "");
 
     if (isAlreadySelected) {
-      showToast("This card is already selected.");
+      showToast(
+        language === "pl"
+          ? "Ta karta jest już wybrana."
+          : "This card is already selected."
+      );
       return;
     }
 
     if (nextSlot === -1) {
-      showToast("You can't pick more than 7 cards.");
+      showToast(
+        language === "pl"
+          ? "Nie możesz wybrać więcej niż 7 kart."
+          : "You can't pick more than 7 cards."
+      );
       return;
     }
 
@@ -257,10 +267,16 @@ const CheckHandScreen = () => {
       </SafeAreaView>
       <View style={styles.content}>
         <Text style={styles.buttonText}>
-          Select your cards. See what you've got.
+          {language === "pl"
+            ? "Wybierz karty. Zobacz czy coś z nich będzie."
+            : "Select your cards. See what you've got."}
         </Text>
         <CopilotStep
-          text="There will be your selected cards. Remove them by pressing directly on card."
+          text={
+            language === "pl"
+              ? "Tutaj zobaczysz wybrane karty. Usunąć je możesz poprzez naciśnięcie na konkretne karty."
+              : "There will be your selected cards. Remove them by pressing directly on card."
+          }
           order={2}
           name="dealerThinking"
         >
@@ -287,7 +303,11 @@ const CheckHandScreen = () => {
           }}
         >
           <CopilotStep
-            text="Press 'Submit' to check your hand or 'Reset' to remove your cards."
+            text={
+              language === "pl"
+                ? "Naciśnij 'Sprawdź' aby zobaczyć układ wybranych kart. 'Resetuj' usunie wszystkie wybrane karty."
+                : "Press 'Check' to check your hand or 'Reset' to remove your cards."
+            }
             order={3}
             name="dealerKnows"
           >
@@ -299,16 +319,24 @@ const CheckHandScreen = () => {
               }}
             >
               <TouchableOpacity style={styles.button} onPress={handleEvaluate}>
-                <Text style={styles.buttonText}>Submit</Text>
+                <Text style={styles.buttonText}>
+                  {language === "pl" ? "Sprawdź" : "Check"}
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity style={[styles.button]} onPress={handleReset}>
-                <Text style={styles.buttonText}>Reset</Text>
+                <Text style={styles.buttonText}>
+                  {language === "pl" ? "Resetuj" : "Reset"}
+                </Text>
               </TouchableOpacity>
             </CopilotView>
           </CopilotStep>
         </View>
         <CopilotStep
-          text="Here you can pick cards by pressing on them. Need card from different suit? Switch the tabs above."
+          text={
+            language === "pl"
+              ? "Wybierz karty poprzez naciśnięcie na nie. Potrzebujesz karty z innego koloru? Zmień zakładkę powyżej."
+              : "Here you can pick cards by pressing on them. Need card from different suit? Switch the tabs above."
+          }
           order={1}
           name="check1"
         >
@@ -480,10 +508,11 @@ const CheckHandScreen = () => {
                     fontWeight: "bold",
                   }}
                 >
-                  {evaluatedHand.handType}
+                  {evaluatedHand.handType[language]}
                 </Text>
                 <Text style={{ fontSize: 14, color: "#ccc" }}>
-                  Hand strength value: {evaluatedHand.value}
+                  {language === "pl" ? "Siła układu:" : "Hand strength value:"}{" "}
+                  {evaluatedHand.value}
                 </Text>
               </>
             )}

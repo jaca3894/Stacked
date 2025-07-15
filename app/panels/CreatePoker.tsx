@@ -16,8 +16,10 @@ import toastConfig from "../../config/ToastConfig";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import HelpPopover from "../../components/HelpPopover";
 import * as Animatable from "react-native-animatable";
+import { useLanguage } from "../../hooks/useLanguage";
 
 const CreatePoker = () => {
+  const { language } = useLanguage();
   const [playersAmount, setPlayersAmount] = useState("");
   const [initialBalance, setInitialBalance] = useState("");
   const [selectedBigBlind, setSelectedBigBlind] = useState<number | null>(null);
@@ -51,8 +53,14 @@ const CreatePoker = () => {
     else {
       Toast.show({
         type: "error",
-        text1: "Invalid game parameters",
-        text2: "Players ≥ 2\t Balance ≥ 100",
+        text1:
+          language === "pl"
+            ? "Nieprawidłowe parametry gry"
+            : "Invalid game parameters",
+        text2:
+          language === "pl"
+            ? "Gracze ≥ 2\t Saldo ≥ 100"
+            : "Players ≥ 2\t Balance ≥ 100",
         position: "top",
         text1Style: {
           fontSize: 20,
@@ -80,7 +88,9 @@ const CreatePoker = () => {
               style={styles.backIcon}
             />
           </TouchableOpacity>
-          <Text style={styles.headerText}>Table setup</Text>
+          <Text style={styles.headerText}>
+            {language === "pl" ? "Konfiguracja pokera" : "Poker setup"}
+          </Text>
         </View>
 
         {/* CONTENT */}
@@ -93,7 +103,9 @@ const CreatePoker = () => {
             delay={100}
           >
             <View style={styles.titleRow}>
-              <Text style={styles.title}>Players</Text>
+              <Text style={styles.title}>
+                {language === "pl" ? "Gracze" : "Players"}
+              </Text>
             </View>
             <TextInput
               style={styles.input}
@@ -119,7 +131,9 @@ const CreatePoker = () => {
             delay={200}
           >
             <View style={styles.titleRow}>
-              <Text style={styles.title}>Balance</Text>
+              <Text style={styles.title}>
+                {language === "pl" ? "Saldo" : "Balance"}
+              </Text>
               <TouchableOpacity
                 ref={balanceRef}
                 onPress={() => setShowBalanceTip(true)}
@@ -133,7 +147,11 @@ const CreatePoker = () => {
               isVisible={showBalanceTip}
               from={balanceRef}
               onRequestClose={() => setShowBalanceTip(false)}
-              text="Initial amount of money per player"
+              text={
+                language === "pl"
+                  ? "Początkowa ilość żetonów każdego gracza"
+                  : "Initial amount of money per player"
+              }
             />
             <TextInput
               style={styles.input}
@@ -174,7 +192,11 @@ const CreatePoker = () => {
               isVisible={showBigBlindTip}
               from={bigBlindRef}
               onRequestClose={() => setShowBigBlindTip(false)}
-              text="Mandatory bet from the player left to dealer"
+              text={
+                language === "pl"
+                  ? "Obowiązkowy zakład od gracza po lewej stronie rozdającego"
+                  : "Mandatory bet from the player left to dealer"
+              }
             />
           </Animatable.View>
           <Animatable.View
@@ -218,7 +240,11 @@ const CreatePoker = () => {
               isVisible={showSmallBlindTip}
               from={smallBlindRef}
               onRequestClose={() => setShowSmallBlindTip(false)}
-              text="Smaller forced bet before dealing cards"
+              text={
+                language === "pl"
+                  ? "Obowiązkowy mniejszy zakład przed rozdaniem kart"
+                  : "Smaller forced bet before dealing cards"
+              }
             />
           </Animatable.View>
           <Animatable.View
@@ -250,7 +276,9 @@ const CreatePoker = () => {
             delay={500}
           >
             <TouchableOpacity onPress={handleStart} style={styles.button}>
-              <Text style={styles.buttonText}>Start Game</Text>
+              <Text style={styles.buttonText}>
+                {language === "pl" ? "Rozpocznij grę" : "Start Game"}
+              </Text>
             </TouchableOpacity>
           </Animatable.View>
         </View>

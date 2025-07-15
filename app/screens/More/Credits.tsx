@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -11,7 +11,10 @@ import {
 } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Linking } from "react-native";
-import { creditsData as credits } from "../../../classes/Database";
+import {
+  getCreditsData as credits,
+  getCreditsData,
+} from "../../../classes/Database";
 import * as Animatable from "react-native-animatable";
 import { useNavigation } from "@react-navigation/native";
 
@@ -19,6 +22,32 @@ const screenHeight = Dimensions.get("screen").height;
 
 const CreditsScreen = () => {
   const navigation = useNavigation();
+
+  type SimpleCreditsSection = {
+    title: string;
+    intro: string;
+    items: string[];
+  };
+
+  type LinkedItem = {
+    label: string;
+    link: string;
+    suffix?: string;
+  };
+
+  type LinkedCreditsSection = {
+    title: string;
+    intro: string;
+    items: LinkedItem[];
+  };
+
+  type CreditsSection = SimpleCreditsSection | LinkedCreditsSection;
+
+  const [data, setData] = useState<CreditsSection[]>([]);
+
+  useEffect(() => {
+    getCreditsData().then(setData);
+  }, []);
 
   return (
     <SafeAreaProvider>
@@ -46,7 +75,7 @@ const CreditsScreen = () => {
           style={styles.logo}
         />
         <ScrollView contentContainerStyle={styles.content}>
-          {credits.map((section, index) => (
+          {data.map((section, index) => (
             <Animatable.View
               animation="fadeIn"
               duration={1000}

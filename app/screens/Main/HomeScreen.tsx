@@ -31,6 +31,7 @@ import {
 import { useCopilot } from "react-native-copilot";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { withCopilotProvider } from "../../../utils/WithCopilotProvider";
+import { useLanguage } from "../../../hooks/useLanguage";
 
 const screenWidth = Math.round(Dimensions.get("window").width);
 
@@ -38,6 +39,7 @@ const CopilotView = walkthroughable(View);
 const CopilotText = walkthroughable(Text);
 
 const HomeScreen = () => {
+  const { language } = useLanguage();
   const [loading, setLoading] = useState(true);
   const navigator = useNavigation();
   const [hasLastGame, setHasLastGame] = useState(true);
@@ -83,7 +85,7 @@ const HomeScreen = () => {
     };
     fetchData();
   }, []);
-  const { start, copilotEvents } = useCopilot();
+  const { start } = useCopilot();
 
   const scrollRef = useRef<ScrollView>(null);
   const hasStartedTutorial = useRef(false);
@@ -186,23 +188,37 @@ const HomeScreen = () => {
               />
               <CopilotStep
                 order={1}
-                text="Welcome in Stacked! My name is James and I'll guide you through our app."
+                text={
+                  language === "pl"
+                    ? "Witamy w Stacked! Nazywam się James i przeprowadzę cię przez naszą aplikację."
+                    : "Welcome in Stacked! My name is James and I'll guide you through our app."
+                }
                 name="dealerHello"
               >
                 <CopilotText style={styles.text}>
-                  Hello, betatester!
+                  {language === "pl"
+                    ? "Witaj betatesterze!"
+                    : "Hello betatester!"}
                 </CopilotText>
               </CopilotStep>
             </View>
             {/* Load Saved Game Panel */}
             <CopilotStep
               name="dealerExplain"
-              text="Here you can continue last saved game. Last games are automatically saved."
+              text={
+                language === "pl"
+                  ? "Z tego miejsca możesz kontynuować ostatnią grę. Ostatnie gry są zapisywane automatycznie."
+                  : "Here you can continue last saved game. Last games are automatically saved."
+              }
               order={2}
             >
               <CopilotView style={styles.panel}>
                 <View style={styles.gameHeader}>
-                  <Text style={styles.gameTitle}>♠ Continue Last Game</Text>
+                  <Text style={styles.gameTitle}>
+                    {language === "pl"
+                      ? "♠ Kontynuuj ostatnią grę"
+                      : "♠ Continue Last Game"}
+                  </Text>
                 </View>
                 {hasLastGame && (
                   <>
@@ -216,7 +232,9 @@ const HomeScreen = () => {
 
                     <TouchableOpacity style={styles.resumeButton}>
                       <Ionicons name="play" size={16} color="#1c1c1c" />
-                      <Text style={styles.resumeText}>Resume</Text>
+                      <Text style={styles.resumeText}>
+                        {language === "pl" ? "Wznów" : "Resume"}
+                      </Text>
                     </TouchableOpacity>
                   </>
                 )}
@@ -249,7 +267,9 @@ const HomeScreen = () => {
                         },
                       ]}
                     >
-                      No saved games.
+                      {language === "pl"
+                        ? "Brak zapisanych gier"
+                        : "No saved games."}
                     </Text>
                   </View>
                 )}
@@ -257,7 +277,11 @@ const HomeScreen = () => {
             </CopilotStep>
             <CopilotStep
               name="dealer2"
-              text="This is Your total progress in reading our articles. We count article as read if it's liked."
+              text={
+                language === "pl"
+                  ? "To jest twój całkowity postęp w czytaniu naszych artykułów. Traktujemy artykuł jako przeczytany jeśli jest polubiony."
+                  : "This is Your total progress in reading our articles. We count article as read if it's liked."
+              }
               order={3}
             >
               <CopilotView style={styles.panel}>
@@ -271,7 +295,9 @@ const HomeScreen = () => {
                     margin: 5,
                   }}
                 ></Image>
-                <Text style={styles.panelTitle}>Total progress</Text>
+                <Text style={styles.panelTitle}>
+                  {language === "pl" ? "Postęp nauki" : "Total progress"}
+                </Text>
                 <View style={styles.progressBarContainer}>
                   <View
                     style={[
@@ -281,7 +307,8 @@ const HomeScreen = () => {
                   />
                 </View>
                 <Text style={styles.panelText}>
-                  {`${percentage}%`} complete
+                  {`${percentage}%`}{" "}
+                  {language === "pl" ? "ukończonych artykułów" : "complete"}
                 </Text>
               </CopilotView>
             </CopilotStep>
@@ -289,7 +316,11 @@ const HomeScreen = () => {
             {/* 📝 Lesson Panel */}
 
             <CopilotView style={styles.lessonPanel}>
-              <Text style={styles.panelTitle}>📝 Your next lesson</Text>
+              <Text style={styles.panelTitle}>
+                {language === "pl"
+                  ? "📝 Twoja następna lekcja"
+                  : "📝 Your next lesson"}
+              </Text>
 
               {article != null && (
                 <View style={styles.lessonBody}>
@@ -349,7 +380,9 @@ const HomeScreen = () => {
                       }
                     >
                       <Ionicons name="play" size={16} color="#1c1c1c" />
-                      <Text style={styles.buttonText}>Continue</Text>
+                      <Text style={styles.buttonText}>
+                        {language === "pl" ? "Kontynuuj" : "Continue"}
+                      </Text>
                     </TouchableOpacity>
                   </View>
 
@@ -379,7 +412,9 @@ const HomeScreen = () => {
                       },
                     ]}
                   >
-                    All lessons completed!
+                    {language === "pl"
+                      ? "Wysztkie lekcje ukończone!"
+                      : "All lessons completed!"}
                   </Text>
                   <View
                     style={{
@@ -392,7 +427,9 @@ const HomeScreen = () => {
             </CopilotView>
 
             <View style={styles.panel}>
-              <Text style={styles.panelTitle}>📖 Random Term</Text>
+              <Text style={styles.panelTitle}>
+                {language === "pl" ? "📖 Losowe pojęcie" : "📖 Random Term"}
+              </Text>
               {term ? (
                 <>
                   <Text style={styles.termTitle}>{term.term}</Text>
@@ -405,7 +442,9 @@ const HomeScreen = () => {
 
             {/* ⚡ Quick Links Panel */}
             <CopilotView style={styles.quickLinksPanel}>
-              <Text style={styles.panelTitle}>Quick Access</Text>
+              <Text style={styles.panelTitle}>
+                {language === "pl" ? "Szybki dostęp" : "Quick Access"}
+              </Text>
 
               <View style={styles.quickLinksRow}>
                 <TouchableOpacity
@@ -413,7 +452,9 @@ const HomeScreen = () => {
                   onPress={() => (navigator as any).navigate("Feedback")}
                 >
                   <Ionicons name="chatbubbles" size={20} color="#cbbb93" />
-                  <Text style={styles.quickLinkText}>Feedback</Text>
+                  <Text style={styles.quickLinkText}>
+                    {language === "pl" ? "Opinia" : "Feedback"}
+                  </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -425,7 +466,9 @@ const HomeScreen = () => {
                   }
                 >
                   <Ionicons name="game-controller" size={20} color="#cbbb93" />
-                  <Text style={styles.quickLinkText}>Play</Text>
+                  <Text style={styles.quickLinkText}>
+                    {language === "pl" ? "Graj" : "Play"}
+                  </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -433,7 +476,9 @@ const HomeScreen = () => {
                   onPress={() => (navigator as any).navigate("ReportBug")}
                 >
                   <Ionicons name="bug" size={20} color="#cbbb93" />
-                  <Text style={styles.quickLinkText}>Bug report</Text>
+                  <Text style={styles.quickLinkText}>
+                    {language === "pl" ? "Zgłoś błąd" : "Bug report"}
+                  </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -441,7 +486,9 @@ const HomeScreen = () => {
                   onPress={() => (navigator as any).navigate("Saves")}
                 >
                   <Ionicons name="folder" size={20} color="#cbbb93" />
-                  <Text style={styles.quickLinkText}>Saves</Text>
+                  <Text style={styles.quickLinkText}>
+                    {language === "pl" ? "Zapisy" : "Saves"}
+                  </Text>
                 </TouchableOpacity>
               </View>
             </CopilotView>

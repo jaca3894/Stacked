@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Dimensions,
 } from "react-native";
+import { useLanguage } from "../../hooks/useLanguage";
 
 interface Props {
   visible: boolean;
@@ -16,6 +17,7 @@ interface Props {
 const BlackjackWinModal: React.FC<Props> = ({ visible, onDismiss }) => {
   const opacity = useRef(new Animated.Value(0)).current;
   const scale = useRef(new Animated.Value(0.8)).current;
+  const { language } = useLanguage();
 
   useEffect(() => {
     if (visible) {
@@ -51,7 +53,9 @@ const BlackjackWinModal: React.FC<Props> = ({ visible, onDismiss }) => {
           style={[styles.modal, { opacity, transform: [{ scale }] }]}
         >
           <Text style={styles.title}>Blackjack! 🃏</Text>
-          <Text style={styles.subtitle}>3:2 payout 💰</Text>
+          <Text style={styles.subtitle}>
+            {language === "pl" ? "Wypłata 3:2 💰" : "3:2 payout 💰"}
+          </Text>
         </Animated.View>
       </View>
     </Modal>

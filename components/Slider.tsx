@@ -2,6 +2,12 @@ import React, { useState } from "react";
 import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
 import Slider from "@react-native-community/slider";
 import Svg, { Path } from "react-native-svg";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+const getLanguage = async (): Promise<"pl" | "eng"> => {
+  const lang = await AsyncStorage.getItem("@language");
+  return lang === "pl" || lang === "eng" ? lang : "eng";
+};
 
 type SliderProps = {
   value: number;
@@ -13,7 +19,7 @@ type SliderProps = {
   step?: number;
 };
 
-const CustomSlider = ({
+const CustomSlider = async ({
   value,
   onValueChange,
   onAccept,
@@ -23,6 +29,7 @@ const CustomSlider = ({
   step = 1,
 }: SliderProps) => {
   const [currValue, setCurrValue] = useState(value);
+  const language = await getLanguage();
   return (
     <View style={styles.container}>
       <TouchableHighlight
@@ -39,7 +46,10 @@ const CustomSlider = ({
           />
         </Svg>
       </TouchableHighlight>
-      <Text style={styles.label}>Choose your bet: {currValue}</Text>
+      <Text style={styles.label}>
+        {language === "pl" ? "Wybierz stawkę: " : "Choose your bet:"}{" "}
+        {currValue}
+      </Text>
       <Slider
         style={styles.slider}
         value={value}
@@ -63,7 +73,9 @@ const CustomSlider = ({
           borderRadius: 5,
         }}
       >
-        <Text style={{ color: "#000", textAlign: "center" }}>Zatwierdź</Text>
+        <Text style={{ color: "#000", textAlign: "center" }}>
+          {language === "pl" ? "Zatwierdź" : "Confirm"}
+        </Text>
       </TouchableHighlight>
     </View>
   );

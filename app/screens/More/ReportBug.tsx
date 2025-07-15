@@ -9,11 +9,12 @@ import { useNavigation } from "@react-navigation/native";
 import { View } from "react-native-animatable";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { useEffect, useState } from "react";
+import { useLanguage } from "../../../hooks/useLanguage";
 
 const ReportBugScreen = () => {
   const navigation = useNavigation();
   const [showContent, setShowContent] = useState(false);
-
+  const { language } = useLanguage();
   useEffect(() => {
     Linking.openURL("https://www.google.com/");
 
@@ -42,9 +43,15 @@ const ReportBugScreen = () => {
                 source={require("../../../assets/dealer/dealerThanks.png")}
                 style={styles.image}
               />
-              <Text style={styles.title}>Bug report submitted!</Text>
+              <Text style={styles.title}>
+                {language === "pl"
+                  ? "Zgłoszono błąd!"
+                  : "Bug report submitted!"}
+              </Text>
               <Text style={styles.subtitle}>
-                Thanks for spotting that. Our dev team is on it!
+                {language === "pl"
+                  ? "Dzięki za zwrócenie na to uwagi! Nasz team deweloperów zaraz się tym zajmie!"
+                  : "Thanks for spotting that. Our dev team is on it!"}
               </Text>
             </View>
           </>
