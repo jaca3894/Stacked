@@ -47,6 +47,14 @@ const PlayerButton = ({ isGameStarted, isCurrentPlayer, opacity, disabled, isDea
     },
   };
 
+  function formatNumberSimple(num: number): string {
+    // 1. Pomnóż przez 100, aby przesunąć przecinek o 2 miejsca (123.456 -> 12345.6)
+    // 2. Zaokrąglij do najbliższej liczby całkowitej (12345.6 -> 12346)
+    // 3. Podziel z powrotem przez 100 (12346 -> 123.46)
+    const roundedNumber = Math.round(num * 100) / 100;
+    return roundedNumber.toString();
+  }
+
   return (
     <View style={[styles.buttonContainer, addPositionStyles, { opacity: opacity ?? 1 }]}>
       <TouchableHighlight
@@ -66,7 +74,7 @@ const PlayerButton = ({ isGameStarted, isCurrentPlayer, opacity, disabled, isDea
               <Text style={styles.dealerIconText}>D</Text>
             </View>
           )}
-          <Text style={styles.buttonText} numberOfLines={2} ellipsizeMode="tail">{name ? `${name}\n${balance}` : '+'}</Text>
+          <Text style={styles.buttonText} numberOfLines={2} ellipsizeMode="tail">{name ? `${name}\n${balance ? formatNumberSimple(balance) : 0}` : '+'}</Text>
           {(isGameStarted && showLastAction) && (
             <View style={[styles.blindView, dynamicStyles.blindView]}>
               {lastAction && <Text style={styles.blindText}>{language === "pl" ? lastActionsTranslations[lastAction as keyof typeof lastActionsTranslations] ?? lastAction : lastAction}</Text>}
