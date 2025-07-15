@@ -1,6 +1,20 @@
 import { StyleSheet, TouchableHighlight, Text, useWindowDimensions } from "react-native";
 import { View } from "react-native-animatable";
 import CardBackView from "./CardBackView";
+import { useLanguage } from "../hooks/useLanguage";
+
+const lastActionsTranslations = {
+  call: "Sprawdź",
+  check: "Czekaj",
+  raise: "Podbij",
+  fold: "Pas",
+  hit: "Dobierz",
+  stand: "Stój",
+  blackjack: "Blackjack",
+  double: "Podwój",
+  insurance: "Ubezpieczenie",
+  busted: "Spalony"
+} as const;
 
 interface PlayerButtonProps {
   isGameStarted: boolean;
@@ -20,6 +34,7 @@ interface PlayerButtonProps {
 
 const PlayerButton = ({ isGameStarted, isCurrentPlayer, opacity, disabled, isDealer, name, balance, lastAction, showLastAction, cardsCount, addStyles, addPositionStyles, onPress }: PlayerButtonProps) => {
   const { width: screenWidth } = useWindowDimensions();
+  const { language } = useLanguage();
 
   const dynamicStyles = {
     button: {
@@ -54,7 +69,7 @@ const PlayerButton = ({ isGameStarted, isCurrentPlayer, opacity, disabled, isDea
           <Text style={styles.buttonText} numberOfLines={2} ellipsizeMode="tail">{name ? `${name}\n${balance}` : '+'}</Text>
           {(isGameStarted && showLastAction) && (
             <View style={[styles.blindView, dynamicStyles.blindView]}>
-              <Text style={styles.blindText}>{lastAction ?? ""}</Text>
+              {lastAction && <Text style={styles.blindText}>{language === "pl" ? lastActionsTranslations[lastAction as keyof typeof lastActionsTranslations] ?? lastAction : lastAction}</Text>}
             </View>
           )}
         </View>

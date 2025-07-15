@@ -20,6 +20,7 @@ import ActionButton from "../../components/ActionButton";
 import CardBackView from "../../components/CardBackView";
 import PotsShowdown from "../../components/PotsShowdown";
 import PlayerButton from "../../components/PlayerButton";
+import { useLanguage } from "../../hooks/useLanguage";
 
 const seatingPlan: Record<number, [number, number, number, number]> = {
   1: [1, 0, 0, 0],
@@ -48,6 +49,7 @@ const screenWidth = Dimensions.get("window").width;
 type GameRouteProp = RouteProp<RootStackParamList, "Game">;
 
 const PokerGame = () => {
+  const { language } = useLanguage();
   const route = useRoute<GameRouteProp>();
   const { playersCount, initialBalance, smallBlindAmount, bigBlindAmount } =
     route.params;
@@ -170,7 +172,7 @@ const PokerGame = () => {
   }
 
   function call() {
-    if (currentPlayerIndex === -1) return; // No current player
+    if (currentPlayerIndex === -1) return;
     let amountToCall = 0;
     if (currentPlayer.lastAction == "SB")
       amountToCall = minAmount - smallBlindAmount - currentPlayer.currentBet;
@@ -284,44 +286,10 @@ const PokerGame = () => {
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.container}>
           <Svg style={styles.background} viewBox="0 0 600 1200">
-            <Rect
-              x={0}
-              y={0}
-              width={600}
-              height={1200}
-              rx={300}
-              ry={180}
-              fill="#2E1C1C"
-            />
-            <Rect
-              x={20}
-              y={20}
-              width={560}
-              height={1160}
-              rx={280}
-              ry={160}
-              fill="#4d342f"
-            />
-            <Rect
-              x={40}
-              y={40}
-              width={520}
-              height={1120}
-              rx={260}
-              ry={140}
-              fill="#006400"
-            />
-            <Rect
-              x={150}
-              y={200}
-              width={300}
-              height={800}
-              rx={180}
-              ry={100}
-              fill="none"
-              stroke="#005000"
-              strokeWidth={12}
-            />
+            <Rect x={0} y={0} width={600} height={1200} rx={300} ry={180} fill="#2E1C1C" />
+            <Rect x={20} y={20}width={560}height={1160}rx={280}ry={160}fill="#4d342f" />
+            <Rect x={40} y={40} width={520} height={1120} rx={260} ry={140} fill="#006400" />
+            <Rect x={150} y={200} width={300} height={800} rx={180} ry={100} fill="none" stroke="#005000" strokeWidth={12} />
           </Svg>
           <View style={[styles.content]}>
             {edges.map(({ pos, dir, len, addStyle }, index) => (
@@ -358,7 +326,7 @@ const PokerGame = () => {
                 setIsGameStarted(true);
               }}
             >
-              <Text style={styles.buttonText}>Start Game</Text>
+              <Text style={styles.buttonText}>{language === "pl" ? "Rozpocznij Grę" : "Start Game"}</Text>
             </TouchableHighlight>
           )}
           {isGameStarted && (
@@ -376,28 +344,28 @@ const PokerGame = () => {
                 currentPlayer.currentBet < minAmount &&
                 currentPlayer.balance != 0 ? (
                 <ActionButton
-                  text="Call"
+                  text={language === "pl" ? "Sprawdź" : "Call"}
                   onPress={() => call()}
                   addButtonStyle={{ height: 50 }}
                   addTextStyle={{ fontSize: 20 }}
                 />
               ) : (
                 <ActionButton
-                  text="Check"
+                  text={language === "pl" ? "Czekaj" : "Check"}
                   onPress={() => check()}
                   addButtonStyle={{ height: 50 }}
                   addTextStyle={{ fontSize: 20 }}
                 />
               )}
               <ActionButton
-                text="Raise"
+                text={language === "pl" ? "Podbij" : "Raise"}
                 onPress={() => setIsSliderShown(true)}
                 opacity={canRaise ? 1 : 0.5}
                 addTextStyle={{ fontSize: 20 }}
                 disabled={!canRaise}
               />
               <ActionButton
-                text="Fold"
+                text={language === "pl" ? "Pas" : "Fold"}
                 onPress={() => fold()}
                 addTextStyle={{ fontSize: 20 }}
               />
@@ -452,7 +420,7 @@ const PokerGame = () => {
                 </Svg>
               </TouchableHighlight>
               <TextInput
-                placeholder="Player name"
+                placeholder={language === "pl" ? "Nazwa Gracza" : "Player name"}
                 style={styles.input}
                 placeholderTextColor="#999"
                 onChange={(e) => {
@@ -475,7 +443,7 @@ const PokerGame = () => {
                   }
                 }}
               >
-                <Text>Dodaj</Text>
+                <Text>{language === "pl" ? "Add" : "Dodaj"}</Text>
               </TouchableHighlight>
             </View>
           </View>
