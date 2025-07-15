@@ -119,17 +119,23 @@ const SettingsScreen = () => {
             transform: [{ scaleX: -1 }],
           }}
         />
-        <Text style={styles.headerText}>Settings</Text>
+        <Text style={styles.headerText}>
+          {language === "pl" ? "Ustawienia" : "Settings"}
+        </Text>
       </TouchableOpacity>
 
       {/* 🌐 Language Section */}
       <View style={[styles.section, { marginTop: "25%" }]}>
         <View style={styles.sectionTitleRow}>
           <Ionicons name="language" size={20} color="#cbbb93" />
-          <Text style={styles.sectionTitle}>Language</Text>
+          <Text style={styles.sectionTitle}>
+            {language === "pl" ? "Język" : "Language"}
+          </Text>
         </View>
         <Text style={styles.sectionDescription}>
-          Choose your preferred language for the app interface.
+          {language === "pl"
+            ? "Wybierz preferowany język interfejsu aplikacji."
+            : "Choose your preferred language for the app interface."}
         </Text>
         <View style={styles.pickerContainer}>
           <Picker
@@ -156,13 +162,19 @@ const SettingsScreen = () => {
       <View style={styles.section}>
         <View style={styles.sectionTitleRow}>
           <Ionicons name="reload-circle" size={20} color="#cbbb93" />
-          <Text style={styles.sectionTitle}>Replay Tutorial</Text>
+          <Text style={styles.sectionTitle}>
+            {language === "pl" ? "Powtórz przewodnik" : "Replay Tutorial"}
+          </Text>
         </View>
         <Text style={styles.sectionDescription}>
-          Restart the onboarding of our app.
+          {language === "pl"
+            ? "Powtórz oprowadzenie po aplikacji."
+            : "Restart the onboarding of our app."}
         </Text>
         <TouchableOpacity style={styles.button} onPress={replayTutorial}>
-          <Text style={styles.buttonText}>Replay Home Tutorial</Text>
+          <Text style={styles.buttonText}>
+            {language === "pl" ? "Powtórz" : "Replay"}
+          </Text>
         </TouchableOpacity>
       </View>
 
@@ -170,13 +182,21 @@ const SettingsScreen = () => {
       <View style={styles.section}>
         <View style={styles.sectionTitleRow}>
           <Ionicons name="trash" size={20} color="#cbbb93" />
-          <Text style={styles.sectionTitle}>Reset Academy Progress</Text>
+          <Text style={styles.sectionTitle}>
+            {language === "pl"
+              ? "Zresetuj postępy w Akademii"
+              : "Reset Academy Progress"}
+          </Text>
         </View>
         <Text style={styles.sectionDescription}>
-          This will erase your completion data for all lessons.
+          {language === "pl"
+            ? "To usunie dane ukończenia lekcji dla każdego artykułu."
+            : "This will erase your completion data for all lessons."}
         </Text>
         <TouchableOpacity style={styles.resetButton} onPress={resetProgress}>
-          <Text style={styles.resetText}>Reset Progress</Text>
+          <Text style={styles.resetText}>
+            {language === "pl" ? "Zresetuj postępy" : "Reset Progress"}
+          </Text>
         </TouchableOpacity>
       </View>
 
