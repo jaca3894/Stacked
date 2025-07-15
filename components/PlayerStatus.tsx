@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { View, Text, StyleSheet, Animated, Image } from "react-native";
 import CardView from "./CardView";
 import Card from "../classes/Card";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useLanguage } from "../hooks/useLanguage";
 
 interface PlayerStatusProps {
   name: string;
@@ -13,12 +13,7 @@ interface PlayerStatusProps {
   isFirstDeal: boolean;
 }
 
-const getLanguage = async (): Promise<"pl" | "eng"> => {
-  const lang = await AsyncStorage.getItem("@language");
-  return lang === "pl" || lang === "eng" ? lang : "eng";
-};
-
-const AnimatedCardBack: React.FC<{ shouldAnimate: boolean }> = async ({
+const AnimatedCardBack: React.FC<{ shouldAnimate: boolean }> = ({
   shouldAnimate,
 }) => {
   const opacity = useRef(new Animated.Value(shouldAnimate ? 0 : 1)).current;
@@ -95,7 +90,7 @@ const AnimatedCard: React.FC<{
   );
 };
 
-const PlayerStatus: React.FC<PlayerStatusProps> = async ({
+const PlayerStatus: React.FC<PlayerStatusProps> = ({
   name,
   balance,
   hand,
@@ -105,7 +100,7 @@ const PlayerStatus: React.FC<PlayerStatusProps> = async ({
 }) => {
   const prevHandRef = useRef<Card[]>([]);
 
-  const language = await getLanguage();
+  const { language } = useLanguage();
   useEffect(() => {
     // Update previous hand on the next tick to keep current `prevHandRef` valid during render
     requestAnimationFrame(() => {
@@ -143,7 +138,7 @@ const PlayerStatus: React.FC<PlayerStatusProps> = async ({
           if (isHidden) {
             return (
               <AnimatedCardBack
-                key={`back-${index}`}
+                key={index+1}
                 shouldAnimate={cardChanged}
               />
             );

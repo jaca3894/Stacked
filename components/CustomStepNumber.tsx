@@ -2,14 +2,15 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import React from "react";
 import { Text, View, StyleSheet } from "react-native";
 import { useCopilot } from "react-native-copilot";
+import { useLanguage } from "../hooks/useLanguage";
 
 const getLanguage = async (): Promise<"pl" | "eng"> => {
   const lang = await AsyncStorage.getItem("@language");
   return lang === "pl" || lang === "eng" ? lang : "eng";
 };
 
-const CustomStepNumber: React.FC = async () => {
-  const language = await getLanguage();
+const CustomStepNumber: React.FC = () => {
+  const { language } = useLanguage();
   const { currentStepNumber } = useCopilot();
 
   return (

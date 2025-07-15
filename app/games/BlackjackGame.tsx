@@ -290,6 +290,25 @@ const BlackjackGame = () => {
             {buttons.includes("blackjack") && <ActionButton text="Blackjack" onPress={blackjack} />}
           </View>
         )}
+        {showInsurance && (
+          <View>
+            <Text style={{color: '#fff'}}>{language === "pl" ? "Czy Dealer ma blackjacka?" : "Does Dealer have blackjack?"}</Text>
+            <View style={{ flexDirection: 'row', gap: 15 }}>
+              <TouchableHighlight style={styles.dodajButton} underlayColor="#948870" onPress={() => {
+                players.forEach(p => {if(p.lastAction == 'insurance') { p.give(p.currentBet); p.lastAction = '' }});
+                setShowInsurance(false);
+                if(players.find(p => ['double', 'stand'].includes(p.lastAction)))
+                  setShowdownVisible(true);
+              }}>
+                <Text style={styles.buttonText}>{language === "pl" ? "Tak" : "Yes"}</Text>
+              </TouchableHighlight>
+              <TouchableHighlight style={styles.dodajButton} underlayColor="#948870" onPress={() => {players.forEach(p => p.currentBet *= 2/3); setShowInsurance(false);
+                setSKIPPED_ACTIONS(["hit", "stand", "blackjack", "double"]); resetButtons(); if(currentPlayer.lastAction != 'insurance') nextPlayer()}}>
+                <Text style={styles.buttonText}>{language === "pl" ? "Nie" : "No"}</Text>
+              </TouchableHighlight>
+            </View>
+          </View>
+        )}
       </View>
       {showInput[0] && (
         <Modal
@@ -376,7 +395,7 @@ const BlackjackGame = () => {
           </Pressable>
         </Modal>
       )}
-      {showInsurance && (
+      {/* {showInsurance && (
         <Modal
           style={styles.absoluteCenter}
           onRequestClose={() => setShowInsurance(false)}
@@ -409,7 +428,7 @@ const BlackjackGame = () => {
             </TouchableWithoutFeedback>
           </Pressable>
         </Modal>
-      )}
+      )} */}
       {showGameEnded && (
         <Modal
           onRequestClose={() => {

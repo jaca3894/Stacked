@@ -12,18 +12,14 @@ import Pot from "../classes/Pot";
 import Player from "../classes/Player";
 import { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useLanguage } from "../hooks/useLanguage";
 
 const [screenWidth, screenHeight] = [
   Dimensions.get("window").width,
   Dimensions.get("window").height,
 ];
-const getLanguage = async (): Promise<"pl" | "eng"> => {
-  const lang = await AsyncStorage.getItem("@language");
-  return lang === "pl" || lang === "eng" ? lang : "eng";
-};
 
-const PotsShowdown = async ({
+const PotsShowdown = ({
   players,
   onClose,
 }: {
@@ -37,7 +33,7 @@ const PotsShowdown = async ({
     new Pot(players.filter((player) => !player.folded)),
   ]);
   const navigation = useNavigation();
-  const language = await getLanguage();
+  const { language } = useLanguage();
 
   useEffect(() => {
     const generatedPots = myCreateSidePots();

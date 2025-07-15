@@ -1,28 +1,24 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useState, useRef } from "react";
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
-  Button,
   Pressable,
 } from "react-native";
+import { useLanguage } from "../hooks/useLanguage";
 
 interface BetInputProps {
   min?: number;
   max: number;
   onConfirm: (amount: number) => void;
 }
-const getLanguage = async (): Promise<"pl" | "eng"> => {
-  const lang = await AsyncStorage.getItem("@language");
-  return lang === "pl" || lang === "eng" ? lang : "eng";
-};
-const BetInput: React.FC<BetInputProps> = async ({ min, max, onConfirm }) => {
+
+const BetInput: React.FC<BetInputProps> = ({ min, max, onConfirm }) => {
+  const { language } = useLanguage();
   const [value, setValue] = useState(() =>
     Math.max(min ?? 1, Math.min(10, max))
   );
-  const language = await getLanguage();
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const startHolding = (fn: () => void) => {
@@ -48,6 +44,8 @@ const BetInput: React.FC<BetInputProps> = async ({ min, max, onConfirm }) => {
   };
   const increase = () => setValue((v) => Math.min(max, v + 1));
   const decrease = () => setValue((v) => Math.max(min ?? 0, v - 1));
+
+  
 
   return (
     <View style={styles.container}>

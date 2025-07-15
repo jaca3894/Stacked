@@ -2,12 +2,8 @@ import React, { useState } from "react";
 import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
 import Slider from "@react-native-community/slider";
 import Svg, { Path } from "react-native-svg";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useLanguage } from "../hooks/useLanguage";
 
-const getLanguage = async (): Promise<"pl" | "eng"> => {
-  const lang = await AsyncStorage.getItem("@language");
-  return lang === "pl" || lang === "eng" ? lang : "eng";
-};
 
 type SliderProps = {
   value: number;
@@ -19,7 +15,7 @@ type SliderProps = {
   step?: number;
 };
 
-const CustomSlider = async ({
+const CustomSlider = ({
   value,
   onValueChange,
   onAccept,
@@ -29,7 +25,7 @@ const CustomSlider = async ({
   step = 1,
 }: SliderProps) => {
   const [currValue, setCurrValue] = useState(value);
-  const language = await getLanguage();
+  const { language } = useLanguage();
   return (
     <View style={styles.container}>
       <TouchableHighlight
