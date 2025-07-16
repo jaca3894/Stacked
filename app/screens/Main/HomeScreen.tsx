@@ -59,44 +59,42 @@ const HomeScreen = () => {
   }, []);
 
   useFocusEffect(
-    useCallback(() => {
+    React.useCallback(() => {
       const fetchLastGame = async () => {
-
         try {
           const lastPokerGame = await AsyncStorage.getItem("@pokerGameSave");
-          const lastBlackjackGame = await AsyncStorage.getItem("@blackjackGameSave");
-          let lastPokerGameDate = 0, lastBlackjackGameDate = 0;
+          const lastBlackjackGame = await AsyncStorage.getItem(
+            "@blackjackGameSave"
+          );
+          let lastPokerGameDate = 0,
+            lastBlackjackGameDate = 0;
 
-          console.log(lastPokerGame, lastBlackjackGame)
-          console.log(hasLastGame, lastGame)
+          console.log(lastPokerGame, lastBlackjackGame);
+          console.log(hasLastGame, lastGame);
 
-          if(!lastPokerGame && !lastBlackjackGame) {
+          if (!lastPokerGame && !lastBlackjackGame) {
             setHasLastGame(false);
             return;
           }
 
-          
-
-          if(lastPokerGame)
-            lastPokerGameDate = JSON.parse(lastPokerGame).date;
-          if(lastBlackjackGame)
+          if (lastPokerGame) lastPokerGameDate = JSON.parse(lastPokerGame).date;
+          if (lastBlackjackGame)
             lastBlackjackGameDate = JSON.parse(lastBlackjackGame).date;
 
-          const gameType = lastPokerGameDate > lastBlackjackGameDate ? 'Poker' : 'Blackjack';
-          const lastGameJSON = gameType == 'Poker' ? lastPokerGame : lastBlackjackGame;
-          if(typeof lastGameJSON == 'string') {
+          const gameType =
+            lastPokerGameDate > lastBlackjackGameDate ? "Poker" : "Blackjack";
+          const lastGameJSON =
+            gameType == "Poker" ? lastPokerGame : lastBlackjackGame;
+          if (typeof lastGameJSON == "string") {
             const players = JSON.parse(lastGameJSON).players;
-            setLastGame({gameType, players});
-            if(players.length > 0)
-              setHasLastGame(true);
+            setLastGame({ gameType, players });
+            if (players.length > 0) setHasLastGame(true);
           }
-        }
-        catch(err) {
+        } catch (err) {
           console.error(err);
         }
-      }
+      };
       fetchLastGame();
-
     }, [])
   );
 
@@ -160,7 +158,10 @@ const HomeScreen = () => {
   const [lastGame, setLastGame] = useState<any>({});
 
   const players = lastGame?.players
-    ?.map((player: ( Player | BlackjackPlayer)) => ({ name: player.name, balance: player.balance }))
+    ?.map((player: Player | BlackjackPlayer) => ({
+      name: player.name,
+      balance: player.balance,
+    }))
     .sort((a: any, b: any) => b.balance - a.balance);
   const [article, setArticle] = useState<any>(null);
   const [percentage, setPercentage] = useState<any>(null);
@@ -251,22 +252,53 @@ const HomeScreen = () => {
                 <View style={styles.gameHeader}>
                   <Text style={styles.gameTitle}>
                     {language === "pl"
-                      ? `♠ Kontynuuj ostatnią grę ${hasLastGame ? '('+lastGame.gameType+')' : ''}`
-                      : `♠ Continue Last Game ${hasLastGame ? '('+lastGame.gameType+')' : ''}`
-                    }
+                      ? `♠ Kontynuuj ostatnią grę ${
+                          hasLastGame ? "(" + lastGame.gameType + ")" : ""
+                        }`
+                      : `♠ Continue Last Game ${
+                          hasLastGame ? "(" + lastGame.gameType + ")" : ""
+                        }`}
                   </Text>
                 </View>
                 {hasLastGame && (
                   <>
-                    {players?.map((player: (Player | BlackjackPlayer), index: number) => (
-                      <View key={player.name} style={styles.playerRow}>
-                        <Text style={styles.playerIndex}>{index + 1}.</Text>
-                        <Text style={styles.playerName}>{player.name}</Text>
-                        <Text style={styles.playerScore}>{player.balance}</Text>
-                      </View>
-                    ))}
+                    {(players?.slice(0, 5) || []).map(
+                      (player: Player | BlackjackPlayer, index: number) => (
+                        <View
+                          key={player.name + index}
+                          style={styles.playerRow}
+                        >
+                          <Text style={styles.playerIndex}>{index + 1}.</Text>
+                          <Text style={styles.playerName}>{player.name}</Text>
+                          <Text style={styles.playerScore}>
+                            {player.balance}
+                          </Text>
+                        </View>
+                      )
+                    )}
 
-                    <TouchableOpacity style={styles.resumeButton} onPress={() => {(navigator as any).navigate(lastGame.gameType == 'Poker' ? "PokerGame" : "BlackjackGame", { playersCount: lastGame.players.length, loadGame: true})}}>
+                    {players && players.length > 5 && (
+                      <Text style={styles.morePlayersText}>
+                        {language === "pl"
+                          ? `(+${players.length - 5} więcej...)`
+                          : `(+${players.length - 5} more...)`}
+                      </Text>
+                    )}
+
+                    <TouchableOpacity
+                      style={styles.resumeButton}
+                      onPress={() => {
+                        (navigator as any).navigate(
+                          lastGame.gameType === "Poker"
+                            ? "PokerGame"
+                            : "BlackjackGame",
+                          {
+                            playersCount: lastGame.players.length,
+                            loadGame: true,
+                          }
+                        );
+                      }}
+                    >
                       <Ionicons name="play" size={16} color="#1c1c1c" />
                       <Text style={styles.resumeText}>
                         {language === "pl" ? "Wznów" : "Resume"}
@@ -811,6 +843,12 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 12,
     marginTop: 4,
+    textAlign: "center",
+  },
+  morePlayersText: {
+    fontSize: 14,
+    color: "#999999",
+    marginVertical: 4,
     textAlign: "center",
   },
 });

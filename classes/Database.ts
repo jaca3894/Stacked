@@ -802,9 +802,7 @@ export const getCreditsData = async () => {
   return [
     {
       title:
-        lang === "pl"
-          ? "⚖️ Licencje wizualne"
-          : "⚖️ About Visual Content Licensing",
+        lang === "pl" ? "Licencje wizualne" : "About Visual Content Licensing",
       intro:
         lang === "pl"
           ? "Wszystkie materiały wizualne (obrazy, gify, filmy) użyte w projekcie pochodzą z:"
@@ -820,7 +818,7 @@ export const getCreditsData = async () => {
       ],
     },
     {
-      title: lang === "pl" ? "📺 Źródła multimediów" : "📺 Media Credits",
+      title: lang === "pl" ? "Źródła multimediów" : "Media Credits",
       intro:
         lang === "pl"
           ? "Wierzymy w właściwe przypisywanie autorów. Ta sekcja zawiera źródła multimediów. Konkretne linki do filmów znajdują się w artykułach, w których treść występuje."

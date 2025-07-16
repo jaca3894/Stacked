@@ -29,19 +29,33 @@ const SettingsScreen = () => {
 
   // Wywoływane przy zmianie w pickerze
   const onLanguageChange = (lang: Language) => {
+    if (lang === language) {
+      // Nie zmieniamy języka — komunikat opcjonalny
+      Alert.alert(
+        language === "pl" ? "Język już ustawiony" : "Language already selected",
+        language === "pl"
+          ? "Wybrany język jest już aktywny."
+          : "The selected language is already active."
+      );
+      return;
+    }
+
     setPendingLanguage(lang);
 
     Alert.alert(
-      "Change language",
-      `Are you sure you want to switch to ${
-        lang === "pl" ? "Polski" : "English"
-      }?`,
+      language === "pl" ? "Zmień język" : "Change language",
+      language === "pl"
+        ? `Czy na pewno chcesz przełączyć język na ${
+            lang === "pl" ? "Polski" : "Angielski"
+          }?`
+        : `Are you sure you want to switch to ${
+            lang === "pl" ? "Polish" : "English"
+          }?`,
       [
         {
           text: language === "pl" ? "Anuluj" : "Cancel",
           style: "cancel",
           onPress: () => {
-            // Cofamy widok do poprzedniego wyboru
             setPendingLanguage(language);
           },
         },
@@ -50,9 +64,12 @@ const SettingsScreen = () => {
           onPress: async () => {
             setLanguage(lang);
             Alert.alert(
-              "Language updated",
-              `Current language: ${lang === "pl" ? "Polski" : "English"}`
+              language === "pl" ? "Język zaktualizowany" : "Language updated",
+              language === "pl"
+                ? `Aktualny język: ${lang === "pl" ? "Polski" : "Angielski"}`
+                : `Current language: ${lang === "pl" ? "Polish" : "English"}`
             );
+
             try {
               await Updates.reloadAsync();
             } catch (error) {
@@ -69,12 +86,13 @@ const SettingsScreen = () => {
       const keys = await AsyncStorage.getAllKeys();
       const seenKeys = keys.filter((key) => key.startsWith("@hasSeen"));
       await AsyncStorage.multiRemove(seenKeys);
-
-      Alert.alert(
+      const title = language === "pl" ? "Powiadomienie" : "Info";
+      const message =
         language === "pl"
           ? "Przewodnik powtórzy się przy następnym otwarciu aplikacji."
-          : "Tutorial will replay next time you open the app."
-      );
+          : "Tutorial will replay next time you open the app.";
+
+      Alert.alert(title, message);
 
       // @ts-ignore
       // navigation.navigate("Home");
