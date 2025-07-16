@@ -131,7 +131,7 @@ const PokerGame = () => {
       loadLastGame();
 
     const checkSave = async () => {
-      const save = await AsyncStorage.getItem("@pokerGameSave");
+      const save = await AsyncStorage.getItem("@lastPokerGameSave");
       if(save && !loadGame) {
         const saveData = JSON.parse(save);
         if(!saveData.players.find((p: Player) => p.name === ''))
@@ -143,7 +143,7 @@ const PokerGame = () => {
 
     const saveGame = async () => {
       if(isGameStarted && players.find(p => p.name === '')) return;
-      await AsyncStorage.setItem("@pokerGameSave", JSON.stringify(stateToSaveRef.current));
+      await AsyncStorage.setItem("@lastPokerGameSave", JSON.stringify(stateToSaveRef.current));
     }
     return () => {
       saveGame();
@@ -175,7 +175,7 @@ const PokerGame = () => {
   }, [players, currentPlayerIndex, minAmount, shownCards, biggestBetPlayerIndex, canRaise, isGameStarted, isGameEnded])
 
   const loadLastGame = async () => {
-    const lastGame = await AsyncStorage.getItem("@pokerGameSave");
+    const lastGame = await AsyncStorage.getItem("@lastPokerGameSave");
     if(lastGame) {
       try {
         const lastGameInfo: PokerGameSaveState = JSON.parse(lastGame);

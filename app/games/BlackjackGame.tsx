@@ -121,7 +121,7 @@ const BlackjackGame = () => {
       loadLastGame();
 
     const checkSave = async () => {
-      const save = await AsyncStorage.getItem("@blackjackGameSave");
+      const save = await AsyncStorage.getItem("@lastBlackjackGameSave");
       if(save) {
         const saveData = JSON.parse(save);
         if(!saveData.players.find((p: BlackjackPlayer) => p.name === ''))
@@ -133,7 +133,7 @@ const BlackjackGame = () => {
 
     const saveGame = async () => {
       if(isGameStarted && players.find(p => p.name === '')) return;
-      await AsyncStorage.setItem("@blackjackGameSave", JSON.stringify(stateToSaveRef.current));
+      await AsyncStorage.setItem("@lastBlackjackGameSave", JSON.stringify(stateToSaveRef.current));
     }
     return () => {
       saveGame();
@@ -142,7 +142,7 @@ const BlackjackGame = () => {
   }, []);
 
   const loadLastGame = async () => {
-    const lastGame = await AsyncStorage.getItem("@blackjackGameSave");
+    const lastGame = await AsyncStorage.getItem("@lastBlackjackGameSave");
     if(lastGame) {
       try {
         const lastGameInfo: BlackjackGameSaveState = JSON.parse(lastGame);
@@ -150,9 +150,10 @@ const BlackjackGame = () => {
         const rehydratedPlayers = lastGameInfo.players.map(playerObject => 
           BlackjackPlayer.fromPlainObject(playerObject)
         );
+        const rehydratedDealer = BlackjackPlayer.fromPlainObject(lastGameInfo.dealer)
 
         setPlayers(rehydratedPlayers);
-        dealer.current = lastGameInfo.dealer;
+        dealer.current = rehydratedDealer;
         setCurrentPlayerIndex(lastGameInfo.currentPlayerIndex);
         setIsGameStarted(lastGameInfo.isGameStarted);
         setDidEveryoneBet(lastGameInfo.didEveryoneBet);

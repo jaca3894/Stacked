@@ -63,8 +63,8 @@ const HomeScreen = () => {
       const fetchLastGame = async () => {
 
         try {
-          const lastPokerGame = await AsyncStorage.getItem("@pokerGameSave");
-          const lastBlackjackGame = await AsyncStorage.getItem("@blackjackGameSave");
+          const lastPokerGame = await AsyncStorage.getItem("@lastPokerGameSave");
+          const lastBlackjackGame = await AsyncStorage.getItem("@lastBlackjackGameSave");
           let lastPokerGameDate = 0, lastBlackjackGameDate = 0;
 
           console.log(lastPokerGame, lastBlackjackGame)
