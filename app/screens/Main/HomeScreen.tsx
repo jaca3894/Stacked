@@ -66,6 +66,9 @@ const HomeScreen = () => {
           const lastBlackjackGame = await AsyncStorage.getItem("@blackjackGameSave");
           let lastPokerGameDate = 0, lastBlackjackGameDate = 0;
 
+          if(!lastPokerGame && !lastBlackjackGame) 
+            return;
+
           if(lastPokerGame)
             lastPokerGameDate = JSON.parse(lastPokerGame).date;
           if(lastBlackjackGame)
