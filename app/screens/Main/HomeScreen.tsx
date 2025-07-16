@@ -242,8 +242,8 @@ const HomeScreen = () => {
               name="dealerExplain"
               text={
                 language === "pl"
-                  ? "Z tego miejsca możesz kontynuować ostatnią grę. Ostatnie gry są zapisywane automatycznie."
-                  : "Here you can continue last saved game. Last games are automatically saved."
+                  ? "Z tego miejsca możesz kontynuować ostatnią grę. Ostatnie gry są zapisywane automatycznie. O zapisywaniu konkretnych gier wspomnę w zakładce 'Graj'."
+                  : "Here you can continue last saved game. Last games are automatically saved. I'll mention saving specific games in the 'Play' tab."
               }
               order={2}
             >
