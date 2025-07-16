@@ -1,5 +1,5 @@
-import React, { ComponentType, useEffect, useState } from "react";
-import { View, ActivityIndicator, Easing } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, ActivityIndicator } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -157,11 +157,11 @@ export default function App() {
             component={SettingsScreen}
             options={{ headerShown: false }}
           />
-          {/* <Stack.Screen
+          <Stack.Screen
             name="Saves"
             component={SavesScreen}
             options={{ headerShown: false }}
-          /> */}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </View>

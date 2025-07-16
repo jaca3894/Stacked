@@ -40,12 +40,12 @@ const ArticleScreen = () => {
     videoAuthor: string;
   };
 
-  const [articlesData, setArticles] = useState<ArticleData[]>([]);
+  const [articlesData, setArticlesData] = useState<ArticleData[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       const data = await getArticlesData();
-      setArticles(data);
+      setArticlesData(data);
     };
     fetchData();
   }, []);

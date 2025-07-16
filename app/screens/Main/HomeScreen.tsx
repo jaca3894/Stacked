@@ -3,7 +3,7 @@ import {
   getCompletionPercentage,
 } from "../../../utils/FindUnlikedArticle";
 import { getRandomGlossaryTerm } from "../../../utils/GetRandomItem";
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import SystemNavigationBar from "react-native-system-navigation-bar";
 import {
@@ -43,14 +43,14 @@ const HomeScreen = () => {
   const loaderTime = 1000;
   type GlossaryEntry = { term: string; definition: string };
 
-  const [term, setRandomTerm] = useState<GlossaryEntry | null>(null);
+  const [term, setTerm] = useState<GlossaryEntry | null>(null);
 
   // po załadowaniu ekranu pobierz losowy termin
   useEffect(() => {
     const fetchTerm = async () => {
       try {
         const term = await getRandomGlossaryTerm();
-        setRandomTerm(term);
+        setTerm(term);
       } catch (e) {
         console.error("Nie udało się pobrać losowego terminu:", e);
       }
@@ -71,9 +71,6 @@ const HomeScreen = () => {
           let lastPokerGameDate = 0,
             lastBlackjackGameDate = 0;
 
-          console.log(lastPokerGame, lastBlackjackGame);
-          console.log(hasLastGame, lastGame);
-
           if (!lastPokerGame && !lastBlackjackGame) {
             setHasLastGame(false);
             return;
@@ -89,7 +86,6 @@ const HomeScreen = () => {
             gameType == "Poker" ? lastPokerGame : lastBlackjackGame;
           if (typeof lastGameJSON == "string") {
             const players = JSON.parse(lastGameJSON).players;
-            console.log(players)
             setLastGame({ gameType, players });
             if (players.length > 0) setHasLastGame(true);
           }
@@ -117,12 +113,12 @@ const HomeScreen = () => {
     videoAuthor: string;
   };
 
-  const [articlesData, setArticles] = useState<ArticleData[]>([]);
+  const [articlesData, setArticlesData] = useState<ArticleData[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       const data = await getArticlesData();
-      setArticles(data);
+      setArticlesData(data);
     };
     fetchData();
   }, []);
@@ -180,7 +176,7 @@ const HomeScreen = () => {
         // 1) pobierz zawsze aktualne articlesData
         const freshArticles = await getArticlesData();
         if (!isActive) return;
-        setArticles(freshArticles);
+        setArticlesData(freshArticles);
 
         // 2) oblicz next lesson i progress
         const next = await getNextUnmarkedItem(freshArticles);
@@ -554,7 +550,7 @@ const HomeScreen = () => {
 
                 <TouchableOpacity
                   style={styles.quickLinkButton}
-                  // onPress={() => (navigator as any).navigate("Saves")}
+                  onPress={() => (navigator as any).navigate("Saves")}
                 >
                   <Ionicons name="folder" size={20} color="#cbbb93" />
                   <Text style={styles.quickLinkText}>
