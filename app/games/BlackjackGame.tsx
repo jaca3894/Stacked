@@ -216,14 +216,14 @@ const BlackjackGame = () => {
     let newIndex = (currentPlayerIndex + 1) % players.length;
     console.log(afterInsurance)
     console.log(players.find(p => p.lastAction == 'insurance'))
-    if(afterInsurance && players.find(p => p.lastAction == 'insurance')) {
+    if(afterInsurance && players.find(p => p.lastAction == 'insurance') && !showdownVisible) {
       console.log(1)
       newIndex = players.findIndex(p => p.lastAction == 'insurance');
       console.log(newIndex)
       setCurrentPlayerIndex(newIndex);
       return;
     }
-    if(afterInsurance) {
+    if(afterInsurance && !showdownVisible) {
       setCurrentPlayerIndex(0);
       setAfterInsurance(false);
       setShowdownVisible(true);
@@ -233,7 +233,7 @@ const BlackjackGame = () => {
       console.log('---------------')
       console.log(players[newIndex].lastAction)
 
-      if (newIndex == 0) {
+      if (newIndex == 0 || newIndex == -1) {
         setShowdownVisible(false);
         setShowGameEnded(true);
         return;
@@ -242,7 +242,7 @@ const BlackjackGame = () => {
       newIndex = findNextActivePlayer(newIndex-1);
       console.log(newIndex)
       
-      if (newIndex == players.length || newIndex == -1) {
+      if (newIndex == -1) {
         setShowdownVisible(false);
         setShowGameEnded(true);
         return;
@@ -384,7 +384,7 @@ const BlackjackGame = () => {
           </View>
         )}
         {(!showInsurance && !showGameEnded && !showdownVisible && isGameStarted && currentPlayer && didEveryoneBet) && (
-          <View style={[styles.row, {bottom: '40%', width: '40%'}]}>
+          <View style={[styles.row, {bottom: '40%', maxWidth: '70%'}]}>
             {buttons.includes("hit") && <ActionButton text={language === "pl" ? "Dobranie" : "Hit"} onPress={hit} />}
             {buttons.includes("stand") && <ActionButton text={language === "pl" ? "Pas" : "Stand"} onPress={stand} />}
             {buttons.includes("double") && <ActionButton text={language === "pl" ? "Podwojenie" : "Double"} onPress={double} />}
@@ -394,7 +394,7 @@ const BlackjackGame = () => {
           </View>
         )}
         {showInsurance && (
-          <View style={[styles.row, {bottom: '40%', width: '30%', flexWrap: "wrap"}]}>
+          <View style={[styles.row, {bottom: '40%', maxWidth: '70%', flexWrap: "wrap"}]}>
             <Text style={{color: '#fff'}}>{language === "pl" ? "Czy Dealer ma blackjacka?" : "Does Dealer have blackjack?"}</Text>
             <View style={{ flexDirection: 'row', gap: 15 }}>
               <ActionButton text={language === "pl" ? "Tak" : "Yes"} onPress={() => { players.forEach(p => {if(p.lastAction == 'insurance') p.give(p.currentBet)});
@@ -408,7 +408,7 @@ const BlackjackGame = () => {
           </View>
         )}
         {showGameEnded && (
-          <View style={[styles.row, {bottom: '40%', width: '25%', flexDirection: 'column'}]}>
+          <View style={[styles.row, {bottom: '40%', maxWidth: '70%', flexDirection: 'column'}]}>
             <Text style={{ fontSize: 22, color: '#fff', fontWeight: 'bold', textAlign: 'center' }}>{language === "pl" ? "Koniec Rundy" : "Round Over"}</Text>
             <View style={{flexDirection: 'row', gap: 10}}>
               <ActionButton text={language === "pl" ? "Nowa Gra" : "New Game"} onPress={() => {setShowGameEnded(false); startGame(); AsyncStorage.setItem('@lastBlackjackGameSave', JSON.stringify({players, date: Date.now()}))}} />
@@ -417,7 +417,7 @@ const BlackjackGame = () => {
           </View>
         )}
         {showdownVisible && (
-          <View style={[styles.row, {bottom: '40%', width: '30%', flexWrap: "wrap"}]}>
+          <View style={[styles.row, {bottom: '40%', maxWidth: '70%', flexWrap: "wrap"}]}>
             <View>
               <Text style={{ fontSize: 18, color: "#fff" }}>
                 {currentPlayer.name ?? ""}

@@ -28,10 +28,7 @@ const SavesScreen = () => {
   const [lastBlackjackPlayers, setLastBlackjackPlayers] = useState<Player[]>([]);
   const [pokerGames, setPokerGames] = useState<GameType[]>([]);
   const [blackjackGames, setBlackjackGames] = useState<GameType[]>([]);
-  const [selectedGameType, setSelectedGameType] = useState<"Poker" | "Blackjack">("Poker");
-
-  const now = new Date();
-  console.log(now);
+  const [selectedGameType, setSelectedGameType] = useState<"Poker" | "Blackjack">(pokerGames.length > 0 ? "Poker" : "Blackjack");
   
   useFocusEffect(
     useCallback(() => {
@@ -166,49 +163,53 @@ const SavesScreen = () => {
                 if(blackjackGames.find(game => game.players === lastBlackjackPlayers)) { return; } 
                 setBlackjackGames(prev => [...prev, {id: generateId(), title: new Date().toLocaleString(), gameType: 'Blackjack', players: lastBlackjackPlayers}])
                 }}
-            />
+                />
           )}
-          <View style={styles.lineContainer}>
-            <View style={[styles.line]} />
-            <Text style={[styles.lineText]}>{language === 'pl' ? "Zapisy" : "Saves"}</Text>
-            <View style={[styles.line]} />
-          </View>
-          <View style={{flexDirection: 'column', gap: 15}}>
-            <View style={{flexDirection: 'row', gap: 10}}>
-              <ActionButton text="Poker" onPress={() => {setSelectedGameType('Poker')}} addButtonStyle={selectedGameType == 'Poker' && styles.activeGameType} />
-              <ActionButton text="Blackjack" onPress={() => {setSelectedGameType('Blackjack')}} addButtonStyle={selectedGameType == 'Blackjack' && styles.activeGameType} />
+          {(pokerGames.length > 0 || blackjackGames.length > 0) && (
+            <View>
+              <View style={styles.lineContainer}>
+                <View style={[styles.line]} />
+                <Text style={[styles.lineText]}>{language === 'pl' ? "Zapisy" : "Saves"}</Text>
+                <View style={[styles.line]} />
+              </View>
+              <View style={{flexDirection: 'column', gap: 15}}>
+                <View style={{flexDirection: 'row', gap: 10}}>
+                  {pokerGames.length > 0 && <ActionButton text="Poker" onPress={() => {setSelectedGameType('Poker')}} addButtonStyle={selectedGameType == 'Poker' && styles.activeGameType} />}
+                  {blackjackGames.length > 0 && <ActionButton text="Blackjack" onPress={() => {setSelectedGameType('Blackjack')}} addButtonStyle={selectedGameType == 'Blackjack' && styles.activeGameType} />}
+                </View>
+                {selectedGameType == "Poker" && pokerGames?.map(game => {
+                    return (
+                      <GameSavePanel
+                        key={game.id}
+                        title={game.title}
+                        gameType={game.gameType}
+                        players={game.players}
+                        language={language}
+                        navigator={navigation}
+                        showDeleteButton={true}
+                        onDelete={() => {setPokerGames(prev => prev.filter(g => g.id !== game.id))}}
+                      />
+                    )
+                  })
+                }
+                {selectedGameType == "Blackjack" && blackjackGames?.map(game => {
+                    return (
+                      <GameSavePanel
+                        key={game.id}
+                        title={game.title}
+                        gameType={game.gameType}
+                        players={game.players}
+                        language={language}
+                        navigator={navigation}
+                        showDeleteButton={true}
+                        onDelete={() => {setBlackjackGames(prev => prev.filter(g => g.id !== game.id))}}
+                      />
+                    )
+                  })
+                }
+              </View>
             </View>
-            {selectedGameType == "Poker" && pokerGames?.map(game => {
-                return (
-                  <GameSavePanel
-                    key={game.id}
-                    title={game.title}
-                    gameType={game.gameType}
-                    players={game.players}
-                    language={language}
-                    navigator={navigation}
-                    showDeleteButton={true}
-                    onDelete={() => {setPokerGames(prev => prev.filter(g => g.id !== game.id))}}
-                  />
-                )
-              })
-            }
-            {selectedGameType == "Blackjack" && blackjackGames?.map(game => {
-                return (
-                  <GameSavePanel
-                    key={game.id}
-                    title={game.title}
-                    gameType={game.gameType}
-                    players={game.players}
-                    language={language}
-                    navigator={navigation}
-                    showDeleteButton={true}
-                    onDelete={() => {setBlackjackGames(prev => prev.filter(g => g.id !== game.id))}}
-                  />
-                )
-              })
-            }
-          </View>
+          )}
         </ScrollView>
       </SafeAreaView>
     </SafeAreaProvider>
