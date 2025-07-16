@@ -1,23 +1,28 @@
-import React from "react";
+import React, { useState } from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Player from "../classes/Player";
 
 interface GameSavePalenProps {
+  title?: string;
   gameType: "Poker" | "Blackjack";
   players: Player[];
   language: "pl" | "eng";
   navigator: any;
-  showDeleteButton: boolean;
+  showDeleteButton?: boolean;
+  onSave?: () => void;
+  onDelete?: () => void;
 }
 
-const GameSavePanel = ({ gameType, players, language, navigator, showDeleteButton }: GameSavePalenProps) => {
+const GameSavePanel = ({ title, gameType, players, language, navigator, showDeleteButton, onSave, onDelete }: GameSavePalenProps) => {
   // Derive a sorted list of players, just like in HomeScreen.
   // We use useMemo to avoid re-calculating on every render unless players change.
   const sortedPlayers = React.useMemo(() => 
     [...players].sort((a, b) => b.balance - a.balance), 
     [players]
   );
+
+  const [showAll, setShowAll] = useState(false);
 
   if (players.length === 0) {
     return null; // Don't render anything if there are no players
@@ -27,12 +32,13 @@ const GameSavePanel = ({ gameType, players, language, navigator, showDeleteButto
     <View style={styles.panel}>
       <View style={styles.gameHeader}>
         <Text style={styles.gameTitle}>
-          {language === "pl" ? "♠ Ostatnia gra" : "♠ Last Game"} ({gameType})
+          {!!title && title}
+          {!title && (language === "pl" ? "♠ Ostatnia gra" : "♠ Last Game")} {!title && `(${gameType})`}
         </Text>
       </View>
       
       {/* Map over the top 5 sorted players */}
-      {sortedPlayers.slice(0, 5).map((player, index) => (
+      {(showAll ? sortedPlayers : sortedPlayers.slice(0, 5)).map((player, index) => (
         <View key={`${player.name}-${index}`} style={styles.playerRow}>
           <Text style={styles.playerIndex}>{index + 1}.</Text>
           <Text style={styles.playerName} numberOfLines={1}>{player.name}</Text>
@@ -42,12 +48,12 @@ const GameSavePanel = ({ gameType, players, language, navigator, showDeleteButto
 
       {/* Show how many more players there are */}
       {sortedPlayers.length > 5 && (
-        <Text style={styles.morePlayersText}>
-          {language === "pl" ? `(+${sortedPlayers.length - 5} więcej...)` : `(+${sortedPlayers.length - 5} more...)`}
+        <Text style={styles.morePlayersText} onPress={() => {setShowAll(prev => !prev)}}>
+          {language === "pl" ? (showAll ? "Ukryj" : `(+${sortedPlayers.length - 5} więcej...)`) : (showAll ? "Hide" : `(+${sortedPlayers.length - 5} more...)`)}
         </Text>
       )}
 
-      <View style={{flexDirection: 'row', gap: 5}}>
+      <View style={{flexDirection: 'row', gap: 10}}>
         {/* Resume Button */}
         <TouchableOpacity
           style={styles.resumeButton}
@@ -57,42 +63,32 @@ const GameSavePanel = ({ gameType, players, language, navigator, showDeleteButto
               loadGame: true,
             });
           }}
-          >
+        >
           <Ionicons name="play" size={16} color="#1c1c1c" />
           <Text style={styles.resumeText}>
             {language === "pl" ? "Wznów" : "Resume"}
           </Text>
         </TouchableOpacity>
 
-        {/* Resume Button */}
+        {/* Save Button */}
         <TouchableOpacity
-          style={[styles.resumeButton, { marginLeft: 20 }]}
-          onPress={() => {
-            navigator.navigate(gameType === "Poker" ? "PokerGame" : "BlackjackGame", {
-              playersCount: players.length,
-              loadGame: true,
-            });
-          }}
-          >
-          <Ionicons name="play" size={16} color="#1c1c1c" />
-          <Text style={styles.resumeText}>
-            {language === "pl" ? "Wznów" : "Resume"}
+          style={[styles.saveButton, { marginLeft: 20 }]}
+          onPress={onSave}
+        >
+          <Ionicons name="save" size={16} color="#cbbb93" />
+          <Text style={styles.saveText}>
+            {language === "pl" ? "Zapisz" : "Save"}
           </Text>
         </TouchableOpacity>
 
         {/* Delete Button */}
         {showDeleteButton && <TouchableOpacity
-          style={styles.resumeButton}
-          onPress={() => {
-            navigator.navigate(gameType === "Poker" ? "PokerGame" : "BlackjackGame", {
-              playersCount: players.length,
-              loadGame: true,
-            });
-          }}
+          style={styles.deleteButton}
+          onPress={onDelete}
           >
-          <Ionicons name="play" size={16} color="#1c1c1c" />
-          <Text style={styles.resumeText}>
-            {language === "pl" ? "Wznów" : "Resume"}
+          <Ionicons name="trash" size={18} color="#d00" />
+          <Text style={styles.deleteText}>
+            {language === "pl" ? "Usuń" : "Delete"}
           </Text>
         </TouchableOpacity>}
       </View>
@@ -158,6 +154,42 @@ const styles = StyleSheet.create({
   },
   resumeText: {
     color: "#1c1c1c",
+    fontWeight: "600",
+    fontSize: 15,
+    marginLeft: 8,
+  },
+  saveButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#1c1c1c",
+    outlineColor: '#cbbb93',
+    outlineWidth: 1,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    marginTop: 16,
+    alignSelf: "flex-start",
+  },
+  saveText: {
+    color: "#fff",
+    fontWeight: "600",
+    fontSize: 15,
+    marginLeft: 8,
+  },
+  deleteButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#1c1c1c",
+    outlineColor: '#d00',
+    outlineWidth: 1,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    marginTop: 16,
+    alignSelf: "flex-start",
+  },
+  deleteText: {
+    color: "#fff",
     fontWeight: "600",
     fontSize: 15,
     marginLeft: 8,

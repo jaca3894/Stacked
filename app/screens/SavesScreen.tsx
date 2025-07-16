@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useLanguage } from "../../hooks/useLanguage";
@@ -6,8 +6,16 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Player from "../../classes/Player"; // Make sure this path is correct
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import GameSavePanel from "../../components/GameSavePanel";
+import ActionButton from "../../components/ActionButton";
 
 // A helper component to render the game panel. This avoids code duplication.
+
+interface GameType {
+  id: string;
+  title: string;
+  gameType: "Poker" | "Blackjack";
+  players: Player[];
+}
 
 const SavesScreen = () => {
   const navigation = useNavigation();
@@ -16,8 +24,14 @@ const SavesScreen = () => {
 
   // --- FIX 1: Initialize state with an empty ARRAY [] ---
   // This prevents crashes when the component first loads.
-  const [pokerPlayers, setPokerPlayers] = useState<Player[]>([]);
-  const [blackjackPlayers, setBlackjackPlayers] = useState<Player[]>([]);
+  const [lastPokerPlayers, setLastPokerPlayers] = useState<Player[]>([]);
+  const [lastBlackjackPlayers, setLastBlackjackPlayers] = useState<Player[]>([]);
+  const [pokerGames, setPokerGames] = useState<GameType[]>([]);
+  const [blackjackGames, setBlackjackGames] = useState<GameType[]>([]);
+  const [selectedGameType, setSelectedGameType] = useState<"Poker" | "Blackjack">("Poker");
+
+  const now = new Date();
+  console.log(now);
   
   useFocusEffect(
     useCallback(() => {
@@ -25,31 +39,52 @@ const SavesScreen = () => {
         setIsLoading(true);
         try {
           // Fetch both game saves in parallel for speed
-          const [pokerSaveJSON, blackjackSaveJSON] = await Promise.all([
+          const [lastPokerSaveJSON, lastBlackjackSaveJSON, pokerSavesJSON, blackjackSavesJSON] = await Promise.all([
             AsyncStorage.getItem("@lastPokerGameSave"),
             AsyncStorage.getItem("@lastBlackjackGameSave"),
+            AsyncStorage.getItem("@pokerGameSaves"),
+            AsyncStorage.getItem("@blackjackGameSaves"),
           ]);
+
           
-          if (pokerSaveJSON) {
-            const pokerData = JSON.parse(pokerSaveJSON);
+          AsyncStorage.getItem("@pokerGameSaves")
+          
+          if (lastPokerSaveJSON) {
+            const lastPokerData = JSON.parse(lastPokerSaveJSON);
             // Ensure players data is an array before setting it
-            setPokerPlayers(Array.isArray(pokerData.players) ? pokerData.players : []);
+            setLastPokerPlayers(Array.isArray(lastPokerData.players) ? lastPokerData.players : []);
           } else {
-            setPokerPlayers([]); // Explicitly set to empty if no save exists
+            setLastPokerPlayers([]); // Explicitly set to empty if no save exists
           }
           
-          if (blackjackSaveJSON) {
-            const blackjackData = JSON.parse(blackjackSaveJSON);
-            setBlackjackPlayers(Array.isArray(blackjackData.players) ? blackjackData.players : []);
+          if (lastBlackjackSaveJSON) {
+            const lastBlackjackData = JSON.parse(lastBlackjackSaveJSON);
+            setLastBlackjackPlayers(Array.isArray(lastBlackjackData.players) ? lastBlackjackData.players : []);
           } else {
-            setBlackjackPlayers([]);
+            setLastBlackjackPlayers([]);
+          }
+
+          if (pokerSavesJSON) {
+            const pokerGamesData = JSON.parse(pokerSavesJSON);
+            setPokerGames(Array.isArray(pokerGamesData) ? pokerGamesData : []);
+          }
+          else {
+            setPokerGames([]);
+          }
+
+          if (blackjackSavesJSON) {
+            const blackjackGamesData = JSON.parse(blackjackSavesJSON);
+            setBlackjackGames(Array.isArray(blackjackGamesData) ? blackjackGamesData : []);
+          }
+          else {
+            setBlackjackGames([]);
           }
 
         } catch (err) {
           console.error("Failed to fetch game saves:", err);
           // Reset on error
-          setPokerPlayers([]);
-          setBlackjackPlayers([]);
+          setLastPokerPlayers([]);
+          setLastBlackjackPlayers([]);
         } finally {
           setIsLoading(false);
         }
@@ -57,9 +92,18 @@ const SavesScreen = () => {
       fetchSaves();
     }, [])
   );
+
+  useEffect(() => {
+    AsyncStorage.setItem("@pokerGameSaves", JSON.stringify(pokerGames));
+    AsyncStorage.setItem("@blackjackGameSaves", JSON.stringify(blackjackGames));
+  }, [pokerGames, blackjackGames])
+
+  const generateId = () => {
+    return Math.random().toString(36).substr(2, 15) + Math.random().toString(36).substr(2, 15);
+  };
   
-  const hasPokerSave = pokerPlayers.length > 0;
-  const hasBlackjackSave = blackjackPlayers.length > 0;
+  const hasPokerSave = lastPokerPlayers.length > 0;
+  const hasBlackjackSave = lastBlackjackPlayers.length > 0;
   const noGamesFound = !isLoading && !hasPokerSave && !hasBlackjackSave;
 
   return (
@@ -102,20 +146,69 @@ const SavesScreen = () => {
           {hasPokerSave && (
             <GameSavePanel
               gameType="Poker"
-              players={pokerPlayers}
+              players={lastPokerPlayers}
               language={language}
               navigator={navigation}
+              onSave={() => {
+                if(pokerGames.find(game => game.players === lastPokerPlayers)) { return; } 
+                setPokerGames(prev => [...prev, {id: generateId(), title: new Date().toLocaleString(), gameType: 'Poker', players: lastPokerPlayers}])
+              }}
             />
           )}
 
           {hasBlackjackSave && (
             <GameSavePanel
               gameType="Blackjack"
-              players={blackjackPlayers}
+              players={lastBlackjackPlayers}
               language={language}
               navigator={navigation}
+              onSave={() => {
+                if(blackjackGames.find(game => game.players === lastBlackjackPlayers)) { return; } 
+                setBlackjackGames(prev => [...prev, {id: generateId(), title: new Date().toLocaleString(), gameType: 'Blackjack', players: lastBlackjackPlayers}])
+                }}
             />
           )}
+          <View style={styles.lineContainer}>
+            <View style={[styles.line]} />
+            <Text style={[styles.lineText]}>{language === 'pl' ? "Zapisy" : "Saves"}</Text>
+            <View style={[styles.line]} />
+          </View>
+          <View style={{flexDirection: 'column', gap: 15}}>
+            <View style={{flexDirection: 'row', gap: 10}}>
+              <ActionButton text="Poker" onPress={() => {setSelectedGameType('Poker')}} addButtonStyle={selectedGameType == 'Poker' && styles.activeGameType} />
+              <ActionButton text="Blackjack" onPress={() => {setSelectedGameType('Blackjack')}} addButtonStyle={selectedGameType == 'Blackjack' && styles.activeGameType} />
+            </View>
+            {selectedGameType == "Poker" && pokerGames?.map(game => {
+                return (
+                  <GameSavePanel
+                    key={game.id}
+                    title={game.title}
+                    gameType={game.gameType}
+                    players={game.players}
+                    language={language}
+                    navigator={navigation}
+                    showDeleteButton={true}
+                    onDelete={() => {setPokerGames(prev => prev.filter(g => g.id !== game.id))}}
+                  />
+                )
+              })
+            }
+            {selectedGameType == "Blackjack" && blackjackGames?.map(game => {
+                return (
+                  <GameSavePanel
+                    key={game.id}
+                    title={game.title}
+                    gameType={game.gameType}
+                    players={game.players}
+                    language={language}
+                    navigator={navigation}
+                    showDeleteButton={true}
+                    onDelete={() => {setBlackjackGames(prev => prev.filter(g => g.id !== game.id))}}
+                  />
+                )
+              })
+            }
+          </View>
         </ScrollView>
       </SafeAreaView>
     </SafeAreaProvider>
@@ -245,6 +338,30 @@ const styles = StyleSheet.create({
     fontSize: 15,
     marginLeft: 8,
   },
+  lineContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '90%',
+    justifyContent: 'center',
+    alignSelf: 'center',
+  },
+  line: {
+    width: '45%',
+    height: 1,
+    backgroundColor: '#666',
+  },
+  lineText: {
+    // Add horizontal margin to create space between the lines and the text
+    marginHorizontal: 8,
+    color: '#eee', // A medium gray color for the text
+    fontSize: 14,
+    fontWeight: '600',
+    flexShrink: 0,
+  },
+  activeGameType: {
+    outlineColor: 'white',
+    outlineWidth: 2,
+  }
 });
 
 export default SavesScreen;
