@@ -1,12 +1,19 @@
 import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { useState } from "react";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useCallback, useState } from "react";
 import { useLanguage } from "../../hooks/useLanguage";
 
 const SavesScreen = () => {
   const navigation = useNavigation();
   const [savesAmount, setSavesAmount] = useState(0);
   const { language } = useLanguage();
+
+  useFocusEffect(
+    useCallback(() => {
+      
+    }, [])
+  );
+
   return (
     <View style={{ flex: 1, backgroundColor: "#1c1c1c", position: "relative" }}>
       <TouchableOpacity

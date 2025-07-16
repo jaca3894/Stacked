@@ -61,13 +61,21 @@ const HomeScreen = () => {
   useFocusEffect(
     useCallback(() => {
       const fetchLastGame = async () => {
+
         try {
           const lastPokerGame = await AsyncStorage.getItem("@pokerGameSave");
           const lastBlackjackGame = await AsyncStorage.getItem("@blackjackGameSave");
           let lastPokerGameDate = 0, lastBlackjackGameDate = 0;
 
-          if(!lastPokerGame && !lastBlackjackGame) 
+          console.log(lastPokerGame, lastBlackjackGame)
+          console.log(hasLastGame, lastGame)
+
+          if(!lastPokerGame && !lastBlackjackGame) {
+            setHasLastGame(false);
             return;
+          }
+
+          
 
           if(lastPokerGame)
             lastPokerGameDate = JSON.parse(lastPokerGame).date;
@@ -243,8 +251,9 @@ const HomeScreen = () => {
                 <View style={styles.gameHeader}>
                   <Text style={styles.gameTitle}>
                     {language === "pl"
-                      ? `♠ Kontynuuj ostatnią grę: ${lastGame.gameType}`
-                      : `♠ Continue Last Game: ${lastGame.gameType}`}
+                      ? `♠ Kontynuuj ostatnią grę ${hasLastGame ? '('+lastGame.gameType+')' : ''}`
+                      : `♠ Continue Last Game ${hasLastGame ? '('+lastGame.gameType+')' : ''}`
+                    }
                   </Text>
                 </View>
                 {hasLastGame && (
