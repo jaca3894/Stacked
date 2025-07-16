@@ -86,14 +86,17 @@ export default class BlackjackPlayer {
     this.stood = true;
   }
 
-  static fromPlainObject(obj: any): BlackjackPlayer {
+  static fromPlainObject(obj: BlackjackPlayer): BlackjackPlayer {
     // 1. Create a new, real instance of the class
     const playerInstance = new BlackjackPlayer(obj.name, obj.balance);
 
     // 2. Copy the saved data onto the new instance
-    playerInstance.cardsCount = obj.cardsCount || 0;
+    playerInstance.name = obj.name || "";
+    playerInstance.balance = obj.balance || 0;
     playerInstance.currentBet = obj.currentBet || 0;
     playerInstance.isDealer = obj.isDealer || false;
+    playerInstance.insuranceBet = obj.insuranceBet || 0;
+    playerInstance.cardsCount = obj.cardsCount || 0;
     playerInstance.lastAction = obj.lastAction || '';
     
     // 3. Return the fully-functional instance

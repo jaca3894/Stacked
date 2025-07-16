@@ -89,6 +89,7 @@ const HomeScreen = () => {
             gameType == "Poker" ? lastPokerGame : lastBlackjackGame;
           if (typeof lastGameJSON == "string") {
             const players = JSON.parse(lastGameJSON).players;
+            console.log(players)
             setLastGame({ gameType, players });
             if (players.length > 0) setHasLastGame(true);
           }
@@ -553,7 +554,7 @@ const HomeScreen = () => {
 
                 <TouchableOpacity
                   style={styles.quickLinkButton}
-                  onPress={() => (navigator as any).navigate("Saves")}
+                  // onPress={() => (navigator as any).navigate("Saves")}
                 >
                   <Ionicons name="folder" size={20} color="#cbbb93" />
                   <Text style={styles.quickLinkText}>
