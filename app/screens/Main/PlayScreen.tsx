@@ -122,21 +122,34 @@ const PlayScreen = () => {
                 </TouchableHighlight>
               </CopilotView>
             </CopilotStep>
-            <TouchableHighlight
-              style={styles.button}
-              onPress={() => (navigation as any).navigate("Saves")}
+
+            <CopilotStep
+              order={3}
+              name="dealerKnows"
+              text={
+                language === "pl"
+                  ? "Rozpoczęcie nowej gry nadpisze ten ostatni zapis, chyba że w tej zakładce zaznaczysz zachowanie konkretnego zapisu."
+                  : "Starting a new game will overwrite the last save unless you select to keep a specific save in this tab."
+              }
             >
-              <View style={styles.buttonView}>
-                <Text style={styles.buttonText}>
-                  {language === "pl" ? "Wczytaj zapis" : "Load save"}
-                </Text>
-                <Image
-                  style={styles.arrow}
-                  source={require("../../../assets/arrowRight.png")}
-                  resizeMode="cover"
-                />
-              </View>
-            </TouchableHighlight>
+              <CopilotView>
+                <TouchableHighlight
+                  style={styles.button}
+                  onPress={() => (navigation as any).navigate("Saves")}
+                >
+                  <View style={styles.buttonView}>
+                    <Text style={styles.buttonText}>
+                      {language === "pl" ? "Wczytaj zapis" : "Load save"}
+                    </Text>
+                    <Image
+                      style={styles.arrow}
+                      source={require("../../../assets/arrowRight.png")}
+                      resizeMode="cover"
+                    />
+                  </View>
+                </TouchableHighlight>
+              </CopilotView>
+            </CopilotStep>
 
             {/* <TouchableHighlight
               style={styles.button}
