@@ -122,6 +122,21 @@ const PlayScreen = () => {
                 </TouchableHighlight>
               </CopilotView>
             </CopilotStep>
+            <TouchableHighlight
+              style={styles.button}
+              onPress={() => (navigation as any).navigate("Saves")}
+            >
+              <View style={styles.buttonView}>
+                <Text style={styles.buttonText}>
+                  {language === "pl" ? "Wczytaj zapis" : "Load save"}
+                </Text>
+                <Image
+                  style={styles.arrow}
+                  source={require("../../../assets/arrowRight.png")}
+                  resizeMode="cover"
+                />
+              </View>
+            </TouchableHighlight>
 
             {/* <TouchableHighlight
               style={styles.button}

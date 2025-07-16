@@ -65,14 +65,27 @@ const SettingsScreen = () => {
   };
 
   const replayTutorial = async () => {
-    await AsyncStorage.removeItem("@hasSeenHomeTutorial");
-    Alert.alert(
-      language === "pl"
-        ? "Przewodnik powtórzy się przy następnym otwarciu aplikacji."
-        : "Tutorial will replay next time you open app."
-    );
-    // @ts-ignore
-    navigation.navigate("Home");
+    try {
+      const keys = await AsyncStorage.getAllKeys();
+      const seenKeys = keys.filter((key) => key.startsWith("@hasSeen"));
+      await AsyncStorage.multiRemove(seenKeys);
+
+      Alert.alert(
+        language === "pl"
+          ? "Przewodnik powtórzy się przy następnym otwarciu aplikacji."
+          : "Tutorial will replay next time you open the app."
+      );
+
+      // @ts-ignore
+      // navigation.navigate("Home");
+    } catch (error) {
+      console.error("Błąd podczas resetowania tutoriali:", error);
+      Alert.alert(
+        language === "pl"
+          ? "Wystąpił błąd podczas resetowania przewodnika."
+          : "An error occurred while resetting the tutorial."
+      );
+    }
   };
 
   const resetProgress = async () => {
