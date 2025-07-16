@@ -62,9 +62,11 @@ const HomeScreen = () => {
     React.useCallback(() => {
       const fetchLastGame = async () => {
         try {
-          const lastPokerGame = await AsyncStorage.getItem("@pokerGameSave");
+          const lastPokerGame = await AsyncStorage.getItem(
+            "@lastPokerGameSave"
+          );
           const lastBlackjackGame = await AsyncStorage.getItem(
-            "@blackjackGameSave"
+            "@lastBlackjackGameSave"
           );
           let lastPokerGameDate = 0,
             lastBlackjackGameDate = 0;

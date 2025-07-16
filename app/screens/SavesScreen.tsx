@@ -2,15 +2,52 @@ import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useCallback, useState } from "react";
 import { useLanguage } from "../../hooks/useLanguage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const SavesScreen = () => {
   const navigation = useNavigation();
   const [savesAmount, setSavesAmount] = useState(0);
   const { language } = useLanguage();
+  const [hasLastGame, setHasLastGame] = useState(false);
+  const [lastGame, setLastGame] = useState({});
 
   useFocusEffect(
     useCallback(() => {
-      
+      const fetchLastGame = async () => {
+
+        try {
+          const lastPokerGame = await AsyncStorage.getItem("@lastPokerGameSave");
+          const lastBlackjackGame = await AsyncStorage.getItem("@lastBlackjackGameSave");
+          const pokerGames = await AsyncStorage.getItem("@pokerGameSaves");
+          const blackjackGames = await AsyncStorage.getItem("@blackjackGameSaves");
+          let lastPokerGameDate = 0, lastBlackjackGameDate = 0;
+
+          console.log(lastPokerGame, lastBlackjackGame)
+          console.log(hasLastGame, lastGame)
+
+          if(!lastPokerGame && !lastBlackjackGame && !pokerGames && !blackjackGames)
+            return;
+          
+          if(lastPokerGame)
+            lastPokerGameDate = JSON.parse(lastPokerGame).date;
+          if(lastBlackjackGame)
+            lastBlackjackGameDate = JSON.parse(lastBlackjackGame).date;
+
+          const gameType = lastPokerGameDate > lastBlackjackGameDate ? 'Poker' : 'Blackjack';
+          const lastGameJSON = gameType == 'Poker' ? lastPokerGame : lastBlackjackGame;
+          if(typeof lastGameJSON == 'string') {
+            const players = JSON.parse(lastGameJSON).players;
+            setLastGame({gameType, players});
+            if(players.length > 0)
+              setHasLastGame(true);
+          }
+        }
+        catch(err) {
+          console.error(err);
+        }
+      }
+      fetchLastGame();
+
     }, [])
   );
 
