@@ -17,7 +17,7 @@ const FeedbackScreen = () => {
   const { language } = useLanguage();
 
   useEffect(() => {
-    Linking.openURL("https://www.google.com/");
+    Linking.openURL("https://forms.gle/LgGTAQz7ZQgxw3k48");
 
     const timer = setTimeout(() => {
       setShowContent(true);

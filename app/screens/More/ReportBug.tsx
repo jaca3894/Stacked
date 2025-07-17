@@ -16,7 +16,7 @@ const ReportBugScreen = () => {
   const [showContent, setShowContent] = useState(false);
   const { language } = useLanguage();
   useEffect(() => {
-    Linking.openURL("https://www.google.com/");
+    Linking.openURL("https://forms.gle/2vWzSoKF7iz2R96DA");
 
     const timer = setTimeout(() => {
       setShowContent(true);
