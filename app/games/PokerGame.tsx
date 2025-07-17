@@ -217,7 +217,7 @@ const PokerGame = () => {
       player.lastAmount = 0;
       player.lastAction = "";
 
-      if (player.name == "") player.name = `Player${i + 1}`;
+      if (player.name == "") player.name = `Player ${i + 1}`;
       player.isDealer = i === dealerIndex;
       if (i === smallBlindIndex) {
         player.take(smallBlindAmount);

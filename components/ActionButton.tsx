@@ -11,7 +11,7 @@ interface ActionButtonProps {
 
 const ActionButton = ({ text, disabled, opacity, addButtonStyle, addTextStyle, onPress }: ActionButtonProps) => {
   return (
-    <TouchableHighlight style={[styles.button, addButtonStyle, { opacity: opacity }]} onPress={onPress} underlayColor="#6e6655ff" disabled={disabled}>
+    <TouchableHighlight style={[styles.button, addButtonStyle, { opacity: opacity }]} onPress={onPress} underlayColor="#948870" disabled={disabled}>
       <Text style={[styles.text, addTextStyle]}>{text}</Text>
     </TouchableHighlight>
   )

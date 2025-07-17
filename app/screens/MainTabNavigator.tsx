@@ -13,6 +13,7 @@ export default function App() {
 
   return (
     <Tab.Navigator
+      initialRouteName={language === "pl" ? "Start" : "Home"}
       tabBarPosition="bottom"
       screenOptions={({ route }: { route: { name: string } }) => ({
         headerStyle: { backgroundColor: "#121212" },

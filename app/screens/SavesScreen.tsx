@@ -112,6 +112,11 @@ const SavesScreen = () => {
   useEffect(() => {
     AsyncStorage.setItem("@pokerGameSaves", JSON.stringify(pokerGames));
     AsyncStorage.setItem("@blackjackGameSaves", JSON.stringify(blackjackGames));
+    
+    if(pokerGames.length === 0 && blackjackGames.length > 0 && selectedGameType === "Poker")
+      setSelectedGameType("Blackjack");
+    if(blackjackGames.length === 0 && pokerGames.length > 0 && selectedGameType === "Blackjack")
+      setSelectedGameType("Poker");
   }, [pokerGames, blackjackGames]);
 
   const generateId = () => {
@@ -242,7 +247,7 @@ const SavesScreen = () => {
                       }}
                       style={[
                         styles.button,
-                        selectedGameType == "Poker" && styles.activeGameType,
+                        selectedGameType === "Poker" && styles.activeGameType,
                       ]}
                     >
                       <Text style={styles.buttonText}>Poker</Text>
@@ -255,7 +260,7 @@ const SavesScreen = () => {
                       }}
                       style={[
                         styles.button,
-                        selectedGameType == "Blackjack" &&
+                        selectedGameType === "Blackjack" &&
                           styles.activeGameType,
                       ]}
                     >
