@@ -14,11 +14,13 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Picker } from "@react-native-picker/picker";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
+import { useAlert } from "../../../components/CustomAlert";
 
 type Language = "pl" | "eng";
 
 const SettingsScreen = () => {
   const navigation = useNavigation();
+  const { showAlert } = useAlert();
   const { language, setLanguage } = useLanguage();
   const [pendingLanguage, setPendingLanguage] = useState<Language>(language);
 
@@ -31,45 +33,60 @@ const SettingsScreen = () => {
   const onLanguageChange = (lang: Language) => {
     if (lang === language) {
       // Nie zmieniamy języka — komunikat opcjonalny
-      Alert.alert(
-        language === "pl" ? "Język już ustawiony" : "Language already selected",
-        language === "pl"
-          ? "Wybrany język jest już aktywny."
-          : "The selected language is already active."
-      );
+      showAlert({
+        type: "info",
+        title:
+          language === "pl"
+            ? "Język już ustawiony"
+            : "Language already selected",
+        message:
+          language === "pl"
+            ? "Wybrany język jest już aktywny."
+            : "The selected language is already active.",
+        buttons: [{ text: "OK" }],
+      });
+      // Alert.alert(
+      //   language === "pl" ? "Język już ustawiony" : "Language already selected",
+      //   language === "pl"
+      //     ? "Wybrany język jest już aktywny."
+      //     : "The selected language is already active."
+      // );
       return;
     }
 
     setPendingLanguage(lang);
 
-    Alert.alert(
-      language === "pl" ? "Zmień język" : "Change language",
-      language === "pl"
-        ? `Czy na pewno chcesz przełączyć język na ${
-            lang === "pl" ? "Polski" : "Angielski"
-          }?`
-        : `Are you sure you want to switch to ${
-            lang === "pl" ? "Polish" : "English"
-          }?`,
-      [
+    showAlert({
+      type: "dialog",
+      title: language === "pl" ? "Zmień język" : "Change language",
+      message:
+        language === "pl"
+          ? `Czy na pewno chcesz przełączyć język na ${
+              lang === "pl" ? "Polski" : "Angielski"
+            }?`
+          : `Are you sure you want to switch to ${
+              lang === "pl" ? "Polish" : "English"
+            }?`,
+      buttons: [
         {
           text: language === "pl" ? "Anuluj" : "Cancel",
           style: "cancel",
-          onPress: () => {
-            setPendingLanguage(language);
-          },
+          onPress: () => setPendingLanguage(language),
         },
         {
           text: language === "pl" ? "Tak" : "Yes",
           onPress: async () => {
             setLanguage(lang);
-            Alert.alert(
-              language === "pl" ? "Język zaktualizowany" : "Language updated",
-              language === "pl"
-                ? `Aktualny język: ${lang === "pl" ? "Polski" : "Angielski"}`
-                : `Current language: ${lang === "pl" ? "Polish" : "English"}`
-            );
-
+            showAlert({
+              type: "info",
+              title:
+                language === "pl" ? "Język zaktualizowany" : "Language updated",
+              message:
+                language === "pl"
+                  ? `Aktualny język: ${lang === "pl" ? "Polski" : "Angielski"}`
+                  : `Current language: ${lang === "pl" ? "Polish" : "English"}`,
+              buttons: [{ text: "OK" }],
+            });
             try {
               await Updates.reloadAsync();
             } catch (error) {
@@ -77,8 +94,8 @@ const SettingsScreen = () => {
             }
           },
         },
-      ]
-    );
+      ],
+    });
   };
 
   const replayTutorial = async () => {
@@ -86,48 +103,76 @@ const SettingsScreen = () => {
       const keys = await AsyncStorage.getAllKeys();
       const seenKeys = keys.filter((key) => key.startsWith("@hasSeen"));
       await AsyncStorage.multiRemove(seenKeys);
-      const title = language === "pl" ? "Powiadomienie" : "Info";
-      const message =
-        language === "pl"
-          ? "Przewodnik powtórzy się przy następnym otwarciu aplikacji."
-          : "Tutorial will replay next time you open the app.";
-
-      Alert.alert(title, message);
+      showAlert({
+        type: "info",
+        title: language === "pl" ? "Powiadomienie" : "Info",
+        message:
+          language === "pl"
+            ? "Przewodnik powtórzy się przy następnym otwarciu aplikacji."
+            : "Tutorial will replay next time you open the app.",
+        buttons: [{ text: "OK" }],
+      });
 
       // @ts-ignore
       // navigation.navigate("Home");
     } catch (error) {
       console.error("Błąd podczas resetowania tutoriali:", error);
-      Alert.alert(
-        language === "pl"
-          ? "Wystąpił błąd podczas resetowania przewodnika."
-          : "An error occurred while resetting the tutorial."
-      );
+      // Alert.alert(
+      //   language === "pl"
+      //     ? "Wystąpił błąd podczas resetowania przewodnika."
+      //     : "An error occurred while resetting the tutorial."
+      // );
     }
   };
 
-  const resetProgress = async () => {
-    Alert.alert(
-      language === "pl" ? "Zresetuj postęp" : "Reset Progress",
-      language === "pl"
-        ? "Czy na pewno chcesz zresetować?"
-        : "Are you sure you want to reset?",
-      [
-        { text: language === "pl" ? "Anuluj" : "Cancel", style: "cancel" },
+  const resetProgress = () => {
+    showAlert({
+      type: "dialog",
+      title: language === "pl" ? "Zresetuj postęp" : "Reset Progress",
+      message:
+        language === "pl"
+          ? "Czy na pewno chcesz zresetować?"
+          : "Are you sure you want to reset?",
+      buttons: [
+        {
+          text: language === "pl" ? "Anuluj" : "Cancel",
+          style: "cancel",
+        },
         {
           text: language === "pl" ? "Resetuj" : "Reset",
           style: "destructive",
           onPress: async () => {
-            const keys = await AsyncStorage.getAllKeys();
-            const articleKeys = keys.filter((k) => k.startsWith("article"));
-            await AsyncStorage.multiRemove(articleKeys);
-            Alert.alert(
-              language === "pl" ? "Progres zresetowany." : "Progress reset."
-            );
+            try {
+              const keys = await AsyncStorage.getAllKeys();
+              const articleKeys = keys.filter((k) => k.startsWith("article"));
+              await AsyncStorage.multiRemove(articleKeys);
+
+              showAlert({
+                type: "info",
+                title:
+                  language === "pl" ? "Progres zresetowany" : "Progress reset",
+                message:
+                  language === "pl"
+                    ? "Twoje dane postępu zostały usunięte."
+                    : "Your progress data has been erased.",
+                buttons: [{ text: "OK" }],
+              });
+            } catch (error) {
+              console.error("❌ Błąd resetowania:", error);
+              showAlert({
+                type: "info",
+                title: language === "pl" ? "Błąd" : "Error",
+                message:
+                  language === "pl"
+                    ? "Nie udało się zresetować postępów."
+                    : "Failed to reset progress.",
+                buttons: [{ text: "OK" }],
+              });
+            }
           },
         },
-      ]
-    );
+      ],
+    });
   };
 
   return (
