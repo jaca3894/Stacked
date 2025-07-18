@@ -90,10 +90,10 @@ const BlackjackGame = () => {
   const [SKIPPED_ACTIONS, setSKIPPED_ACTIONS] = useState<SkippedAction[]>(['blackjack', 'busted']);
   const [didDealerHaveBlackjack, setDidDealerHaveBlackjack] = useState(false);
 
-  const stateToSaveRef = useRef<BlackjackGameSaveState>({
-    players,
-    date: Date.now()
-  });
+  // const stateToSaveRef = useRef<BlackjackGameSaveState>({
+  //   players,
+  //   date: Date.now()
+  // });
 
   // useEffect(() => {
   //   stateToSaveRef.current = {
@@ -107,10 +107,6 @@ const BlackjackGame = () => {
     if(loadGame)
       loadLastGame();
 
-    const saveGame = async () => {
-      if(isGameStarted && players.find(p => p.name === '')) return;
-      await AsyncStorage.setItem("@lastBlackjackGameSave", JSON.stringify(stateToSaveRef.current));
-    }
     return () => {
       // saveGame();
       ScreenOrientation.unlockAsync();

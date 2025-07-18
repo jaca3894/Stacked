@@ -8,6 +8,8 @@ import {
   SafeAreaView,
   StyleSheet,
   TouchableHighlight,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import { useState, useRef } from "react";
 import { useNavigation } from "@react-navigation/core";
@@ -75,221 +77,223 @@ const CreatePoker = () => {
   };
 
   return (
-    <SafeAreaProvider>
-      <SafeAreaView style={styles.container}>
-        {/* HEADER */}
-        <View style={styles.header}>
-          <TouchableOpacity
-            onPress={() => navigation.goBack()}
-            style={styles.backButton}
-          >
-            <Image
-              source={require("../../assets/arrowRight.png")}
-              style={styles.backIcon}
-            />
-          </TouchableOpacity>
-          <Text style={styles.headerText}>
-            {language === "pl" ? "Konfiguracja pokera" : "Poker setup"}
-          </Text>
-        </View>
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+      <SafeAreaProvider>
+        <SafeAreaView style={styles.container}>
+          {/* HEADER */}
+          <View style={styles.header}>
+            <TouchableOpacity
+              onPress={() => navigation.goBack()}
+              style={styles.backButton}
+            >
+              <Image
+                source={require("../../assets/arrowRight.png")}
+                style={styles.backIcon}
+              />
+            </TouchableOpacity>
+            <Text style={styles.headerText}>
+              {language === "pl" ? "Konfiguracja pokera" : "Poker setup"}
+            </Text>
+          </View>
 
-        {/* CONTENT */}
-        <View style={styles.content}>
-          {/* Players (bez tooltipa) */}
-          <Animatable.View
-            style={{ width: "100%", alignItems: "center" }}
-            animation="fadeIn"
-            duration={1000}
-            delay={100}
-          >
-            <View style={styles.titleRow}>
-              <Text style={styles.title}>
-                {language === "pl" ? "Gracze" : "Players"}
-              </Text>
-            </View>
-            <TextInput
-              style={styles.input}
-              value={playersAmount}
-              onChangeText={(text) => {
-                const numeric = text.replace(/\D/g, "");
-                if (numeric === "") return setPlayersAmount("");
-                let number = Math.max(1, Math.min(parseInt(numeric, 10), 12));
-                setPlayersAmount(number.toString());
-              }}
-              keyboardType="numeric"
-              placeholder="(2-12)"
-              placeholderTextColor="#888"
-              maxLength={2}
-            />
-          </Animatable.View>
+          {/* CONTENT */}
+          <View style={styles.content}>
+            {/* Players (bez tooltipa) */}
+            <Animatable.View
+              style={{ width: "100%", alignItems: "center" }}
+              animation="fadeIn"
+              duration={1000}
+              delay={100}
+            >
+              <View style={styles.titleRow}>
+                <Text style={styles.title}>
+                  {language === "pl" ? "Gracze" : "Players"}
+                </Text>
+              </View>
+              <TextInput
+                style={styles.input}
+                value={playersAmount}
+                onChangeText={(text) => {
+                  const numeric = text.replace(/\D/g, "");
+                  if (numeric === "") return setPlayersAmount("");
+                  let number = Math.max(1, Math.min(parseInt(numeric, 10), 12));
+                  setPlayersAmount(number.toString());
+                }}
+                keyboardType="numeric"
+                placeholder="(2-12)"
+                placeholderTextColor="#888"
+                maxLength={2}
+              />
+            </Animatable.View>
 
-          {/* Balance + tooltip */}
-          <Animatable.View
-            style={{ width: "100%", alignItems: "center" }}
-            animation="fadeIn"
-            duration={1000}
-            delay={200}
-          >
-            <View style={styles.titleRow}>
-              <Text style={styles.title}>
-                {language === "pl" ? "Saldo" : "Balance"}
-              </Text>
+            {/* Balance + tooltip */}
+            <Animatable.View
+              style={{ width: "100%", alignItems: "center" }}
+              animation="fadeIn"
+              duration={1000}
+              delay={200}
+            >
+              <View style={styles.titleRow}>
+                <Text style={styles.title}>
+                  {language === "pl" ? "Saldo" : "Balance"}
+                </Text>
+                <TouchableOpacity
+                  ref={balanceRef}
+                  onPress={() => setShowBalanceTip(true)}
+                >
+                  <View style={styles.iconWrapper}>
+                    <Ionicons name="help-circle" size={20} color="#cbbb9c" />
+                  </View>
+                </TouchableOpacity>
+              </View>
+              <HelpPopover
+                isVisible={showBalanceTip}
+                from={balanceRef}
+                onRequestClose={() => setShowBalanceTip(false)}
+                text={
+                  language === "pl"
+                    ? "Początkowa ilość żetonów każdego gracza"
+                    : "Initial amount of money per player"
+                }
+              />
+              <TextInput
+                style={styles.input}
+                value={initialBalance}
+                onChangeText={(text) => {
+                  const numeric = text.replace(/\D/g, "");
+                  if (numeric === "") return setInitialBalance("");
+                  let number = Math.max(
+                    1,
+                    Math.min(parseInt(numeric, 10), 100000)
+                  );
+                  setInitialBalance(number.toString());
+                }}
+                keyboardType="numeric"
+                placeholder="(100-100k)"
+                placeholderTextColor="#888"
+                maxLength={5}
+              />
+            </Animatable.View>
+
+            {/* Big blind */}
+            <Animatable.View
+              style={styles.titleRow}
+              animation="fadeIn"
+              duration={1000}
+              delay={300}
+            >
+              <Text style={styles.title}>Big blind</Text>
               <TouchableOpacity
-                ref={balanceRef}
-                onPress={() => setShowBalanceTip(true)}
+                ref={bigBlindRef}
+                onPress={() => setShowBigBlindTip(true)}
               >
                 <View style={styles.iconWrapper}>
                   <Ionicons name="help-circle" size={20} color="#cbbb9c" />
                 </View>
               </TouchableOpacity>
-            </View>
-            <HelpPopover
-              isVisible={showBalanceTip}
-              from={balanceRef}
-              onRequestClose={() => setShowBalanceTip(false)}
-              text={
-                language === "pl"
-                  ? "Początkowa ilość żetonów każdego gracza"
-                  : "Initial amount of money per player"
-              }
-            />
-            <TextInput
-              style={styles.input}
-              value={initialBalance}
-              onChangeText={(text) => {
-                const numeric = text.replace(/\D/g, "");
-                if (numeric === "") return setInitialBalance("");
-                let number = Math.max(
-                  1,
-                  Math.min(parseInt(numeric, 10), 100000)
-                );
-                setInitialBalance(number.toString());
-              }}
-              keyboardType="numeric"
-              placeholder="(100-100k)"
-              placeholderTextColor="#888"
-              maxLength={5}
-            />
-          </Animatable.View>
-
-          {/* Big blind */}
-          <Animatable.View
-            style={styles.titleRow}
-            animation="fadeIn"
-            duration={1000}
-            delay={300}
-          >
-            <Text style={styles.title}>Big blind</Text>
-            <TouchableOpacity
-              ref={bigBlindRef}
-              onPress={() => setShowBigBlindTip(true)}
+              <HelpPopover
+                isVisible={showBigBlindTip}
+                from={bigBlindRef}
+                onRequestClose={() => setShowBigBlindTip(false)}
+                text={
+                  language === "pl"
+                    ? "Obowiązkowy zakład od gracza po lewej stronie rozdającego"
+                    : "Mandatory bet from the player left to dealer"
+                }
+              />
+            </Animatable.View>
+            <Animatable.View
+              style={{ width: "90%", flexDirection: "row" }}
+              animation="fadeIn"
+              duration={1000}
+              delay={300}
             >
-              <View style={styles.iconWrapper}>
-                <Ionicons name="help-circle" size={20} color="#cbbb9c" />
-              </View>
-            </TouchableOpacity>
-            <HelpPopover
-              isVisible={showBigBlindTip}
-              from={bigBlindRef}
-              onRequestClose={() => setShowBigBlindTip(false)}
-              text={
-                language === "pl"
-                  ? "Obowiązkowy zakład od gracza po lewej stronie rozdającego"
-                  : "Mandatory bet from the player left to dealer"
-              }
-            />
-          </Animatable.View>
-          <Animatable.View
-            style={{ width: "90%", flexDirection: "row" }}
-            animation="fadeIn"
-            duration={1000}
-            delay={300}
-          >
-            {bigBlindsData.map((value, i) => (
-              <TouchableHighlight
-                key={i + 1}
-                onPress={() => setSelectedBigBlind(i)}
-                style={[
-                  styles.blindItem,
-                  selectedBigBlind === i && styles.blindItemSelected,
-                ]}
-                underlayColor="#948870"
-              >
-                <Text style={{ textAlign: "center" }}>{value}</Text>
-              </TouchableHighlight>
-            ))}
-          </Animatable.View>
+              {bigBlindsData.map((value, i) => (
+                <TouchableHighlight
+                  key={i + 1}
+                  onPress={() => setSelectedBigBlind(i)}
+                  style={[
+                    styles.blindItem,
+                    selectedBigBlind === i && styles.blindItemSelected,
+                  ]}
+                  underlayColor="#948870"
+                >
+                  <Text style={{ textAlign: "center" }}>{value}</Text>
+                </TouchableHighlight>
+              ))}
+            </Animatable.View>
 
-          {/* Small blind */}
-          <Animatable.View
-            style={styles.titleRow}
-            animation="fadeIn"
-            duration={1000}
-            delay={400}
-          >
-            <Text style={styles.title}>Small blind</Text>
-            <TouchableOpacity
-              ref={smallBlindRef}
-              onPress={() => setShowSmallBlindTip(true)}
+            {/* Small blind */}
+            <Animatable.View
+              style={styles.titleRow}
+              animation="fadeIn"
+              duration={1000}
+              delay={400}
             >
-              <View style={styles.iconWrapper}>
-                <Ionicons name="help-circle" size={20} color="#cbbb9c" />
-              </View>
-            </TouchableOpacity>
-            <HelpPopover
-              isVisible={showSmallBlindTip}
-              from={smallBlindRef}
-              onRequestClose={() => setShowSmallBlindTip(false)}
-              text={
-                language === "pl"
-                  ? "Obowiązkowy mniejszy zakład przed rozdaniem kart"
-                  : "Smaller forced bet before dealing cards"
-              }
-            />
-          </Animatable.View>
-          <Animatable.View
-            style={{ width: "90%", flexDirection: "row" }}
-            animation="fadeIn"
-            duration={1000}
-            delay={400}
-          >
-            {smallBlindsData.map((value, i) => (
-              <TouchableHighlight
-                key={i + 1}
-                onPress={() => setSelectedSmallBlind(i)}
-                style={[
-                  styles.blindItem,
-                  selectedSmallBlind === i && styles.blindItemSelected,
-                ]}
-                underlayColor="#948870"
+              <Text style={styles.title}>Small blind</Text>
+              <TouchableOpacity
+                ref={smallBlindRef}
+                onPress={() => setShowSmallBlindTip(true)}
               >
-                <Text style={{ textAlign: "center" }}>{value}</Text>
-              </TouchableHighlight>
-            ))}
-          </Animatable.View>
+                <View style={styles.iconWrapper}>
+                  <Ionicons name="help-circle" size={20} color="#cbbb9c" />
+                </View>
+              </TouchableOpacity>
+              <HelpPopover
+                isVisible={showSmallBlindTip}
+                from={smallBlindRef}
+                onRequestClose={() => setShowSmallBlindTip(false)}
+                text={
+                  language === "pl"
+                    ? "Obowiązkowy mniejszy zakład przed rozdaniem kart"
+                    : "Smaller forced bet before dealing cards"
+                }
+              />
+            </Animatable.View>
+            <Animatable.View
+              style={{ width: "90%", flexDirection: "row" }}
+              animation="fadeIn"
+              duration={1000}
+              delay={400}
+            >
+              {smallBlindsData.map((value, i) => (
+                <TouchableHighlight
+                  key={i + 1}
+                  onPress={() => setSelectedSmallBlind(i)}
+                  style={[
+                    styles.blindItem,
+                    selectedSmallBlind === i && styles.blindItemSelected,
+                  ]}
+                  underlayColor="#948870"
+                >
+                  <Text style={{ textAlign: "center" }}>{value}</Text>
+                </TouchableHighlight>
+              ))}
+            </Animatable.View>
 
-          {/* START BUTTON */}
-          <Animatable.View
-            style={{ width: "100%", alignItems: "center" }}
-            animation="fadeIn"
-            duration={1000}
-            delay={500}
-          >
-            <TouchableOpacity onPress={handleStart} style={styles.button}>
-              <Text style={styles.buttonText}>
-                {language === "pl" ? "Rozpocznij grę" : "Start Game"}
-              </Text>
-            </TouchableOpacity>
-          </Animatable.View>
-        </View>
+            {/* START BUTTON */}
+            <Animatable.View
+              style={{ width: "100%", alignItems: "center" }}
+              animation="fadeIn"
+              duration={1000}
+              delay={500}
+            >
+              <TouchableOpacity onPress={handleStart} style={styles.button}>
+                <Text style={styles.buttonText}>
+                  {language === "pl" ? "Rozpocznij grę" : "Start Game"}
+                </Text>
+              </TouchableOpacity>
+            </Animatable.View>
+          </View>
 
-        {/* FOOTER */}
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>2025 Stacked.</Text>
-        </View>
-      </SafeAreaView>
-      <Toast config={toastConfig} swipeable />
-    </SafeAreaProvider>
+          {/* FOOTER */}
+          <View style={styles.footer}>
+            <Text style={styles.footerText}>2025 Stacked.</Text>
+          </View>
+        </SafeAreaView>
+        <Toast config={toastConfig} swipeable />
+      </SafeAreaProvider>
+    </TouchableWithoutFeedback>
   );
 };
 

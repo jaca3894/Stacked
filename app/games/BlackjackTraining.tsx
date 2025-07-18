@@ -23,7 +23,7 @@ type GameRouteProp = RouteProp<RootStackParamList, "BlackjackTraining">;
 const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
 const BlackjackTraining = () => {
-  const { language, setLanguage } = useLanguage();
+  const { language } = useLanguage();
   const route = useRoute<GameRouteProp>();
   const {
     initialBalance,
