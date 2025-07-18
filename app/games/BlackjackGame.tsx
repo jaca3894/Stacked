@@ -353,7 +353,7 @@ const BlackjackGame = () => {
         </View>
         
         
-        {!isGameStarted && 
+        {(!isGameStarted && !showGameEnded) && 
           <TouchableHighlight style={[styles.button, { position: 'absolute', bottom: '30%' }]} underlayColor="#948870" onPress={startGame}>
             <Text style={styles.buttonText}>{language === "pl" ? "Rozpocznij Grę" : "Start Game"}</Text>
           </TouchableHighlight>
