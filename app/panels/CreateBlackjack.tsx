@@ -397,7 +397,9 @@ const CreateBlackjack = () => {
                 delay={initialRadioState ? 600 : 0}
               >
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
-                  <Text style={styles.title}>{"Auto-hit przy 17"}</Text>
+                  <Text style={styles.title}>{`Auto-hit ${
+                    language === "pl" ? "przy" : "on"
+                  } 17`}</Text>
                   <TouchableOpacity
                     ref={autoHitRef}
                     onPress={() => setShowAutoHitTip(true)}
