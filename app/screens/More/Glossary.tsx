@@ -16,6 +16,7 @@ import { getGlossaryData } from "../../../classes/Database";
 import * as Animatable from "react-native-animatable";
 import { useNavigation } from "@react-navigation/native";
 import { useLanguage } from "../../../hooks/useLanguage";
+import KeyboardDismissingView from "../../../components/KeyboardDismissingView";
 
 const screenHeight = Dimensions.get("screen").height;
 
@@ -109,93 +110,95 @@ const GlossaryScreen = () => {
   // 5. Render
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={styles.container}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.backButton}
-        >
+      <KeyboardDismissingView>
+        <SafeAreaView style={styles.container}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={styles.backButton}
+          >
+            <Image
+              source={require("../../../assets/arrowRight.png")}
+              style={styles.backIcon}
+            />
+          </TouchableOpacity>
+
           <Image
-            source={require("../../../assets/arrowRight.png")}
-            style={styles.backIcon}
+            source={require("../../../assets/icons/logo.png")}
+            style={styles.logo}
           />
-        </TouchableOpacity>
 
-        <Image
-          source={require("../../../assets/icons/logo.png")}
-          style={styles.logo}
-        />
+          <TextInput
+            value={search}
+            onChangeText={handleSearch}
+            placeholder={
+              language === "pl" ? "Szukaj pojęć..." : "Search terms..."
+            }
+            placeholderTextColor="#777"
+            style={styles.searchInput}
+          />
 
-        <TextInput
-          value={search}
-          onChangeText={handleSearch}
-          placeholder={
-            language === "pl" ? "Szukaj pojęć..." : "Search terms..."
-          }
-          placeholderTextColor="#777"
-          style={styles.searchInput}
-        />
-
-        <ScrollView contentContainerStyle={styles.content}>
-          {isSearching ? (
-            filteredItems.length > 0 ? (
-              filteredItems.map((item) => (
-                <View
-                  key={`${item.section}-${item.term}`}
-                  style={styles.termBlock}
-                >
-                  <Text style={styles.term}>{item.term}</Text>
-                  <Text style={styles.definition}>{item.definition}</Text>
-                  <Text style={styles.sectionLabel}>{item.section}</Text>
-                </View>
-              ))
+          <ScrollView contentContainerStyle={styles.content}>
+            {isSearching ? (
+              filteredItems.length > 0 ? (
+                filteredItems.map((item) => (
+                  <View
+                    key={`${item.section}-${item.term}`}
+                    style={styles.termBlock}
+                  >
+                    <Text style={styles.term}>{item.term}</Text>
+                    <Text style={styles.definition}>{item.definition}</Text>
+                    <Text style={styles.sectionLabel}>{item.section}</Text>
+                  </View>
+                ))
+              ) : (
+                <Text style={styles.noResults}>{"Brak wyników."}</Text>
+              )
             ) : (
-              <Text style={styles.noResults}>{"Brak wyników."}</Text>
-            )
-          ) : (
-            glossaryData!.map((section) => {
-              const isCollapsed = collapsedSections.includes(section.title);
-              const anim = animationsRef.current[section.title];
-              const height = anim.interpolate({
-                inputRange: [0, 1],
-                outputRange: [0, section.data.length * 64],
-              });
+              glossaryData!.map((section) => {
+                const isCollapsed = collapsedSections.includes(section.title);
+                const anim = animationsRef.current[section.title];
+                const height = anim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [0, section.data.length * 64],
+                });
 
-              return (
-                <Animatable.View
-                  key={section.title}
-                  animation="fadeIn"
-                  duration={500}
-                >
-                  <TouchableOpacity
-                    onPress={() => toggleSection(section.title)}
+                return (
+                  <Animatable.View
+                    key={section.title}
+                    animation="fadeIn"
+                    duration={500}
                   >
-                    <Text style={styles.sectionTitle}>
-                      {isCollapsed ? "▶" : "▼"} {section.title}
-                    </Text>
-                  </TouchableOpacity>
-                  <Animated.View
-                    style={{
-                      height,
-                      overflow: "hidden",
-                      opacity: anim,
-                    }}
-                  >
-                    {section.data.map((item) => (
-                      <View key={item.term} style={styles.termBlock}>
-                        <Text style={styles.term}>{item.term}</Text>
-                        <Text style={styles.definition}>{item.definition}</Text>
-                      </View>
-                    ))}
-                  </Animated.View>
-                </Animatable.View>
-              );
-            })
-          )}
-          <View style={styles.footer}>
-            <Text style={styles.footerText}>2025 Stacked.</Text>
-          </View>
-        </ScrollView>
-      </SafeAreaView>
+                    <TouchableOpacity
+                      onPress={() => toggleSection(section.title)}
+                    >
+                      <Text style={styles.sectionTitle}>
+                        {isCollapsed ? "▶" : "▼"} {section.title}
+                      </Text>
+                    </TouchableOpacity>
+                    <Animated.View
+                      style={{
+                        height,
+                        overflow: "hidden",
+                        opacity: anim,
+                      }}
+                    >
+                      {section.data.map((item) => (
+                        <View key={item.term} style={styles.termBlock}>
+                          <Text style={styles.term}>{item.term}</Text>
+                          <Text style={styles.definition}>{item.definition}</Text>
+                        </View>
+                      ))}
+                    </Animated.View>
+                  </Animatable.View>
+                );
+              })
+            )}
+            <View style={styles.footer}>
+              <Text style={styles.footerText}>2025 Stacked.</Text>
+            </View>
+          </ScrollView>
+        </SafeAreaView>
+      </KeyboardDismissingView>
     </SafeAreaProvider>
   );
 };

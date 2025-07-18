@@ -7,9 +7,7 @@ import {
   Image,
   SafeAreaView,
   StyleSheet,
-  Switch,
-  TouchableWithoutFeedback,
-  Keyboard,
+  Switch
 } from "react-native";
 import { useState, useRef, useEffect } from "react";
 import { useNavigation } from "@react-navigation/core";
@@ -20,6 +18,7 @@ import HelpPopover from "../../components/HelpPopover";
 import * as ScreenOrientation from "expo-screen-orientation";
 import * as Animatable from "react-native-animatable";
 import { useLanguage } from "../../hooks/useLanguage";
+import KeyboardDismissingView from "../../components/KeyboardDismissingView";
 
 const CreateBlackjack = () => {
   useEffect(() => {
@@ -132,7 +131,7 @@ const CreateBlackjack = () => {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+    <KeyboardDismissingView>
       <SafeAreaProvider>
         <SafeAreaView style={styles.container}>
           {/* HEADER */}
@@ -449,7 +448,7 @@ const CreateBlackjack = () => {
         </SafeAreaView>
         <Toast config={toastConfig} />
       </SafeAreaProvider>
-    </TouchableWithoutFeedback>
+    </KeyboardDismissingView>
   );
 };
 

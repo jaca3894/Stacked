@@ -8,8 +8,6 @@ import {
   SafeAreaView,
   StyleSheet,
   TouchableHighlight,
-  TouchableWithoutFeedback,
-  Keyboard,
 } from "react-native";
 import { useState, useRef } from "react";
 import { useNavigation } from "@react-navigation/core";
@@ -19,6 +17,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import HelpPopover from "../../components/HelpPopover";
 import * as Animatable from "react-native-animatable";
 import { useLanguage } from "../../hooks/useLanguage";
+import KeyboardDismissingView from "../../components/KeyboardDismissingView";
 
 const CreatePoker = () => {
   const { language } = useLanguage();
@@ -77,7 +76,7 @@ const CreatePoker = () => {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+    <KeyboardDismissingView>
       <SafeAreaProvider>
         <SafeAreaView style={styles.container}>
           {/* HEADER */}
@@ -97,7 +96,7 @@ const CreatePoker = () => {
           </View>
 
           {/* CONTENT */}
-          <View style={styles.content}>
+          <KeyboardDismissingView style={styles.content}>
             {/* Players (bez tooltipa) */}
             <Animatable.View
               style={{ width: "100%", alignItems: "center" }}
@@ -284,7 +283,7 @@ const CreatePoker = () => {
                 </Text>
               </TouchableOpacity>
             </Animatable.View>
-          </View>
+          </KeyboardDismissingView>
 
           {/* FOOTER */}
           <View style={styles.footer}>
@@ -293,7 +292,7 @@ const CreatePoker = () => {
         </SafeAreaView>
         <Toast config={toastConfig} swipeable />
       </SafeAreaProvider>
-    </TouchableWithoutFeedback>
+    </KeyboardDismissingView>
   );
 };
 
