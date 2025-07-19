@@ -8,6 +8,7 @@ import {
   TextInput,
   Modal,
   Pressable,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { RouteProp, useRoute } from "@react-navigation/native";
@@ -24,7 +25,6 @@ import PlayerButton from "../../components/PlayerButton";
 import { useLanguage } from "../../hooks/useLanguage";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import KeyboardDismissingView from "../../components/KeyboardDismissingView";
 
 const seatingPlan: Record<number, [number, number, number, number]> = {
   1: [1, 0, 0, 0],
@@ -496,7 +496,7 @@ const PokerGame = () => {
           transparent={true}
           animationType="fade"
         >
-          <KeyboardDismissingView style={styles.popUp}>
+          <View style={styles.popUp}>
             <View style={[styles.popUpInside, { height: 'auto', paddingVertical: 50 }]}>
               <TouchableHighlight
                 style={styles.closeButton}
@@ -539,7 +539,7 @@ const PokerGame = () => {
                 <Text>{language === "pl" ? "Add" : "Dodaj"}</Text>
               </TouchableHighlight>
             </View>
-          </KeyboardDismissingView>
+          </View>
         </Modal>
       )}
       {showLoadGame && (
@@ -551,7 +551,7 @@ const PokerGame = () => {
           statusBarTranslucent={true}
         >
           <Pressable style={[styles.popUp, { backgroundColor: "transparent" }]} onPress={() => setShowLoadGame(false)}>
-            <KeyboardDismissingView>
+            <TouchableWithoutFeedback>
               <View style={[styles.popUpInside]}>
                 <Text style={{color: '#fff'}}>{language === "pl" ? "Czy chcesz wczytać ostatnią grę?" : "Do you want to load last game?"}</Text>
                 <View style={{ flexDirection: 'row', gap: 15 }}>
@@ -566,7 +566,7 @@ const PokerGame = () => {
                   </TouchableHighlight>
                 </View>
               </View>
-            </KeyboardDismissingView>
+            </TouchableWithoutFeedback>
           </Pressable>
         </Modal>
       )}

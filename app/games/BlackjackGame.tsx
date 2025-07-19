@@ -7,6 +7,7 @@ import {
   TextInput,
   Modal,
   Pressable,
+  TouchableWithoutFeedback,
   useWindowDimensions,
 } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -23,7 +24,6 @@ import PlayerButton from "../../components/PlayerButton";
 import { Image } from "react-native-animatable";
 import { useLanguage } from "../../hooks/useLanguage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import KeyboardDismissingView from "../../components/KeyboardDismissingView";
 
 type GameRouteProp = RouteProp<RootStackParamList, "Game">;
 type ButtonAction = "hit" | "stand" | "blackjack" | "double" | "insurance" | "busted";
@@ -441,7 +441,7 @@ const BlackjackGame = () => {
       {showInput[0] && (
         <Modal onRequestClose={() => setShowInput([false, -1])} transparent={true} animationType="fade" statusBarTranslucent={true}>
           <Pressable style={styles.popUp} onPress={() => setShowInput([false, -1])}>
-            <KeyboardDismissingView>
+            <TouchableWithoutFeedback>
               <View style={[styles.popUpInside, dynamicStyles.popUpInside]}>
                 <TouchableHighlight style={styles.closeButton} underlayColor="transparent" onPress={() => setShowInput([false, -1])}>
                   <Text style={[styles.buttonText, { fontSize: 24, color: "#fff" }]}>×</Text>
@@ -470,7 +470,7 @@ const BlackjackGame = () => {
                   <Text style={styles.buttonText}>{language === "pl" ? "Zapisz" : "Save"}</Text>
                 </TouchableHighlight>
               </View>
-            </KeyboardDismissingView>
+            </TouchableWithoutFeedback>
           </Pressable>
         </Modal>
       )}
