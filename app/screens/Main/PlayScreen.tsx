@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   Text,
   Image,
@@ -13,6 +13,7 @@ import { withCopilotProvider } from "../../../utils/WithCopilotProvider";
 import { CopilotStep, walkthroughable, useCopilot } from "react-native-copilot";
 import { useLanguage } from "../../../hooks/useLanguage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as ScreenOrientation from "expo-screen-orientation";
 
 const CopilotView = walkthroughable(View);
 
@@ -25,6 +26,10 @@ const PlayScreen = () => {
   const { language } = useLanguage();
 
   const hasStartedTutorial = useRef(false);
+
+  useEffect(() => {
+    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
+  }, []);
 
   useFocusEffect(
     React.useCallback(() => {

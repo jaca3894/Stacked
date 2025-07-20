@@ -516,6 +516,7 @@ const PokerGame = () => {
                 placeholder={language === "pl" ? "Nazwa Gracza" : "Player name"}
                 style={styles.input}
                 placeholderTextColor="#999"
+                maxLength={10}
                 onChange={(e) => {
                   const value = e.nativeEvent.text;
                   setInputValue(value);

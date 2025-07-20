@@ -6,10 +6,28 @@ import AcademyScreen from "./Main/AcademyScreen";
 import MoreScreen from "./Main/MoreScreen";
 import CheckHandScreen from "./Main/CheckHandScreen";
 import { useLanguage } from "../../hooks/useLanguage";
+import LoadingPanel from "../panels/LoadingPanel";
+import { View } from "react-native-animatable";
+import { useEffect, useState } from "react";
 
 export default function App() {
   const Tab = createMaterialTopTabNavigator();
-  const { language } = useLanguage();
+  const { language, isLoading } = useLanguage();
+  const [showLoading, setShowLoading] = useState(isLoading);
+
+  useEffect(() => {
+    if(!isLoading) {
+      setTimeout(() => setShowLoading(false), 500);
+    }
+  }, [isLoading])
+
+  if (showLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#121212' }}>
+        <LoadingPanel visible={true} />
+      </View>
+    );
+  }
 
   return (
     <Tab.Navigator
@@ -35,7 +53,7 @@ export default function App() {
         tabBarIcon: ({ focused, color }) => {
           let iconName = "";
 
-          if (route.name === (language === "pl" ? "Academy" : "Academy"))
+          if (route.name === "Academy")
             iconName = "book";
           else if (route.name === (language === "pl" ? "Więcej" : "More"))
             iconName = "ellipsis-horizontal";

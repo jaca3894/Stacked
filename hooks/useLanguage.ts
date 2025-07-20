@@ -3,14 +3,17 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const useLanguage = () => {
   const [language, setLanguageState] = useState<"pl" | "eng">("eng");
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const load = async () => {
       const stored = await AsyncStorage.getItem("@language");
       if (stored === "pl" || stored === "eng") {
         setLanguageState(stored);
+        setIsLoading(false);
       } else {
         setLanguageState("eng");
+        setIsLoading(false);
       }
     };
     load();
@@ -24,5 +27,6 @@ export const useLanguage = () => {
   return {
     language,
     setLanguage,
+    isLoading
   };
 };

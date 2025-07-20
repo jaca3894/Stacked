@@ -206,269 +206,122 @@ const HomeScreen = () => {
   }, []);
 
   return (
-    <>
-      {loading && <LoadingPanel visible={loading} />}
-      <SafeAreaProvider>
-        <SafeAreaView style={[styles.container, { flex: 1 }]}>
-          <ScrollView
-            ref={(ref) => {
-              scrollRef.current = ref;
-            }}
-            contentContainerStyle={[styles.scrollContainer, { flexGrow: 1 }]}
-          >
-            <View style={styles.header}>
-              <Image
-                source={require("../../../assets/icons/logo.png")}
-                style={styles.logo}
-              />
-              <CopilotStep
-                order={1}
-                text={
-                  language === "pl"
-                    ? "Witamy w Stacked! Nazywam się James i przeprowadzę cię przez naszą aplikację."
-                    : "Welcome in Stacked! My name is James and I'll guide you through our app."
-                }
-                name="dealerHello"
-              >
-                <CopilotText style={styles.text}>
-                  {language === "pl"
-                    ? "Witaj betatesterze!"
-                    : "Hello betatester!"}
-                </CopilotText>
-              </CopilotStep>
-            </View>
-            {/* Load Saved Game Panel */}
+    <SafeAreaProvider>
+      <SafeAreaView style={[styles.container, { flex: 1 }]}>
+        <ScrollView
+          ref={(ref) => {
+            scrollRef.current = ref;
+          }}
+          contentContainerStyle={[styles.scrollContainer, { flexGrow: 1 }]}
+        >
+          <View style={styles.header}>
+            <Image
+              source={require("../../../assets/icons/logo.png")}
+              style={styles.logo}
+            />
             <CopilotStep
-              name="dealerExplain"
+              order={1}
               text={
                 language === "pl"
-                  ? "Z tego miejsca możesz kontynuować ostatnią grę. Ostatnie gry są zapisywane automatycznie. O zapisywaniu konkretnych gier wspomnę w zakładce 'Graj'."
-                  : "Here you can continue last saved game. Last games are automatically saved. I'll mention saving specific games in the 'Play' tab."
+                  ? "Witamy w Stacked! Nazywam się James i przeprowadzę cię przez naszą aplikację."
+                  : "Welcome in Stacked! My name is James and I'll guide you through our app."
               }
-              order={2}
+              name="dealerHello"
             >
-              <CopilotView style={styles.panel}>
-                <View style={styles.gameHeader}>
-                  <Text style={styles.gameTitle}>
-                    {language === "pl"
-                      ? `♠ Kontynuuj ostatnią grę ${
-                          hasLastGame ? "(" + lastGame.gameType + ")" : ""
-                        }`
-                      : `♠ Continue Last Game ${
-                          hasLastGame ? "(" + lastGame.gameType + ")" : ""
-                        }`}
-                  </Text>
-                </View>
-                {hasLastGame && (
-                  <>
-                    {(players?.slice(0, 5) || []).map(
-                      (player: Player | BlackjackPlayer, index: number) => (
-                        <View
-                          key={player.name + index}
-                          style={styles.playerRow}
-                        >
-                          <Text style={styles.playerIndex}>{index + 1}.</Text>
-                          <Text style={styles.playerName}>{player.name}</Text>
-                          <Text style={styles.playerScore}>
-                            {player.balance}
-                          </Text>
-                        </View>
-                      )
-                    )}
-
-                    {players && players.length > 5 && (
-                      <Text style={styles.morePlayersText}>
-                        {language === "pl"
-                          ? `(+${players.length - 5} więcej...)`
-                          : `(+${players.length - 5} more...)`}
-                      </Text>
-                    )}
-
-                    <TouchableOpacity
-                      style={styles.resumeButton}
-                      onPress={() => {
-                        (navigator as any).navigate(
-                          lastGame.gameType === "Poker"
-                            ? "PokerGame"
-                            : "BlackjackGame",
-                          {
-                            playersCount: lastGame.players.length,
-                            loadGame: true,
-                          }
-                        );
-                      }}
-                    >
-                      <Ionicons name="play" size={16} color="#1c1c1c" />
-                      <Text style={styles.resumeText}>
-                        {language === "pl" ? "Wznów" : "Resume"}
-                      </Text>
-                    </TouchableOpacity>
-                  </>
-                )}
-
-                {!hasLastGame && (
-                  <View style={{ padding: 10 }}>
-                    <View style={{ position: "relative" }}>
-                      <Image
-                        source={require("../../../assets/dealer/dealerConfused.png")}
-                        style={{
-                          width: "100%",
-                          resizeMode: "contain",
-                          height: 120,
-                        }}
-                      ></Image>
-                      <View
-                        style={{
-                          ...StyleSheet.absoluteFillObject,
-                          backgroundColor: "rgba(42,42,42,0.5)",
-                        }}
-                      ></View>
-                    </View>
-                    <Text
-                      style={[
-                        styles.panelText,
-                        {
-                          textAlign: "center",
-                          marginVertical: 10,
-                          color: "gray",
-                        },
-                      ]}
-                    >
-                      {language === "pl"
-                        ? "Brak zapisanych gier"
-                        : "No saved games."}
-                    </Text>
-                  </View>
-                )}
-              </CopilotView>
-            </CopilotStep>
-            <CopilotStep
-              name="dealer2"
-              text={
-                language === "pl"
-                  ? "To jest twój całkowity postęp w czytaniu naszych artykułów. Traktujemy artykuł jako przeczytany jeśli jest polubiony."
-                  : "This is Your total progress in reading our articles. We count article as read if it's liked."
-              }
-              order={3}
-            >
-              <CopilotView style={styles.panel}>
-                <Image
-                  source={require("../../../assets/icons/logoAcademy.png")}
-                  style={{
-                    width: "50%",
-                    height: 50,
-                    resizeMode: "contain",
-                    alignSelf: "center",
-                    margin: 5,
-                  }}
-                ></Image>
-                <Text style={styles.panelTitle}>
-                  {language === "pl" ? "Postęp nauki" : "Total progress"}
-                </Text>
-                <View style={styles.progressBarContainer}>
-                  <View
-                    style={[
-                      styles.progressBar,
-                      { width: `${percentage}%` as DimensionValue },
-                    ]}
-                  />
-                </View>
-                <Text style={styles.panelText}>
-                  {`${percentage}%`}{" "}
-                  {language === "pl" ? "ukończonych artykułów" : "complete"}
-                </Text>
-              </CopilotView>
-            </CopilotStep>
-
-            {/* 📝 Lesson Panel */}
-
-            <CopilotView style={styles.lessonPanel}>
-              <Text style={styles.panelTitle}>
+              <CopilotText style={styles.text}>
                 {language === "pl"
-                  ? "📝 Twoja następna lekcja"
-                  : "📝 Your next lesson"}
-              </Text>
+                  ? "Witaj betatesterze!"
+                  : "Hello betatester!"}
+              </CopilotText>
+            </CopilotStep>
+          </View>
+          {/* Load Saved Game Panel */}
+          <CopilotStep
+            name="dealerExplain"
+            text={
+              language === "pl"
+                ? "Z tego miejsca możesz kontynuować ostatnią grę. Ostatnie gry są zapisywane automatycznie. O zapisywaniu konkretnych gier wspomnę w zakładce 'Graj'."
+                : "Here you can continue last saved game. Last games are automatically saved. I'll mention saving specific games in the 'Play' tab."
+            }
+            order={2}
+          >
+            <CopilotView style={styles.panel}>
+              <View style={styles.gameHeader}>
+                <Text style={styles.gameTitle}>
+                  {language === "pl"
+                    ? `♠ Kontynuuj ostatnią grę ${
+                        hasLastGame ? "(" + lastGame.gameType + ")" : ""
+                      }`
+                    : `♠ Continue Last Game ${
+                        hasLastGame ? "(" + lastGame.gameType + ")" : ""
+                      }`}
+                </Text>
+              </View>
+              {hasLastGame && (
+                <>
+                  {(players?.slice(0, 5) || []).map(
+                    (player: Player | BlackjackPlayer, index: number) => (
+                      <View
+                        key={player.name + index}
+                        style={styles.playerRow}
+                      >
+                        <Text style={styles.playerIndex}>{index + 1}.</Text>
+                        <Text style={styles.playerName}>{player.name}</Text>
+                        <Text style={styles.playerScore}>
+                          {player.balance}
+                        </Text>
+                      </View>
+                    )
+                  )}
 
-              {article != null && (
-                <View style={styles.lessonBody}>
-                  <Text style={styles.lessonDate}>{article.date}</Text>
-                  <View style={styles.lessonTitleRow}>
-                    {/* <Ionicons
-                      name="book"
-                      size={20}
-                      color="#cbbb93"
-                      style={{ marginRight: 6 }}
-                      /> */}
-                    <Text style={styles.lessonTitle}>{article.title}</Text>
-                    {/* <Ionicons
-                      name="chevron-down"
-                      size={20}
-                      color="#777"
-                      style={{ marginLeft: 6 }}
-                      /> */}
-                  </View>
-                  <View
-                    style={{
-                      width: "100%",
-                      // height: 200,
-                      // backgroundColor: "red",
+                  {players && players.length > 5 && (
+                    <Text style={styles.morePlayersText}>
+                      {language === "pl"
+                        ? `(+${players.length - 5} więcej...)`
+                        : `(+${players.length - 5} more...)`}
+                    </Text>
+                  )}
+
+                  <TouchableOpacity
+                    style={styles.resumeButton}
+                    onPress={() => {
+                      (navigator as any).navigate(
+                        lastGame.gameType === "Poker"
+                          ? "PokerGame"
+                          : "BlackjackGame",
+                        {
+                          playersCount: lastGame.players.length,
+                          loadGame: true,
+                        }
+                      );
                     }}
                   >
-                    <Gif
-                      source={article.bannerPath}
-                      style={{
-                        width: "90%",
-                        height: 200,
-                        alignSelf: "center",
-                        borderRadius: 12,
-                      }}
-                      // contentFit="contain"
-                    ></Gif>
-                    <Text
-                      ellipsizeMode="tail"
-                      numberOfLines={3}
-                      style={{
-                        width: "90%",
-                        textAlign: "center",
-                        alignSelf: "center",
-                        margin: 10,
-                        color: "white",
-                        marginBottom: 20,
-                      }}
-                    >
-                      {article.content}
+                    <Ionicons name="play" size={16} color="#1c1c1c" />
+                    <Text style={styles.resumeText}>
+                      {language === "pl" ? "Wznów" : "Resume"}
                     </Text>
-                    <TouchableOpacity
-                      style={[styles.resumeButton, { alignSelf: "center" }]}
-                      onPress={() =>
-                        (navigator as any).navigate("Article", {
-                          articleId: article.id,
-                        })
-                      }
-                    >
-                      <Ionicons name="play" size={16} color="#1c1c1c" />
-                      <Text style={styles.buttonText}>
-                        {language === "pl" ? "Kontynuuj" : "Continue"}
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-
-                  {/* <View style={styles.progressBarContainer}>
-                    <View style={[styles.progressBar, { width: "15%" }]} />
-                    </View> */}
-                  {/* <Text style={styles.lessonProgressText}>Progress: 15%</Text> */}
-                </View>
+                  </TouchableOpacity>
+                </>
               )}
-              {article === null && (
-                <View style={{ position: "relative" }}>
-                  <Image
-                    source={require("../../../assets/dealer/dealerHappy.png")}
-                    style={{
-                      width: "100%",
-                      resizeMode: "contain",
-                      height: 120,
-                    }}
-                  ></Image>
+
+              {!hasLastGame && (
+                <View style={{ padding: 10 }}>
+                  <View style={{ position: "relative" }}>
+                    <Image
+                      source={require("../../../assets/dealer/dealerConfused.png")}
+                      style={{
+                        width: "100%",
+                        resizeMode: "contain",
+                        height: 120,
+                      }}
+                    ></Image>
+                    <View
+                      style={{
+                        ...StyleSheet.absoluteFillObject,
+                        backgroundColor: "rgba(42,42,42,0.5)",
+                      }}
+                    ></View>
+                  </View>
                   <Text
                     style={[
                       styles.panelText,
@@ -480,93 +333,237 @@ const HomeScreen = () => {
                     ]}
                   >
                     {language === "pl"
-                      ? "Wysztkie lekcje ukończone!"
-                      : "All lessons completed!"}
+                      ? "Brak zapisanych gier"
+                      : "No saved games."}
                   </Text>
-                  <View
-                    style={{
-                      ...StyleSheet.absoluteFillObject,
-                      backgroundColor: "rgba(42,42,42,0.5)",
-                    }}
-                  ></View>
                 </View>
               )}
             </CopilotView>
-
-            <View style={styles.panel}>
+          </CopilotStep>
+          <CopilotStep
+            name="dealer2"
+            text={
+              language === "pl"
+                ? "To jest twój całkowity postęp w czytaniu naszych artykułów. Traktujemy artykuł jako przeczytany jeśli jest polubiony."
+                : "This is Your total progress in reading our articles. We count article as read if it's liked."
+            }
+            order={3}
+          >
+            <CopilotView style={styles.panel}>
+              <Image
+                source={require("../../../assets/icons/logoAcademy.png")}
+                style={{
+                  width: "50%",
+                  height: 50,
+                  resizeMode: "contain",
+                  alignSelf: "center",
+                  margin: 5,
+                }}
+              ></Image>
               <Text style={styles.panelTitle}>
-                {language === "pl" ? "📖 Losowe pojęcie" : "📖 Random Term"}
+                {language === "pl" ? "Postęp nauki" : "Total progress"}
               </Text>
-              {term ? (
-                <>
-                  <Text style={styles.termTitle}>{term.term}</Text>
-                  <Text style={styles.termDefinition}>{term.definition}</Text>
-                </>
-              ) : (
-                <></>
-              )}
-            </View>
-
-            {/* ⚡ Quick Links Panel */}
-            <CopilotView style={styles.quickLinksPanel}>
-              <Text style={styles.panelTitle}>
-                {language === "pl" ? "Szybki dostęp" : "Quick Access"}
-              </Text>
-
-              <View style={styles.quickLinksRow}>
-                <TouchableOpacity
-                  style={styles.quickLinkButton}
-                  onPress={() => (navigator as any).navigate("Feedback")}
-                >
-                  <Ionicons name="chatbubbles" size={20} color="#cbbb93" />
-                  <Text style={styles.quickLinkText}>
-                    {language === "pl" ? "Opinia" : "Feedback"}
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={styles.quickLinkButton}
-                  onPress={() =>
-                    (navigator as any).navigate("MainTabs", {
-                      screen: "Play",
-                    })
-                  }
-                >
-                  <Ionicons name="game-controller" size={20} color="#cbbb93" />
-                  <Text style={styles.quickLinkText}>
-                    {language === "pl" ? "Graj" : "Play"}
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={styles.quickLinkButton}
-                  onPress={() => (navigator as any).navigate("ReportBug")}
-                >
-                  <Ionicons name="bug" size={20} color="#cbbb93" />
-                  <Text style={styles.quickLinkText}>
-                    {language === "pl" ? "Zgłoś błąd" : "Bug report"}
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={styles.quickLinkButton}
-                  onPress={() => (navigator as any).navigate("Saves")}
-                >
-                  <Ionicons name="folder" size={20} color="#cbbb93" />
-                  <Text style={styles.quickLinkText}>
-                    {language === "pl" ? "Zapisy" : "Saves"}
-                  </Text>
-                </TouchableOpacity>
+              <View style={styles.progressBarContainer}>
+                <View
+                  style={[
+                    styles.progressBar,
+                    { width: `${percentage}%` as DimensionValue },
+                  ]}
+                />
               </View>
+              <Text style={styles.panelText}>
+                {`${percentage}%`}{" "}
+                {language === "pl" ? "ukończonych artykułów" : "complete"}
+              </Text>
             </CopilotView>
+          </CopilotStep>
 
-            <View style={styles.footer}>
-              <Text style={styles.footerText}>2025 Stacked.</Text>
+          {/* 📝 Lesson Panel */}
+
+          <CopilotView style={styles.lessonPanel}>
+            <Text style={styles.panelTitle}>
+              {language === "pl"
+                ? "📝 Twoja następna lekcja"
+                : "📝 Your next lesson"}
+            </Text>
+
+            {article != null && (
+              <View style={styles.lessonBody}>
+                <Text style={styles.lessonDate}>{article.date}</Text>
+                <View style={styles.lessonTitleRow}>
+                  {/* <Ionicons
+                    name="book"
+                    size={20}
+                    color="#cbbb93"
+                    style={{ marginRight: 6 }}
+                    /> */}
+                  <Text style={styles.lessonTitle}>{article.title}</Text>
+                  {/* <Ionicons
+                    name="chevron-down"
+                    size={20}
+                    color="#777"
+                    style={{ marginLeft: 6 }}
+                    /> */}
+                </View>
+                <View
+                  style={{
+                    width: "100%",
+                    // height: 200,
+                    // backgroundColor: "red",
+                  }}
+                >
+                  <Gif
+                    source={article.bannerPath}
+                    style={{
+                      width: "90%",
+                      height: 200,
+                      alignSelf: "center",
+                      borderRadius: 12,
+                    }}
+                    // contentFit="contain"
+                  ></Gif>
+                  <Text
+                    ellipsizeMode="tail"
+                    numberOfLines={3}
+                    style={{
+                      width: "90%",
+                      textAlign: "center",
+                      alignSelf: "center",
+                      margin: 10,
+                      color: "white",
+                      marginBottom: 20,
+                    }}
+                  >
+                    {article.content}
+                  </Text>
+                  <TouchableOpacity
+                    style={[styles.resumeButton, { alignSelf: "center" }]}
+                    onPress={() =>
+                      (navigator as any).navigate("Article", {
+                        articleId: article.id,
+                      })
+                    }
+                  >
+                    <Ionicons name="play" size={16} color="#1c1c1c" />
+                    <Text style={styles.buttonText}>
+                      {language === "pl" ? "Kontynuuj" : "Continue"}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+
+                {/* <View style={styles.progressBarContainer}>
+                  <View style={[styles.progressBar, { width: "15%" }]} />
+                  </View> */}
+                {/* <Text style={styles.lessonProgressText}>Progress: 15%</Text> */}
+              </View>
+            )}
+            {article === null && (
+              <View style={{ position: "relative" }}>
+                <Image
+                  source={require("../../../assets/dealer/dealerHappy.png")}
+                  style={{
+                    width: "100%",
+                    resizeMode: "contain",
+                    height: 120,
+                  }}
+                ></Image>
+                <Text
+                  style={[
+                    styles.panelText,
+                    {
+                      textAlign: "center",
+                      marginVertical: 10,
+                      color: "gray",
+                    },
+                  ]}
+                >
+                  {language === "pl"
+                    ? "Wysztkie lekcje ukończone!"
+                    : "All lessons completed!"}
+                </Text>
+                <View
+                  style={{
+                    ...StyleSheet.absoluteFillObject,
+                    backgroundColor: "rgba(42,42,42,0.5)",
+                  }}
+                ></View>
+              </View>
+            )}
+          </CopilotView>
+
+          <View style={styles.panel}>
+            <Text style={styles.panelTitle}>
+              {language === "pl" ? "📖 Losowe pojęcie" : "📖 Random Term"}
+            </Text>
+            {term ? (
+              <>
+                <Text style={styles.termTitle}>{term.term}</Text>
+                <Text style={styles.termDefinition}>{term.definition}</Text>
+              </>
+            ) : (
+              <></>
+            )}
+          </View>
+
+          {/* ⚡ Quick Links Panel */}
+          <CopilotView style={styles.quickLinksPanel}>
+            <Text style={styles.panelTitle}>
+              {language === "pl" ? "Szybki dostęp" : "Quick Access"}
+            </Text>
+
+            <View style={styles.quickLinksRow}>
+              <TouchableOpacity
+                style={styles.quickLinkButton}
+                onPress={() => (navigator as any).navigate("Feedback")}
+              >
+                <Ionicons name="chatbubbles" size={20} color="#cbbb93" />
+                <Text style={styles.quickLinkText}>
+                  {language === "pl" ? "Opinia" : "Feedback"}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.quickLinkButton}
+                onPress={() =>
+                  (navigator as any).navigate("MainTabs", {
+                    screen: "Play",
+                  })
+                }
+              >
+                <Ionicons name="game-controller" size={20} color="#cbbb93" />
+                <Text style={styles.quickLinkText}>
+                  {language === "pl" ? "Graj" : "Play"}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.quickLinkButton}
+                onPress={() => (navigator as any).navigate("ReportBug")}
+              >
+                <Ionicons name="bug" size={20} color="#cbbb93" />
+                <Text style={styles.quickLinkText}>
+                  {language === "pl" ? "Zgłoś błąd" : "Bug report"}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.quickLinkButton}
+                onPress={() => (navigator as any).navigate("Saves")}
+              >
+                <Ionicons name="folder" size={20} color="#cbbb93" />
+                <Text style={styles.quickLinkText}>
+                  {language === "pl" ? "Zapisy" : "Saves"}
+                </Text>
+              </TouchableOpacity>
             </View>
-          </ScrollView>
-        </SafeAreaView>
-      </SafeAreaProvider>
-    </>
+          </CopilotView>
+
+          <View style={styles.footer}>
+            <Text style={styles.footerText}>2025 Stacked.</Text>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 };
 

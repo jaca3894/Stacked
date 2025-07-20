@@ -109,7 +109,7 @@ const BlackjackGame = () => {
 
     return () => {
       // saveGame();
-      ScreenOrientation.unlockAsync();
+      ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
     };
   }, []);
 
@@ -452,6 +452,7 @@ const BlackjackGame = () => {
                   style={styles.input}
                   placeholderTextColor="#999"
                   onChangeText={setInputValue}
+                  maxLength={10}
                 />
                 <TouchableHighlight style={styles.dodajButton} underlayColor="#948870" 
                   onPress={() => {
