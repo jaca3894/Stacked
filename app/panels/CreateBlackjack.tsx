@@ -10,6 +10,7 @@ import {
   Switch,
   TouchableWithoutFeedback,
   Keyboard,
+  Pressable,
 } from "react-native";
 import { useState, useRef, useEffect } from "react";
 import { useNavigation } from "@react-navigation/core";
@@ -20,6 +21,7 @@ import HelpPopover from "../../components/HelpPopover";
 import * as ScreenOrientation from "expo-screen-orientation";
 import * as Animatable from "react-native-animatable";
 import { useLanguage } from "../../hooks/useLanguage";
+import { KeyboardAvoidingView, Platform } from "react-native";
 
 const CreateBlackjack = () => {
   useEffect(() => {
@@ -132,324 +134,361 @@ const CreateBlackjack = () => {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-      <SafeAreaProvider>
-        <SafeAreaView style={styles.container}>
-          {/* HEADER */}
-          <Animatable.View
-            style={styles.header}
-            animation="fadeIn"
-            duration={1000}
-          >
-            <TouchableOpacity
-              onPress={() => navigation.goBack()}
-              style={styles.backButton}
-            >
-              <Image
-                source={require("../../assets/arrowRight.png")}
-                style={styles.backIcon}
-              />
-            </TouchableOpacity>
-            <Text style={styles.headerText}>
-              {language === "pl" ? "Konfiguracja blackjacka" : "Blackjack setup"}
-            </Text>
-          </Animatable.View>
-
-          {/* CONTENT */}
-          <View style={styles.content}>
-            {/* Players */}
-
-            {/* Balance + tooltip */}
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      style={{ flex: 1 }}
+    >
+      <Pressable style={{ flex: 1 }} onPress={() => Keyboard.dismiss()}>
+        <SafeAreaProvider>
+          <SafeAreaView style={styles.container}>
+            {/* HEADER */}
             <Animatable.View
-              style={{ width: "100%", alignItems: "center" }}
+              style={styles.header}
               animation="fadeIn"
               duration={1000}
-              delay={100}
             >
-              <View style={styles.titleRow}>
-                <Text style={styles.title}>
-                  {language === "pl" ? "Saldo" : "Balance"}
-                </Text>
-                <TouchableOpacity
-                  ref={balanceRef}
-                  onPress={() => setShowBalanceTip(true)}
-                >
-                  <View style={styles.iconWrapper}>
-                    <Ionicons name="help-circle" size={20} color="#cbbb9c" />
-                  </View>
-                </TouchableOpacity>
-              </View>
-              <HelpPopover
-                isVisible={showBalanceTip}
-                from={balanceRef}
-                onRequestClose={() => setShowBalanceTip(false)}
-                text={
-                  language === "pl"
-                    ? "Początkowa ilość żetonów każdego gracza"
-                    : "Initial money per player"
-                }
-              />
-              <TextInput
-                style={styles.input}
-                value={initialBalance}
-                onChangeText={(text) => {
-                  const numeric = text.replace(/\D/g, "");
-                  if (numeric === "") return setInitialBalance("");
-                  let number = parseInt(numeric, 10);
-                  if (number > 100000) number = 100000;
-                  setInitialBalance(number.toString());
-                }}
-                keyboardType="numeric"
-                placeholder="(100-100k)"
-                placeholderTextColor="#888"
-                maxLength={6}
-              />
-            </Animatable.View>
-
-            <Animatable.View
-              style={styles.radioGroup}
-              animation="fadeIn"
-              duration={1000}
-              delay={200}
-            >
-              {/* Table Tracking */}
               <TouchableOpacity
-                onPress={() => {
-                  setMode("tracking");
-                  setInitialRadioState(false);
-                }}
-                style={styles.radioOption}
+                onPress={() => navigation.goBack()}
+                style={styles.backButton}
               >
-                <Ionicons
-                  name={
-                    mode === "tracking" ? "radio-button-on" : "radio-button-off"
-                  }
-                  size={20}
-                  color="#cbbb9c"
-                />
-                <Text style={styles.radioLabel}>
-                  {language === "pl"
-                    ? "Tryb śledzenia stołu"
-                    : "Table tracking mode"}
-                </Text>
-                <TouchableOpacity
-                  ref={trackingRef}
-                  onPress={() => setShowTrackingTip(true)}
-                >
-                  <View style={styles.iconWrapper}>
-                    <Ionicons name="help-circle" size={20} color="#cbbb9c" />
-                  </View>
-                </TouchableOpacity>
-                <HelpPopover
-                  isVisible={showTrackingTip}
-                  from={trackingRef}
-                  onRequestClose={() => setShowTrackingTip(false)}
-                  text={
-                    language === "pl"
-                      ? "Śledź wygrane/przegrane i przepływ żetonów na stole"
-                      : "Track win/loss and chip flow at the table."
-                  }
+                <Image
+                  source={require("../../assets/arrowRight.png")}
+                  style={styles.backIcon}
                 />
               </TouchableOpacity>
+              <Text style={styles.headerText}>
+                {language === "pl"
+                  ? "Konfiguracja blackjacka"
+                  : "Blackjack setup"}
+              </Text>
+            </Animatable.View>
 
-              {/* Training Mode */}
-              <TouchableOpacity
-                onPress={() => {
-                  setMode("training");
-                  setInitialRadioState(false);
-                }}
-                style={styles.radioOption}
+            {/* CONTENT */}
+            <View style={styles.content}>
+              {/* Players */}
+
+              {/* Balance + tooltip */}
+              <Animatable.View
+                style={{ width: "100%", alignItems: "center" }}
+                animation="fadeIn"
+                duration={1000}
+                delay={100}
               >
-                <Ionicons
-                  name={
-                    mode === "training" ? "radio-button-on" : "radio-button-off"
-                  }
-                  size={20}
-                  color="#cbbb9c"
-                />
-                <Text style={styles.radioLabel}>
-                  {language === "pl" ? "Tryb treningowy" : "Training mode"}
-                </Text>
-                <TouchableOpacity
-                  ref={trainingRef}
-                  onPress={() => setShowTrainingTip(true)}
-                >
-                  <View style={styles.iconWrapper}>
-                    <Ionicons name="help-circle" size={20} color="#cbbb9c" />
-                  </View>
-                </TouchableOpacity>
+                <View style={styles.titleRow}>
+                  <Text style={styles.title}>
+                    {language === "pl" ? "Saldo" : "Balance"}
+                  </Text>
+                  <TouchableOpacity
+                    ref={balanceRef}
+                    onPress={() => setShowBalanceTip(true)}
+                  >
+                    <View style={styles.iconWrapper}>
+                      <Ionicons name="help-circle" size={20} color="#cbbb9c" />
+                    </View>
+                  </TouchableOpacity>
+                </View>
                 <HelpPopover
-                  isVisible={showTrainingTip}
-                  from={trainingRef}
-                  onRequestClose={() => setShowTrainingTip(false)}
+                  isVisible={showBalanceTip}
+                  from={balanceRef}
+                  onRequestClose={() => setShowBalanceTip(false)}
                   text={
                     language === "pl"
-                      ? "Idealny do nauki podstaw blackjacka."
-                      : "Perfect for learning blackjack basics."
+                      ? "Początkowa ilość żetonów każdego gracza"
+                      : "Initial money per player"
                   }
                 />
-              </TouchableOpacity>
-            </Animatable.View>
-            {mode === "tracking" && (
+                <TextInput
+                  style={styles.input}
+                  value={initialBalance}
+                  onChangeText={(text) => {
+                    const numeric = text.replace(/\D/g, "");
+                    if (numeric === "") return setInitialBalance("");
+                    let number = parseInt(numeric, 10);
+                    if (number > 100000) number = 100000;
+                    setInitialBalance(number.toString());
+                  }}
+                  keyboardType="numeric"
+                  placeholder="(100-100k)"
+                  placeholderTextColor="#888"
+                  maxLength={6}
+                />
+              </Animatable.View>
+
+              <Animatable.View
+                style={styles.radioGroup}
+                animation="fadeIn"
+                duration={1000}
+                delay={200}
+              >
+                {/* Table Tracking */}
+                <TouchableOpacity
+                  onPress={() => {
+                    setMode("tracking");
+                    setInitialRadioState(false);
+                  }}
+                  style={styles.radioOption}
+                >
+                  <Ionicons
+                    name={
+                      mode === "tracking"
+                        ? "radio-button-on"
+                        : "radio-button-off"
+                    }
+                    size={20}
+                    color="#cbbb9c"
+                  />
+                  <Text style={styles.radioLabel}>
+                    {language === "pl"
+                      ? "Tryb śledzenia stołu"
+                      : "Table tracking mode"}
+                  </Text>
+                  <TouchableOpacity
+                    ref={trackingRef}
+                    onPress={() => setShowTrackingTip(true)}
+                  >
+                    <View style={styles.iconWrapper}>
+                      <Ionicons name="help-circle" size={20} color="#cbbb9c" />
+                    </View>
+                  </TouchableOpacity>
+                  <HelpPopover
+                    isVisible={showTrackingTip}
+                    from={trackingRef}
+                    onRequestClose={() => setShowTrackingTip(false)}
+                    text={
+                      language === "pl"
+                        ? "Śledź wygrane/przegrane i przepływ żetonów na stole"
+                        : "Track win/loss and chip flow at the table."
+                    }
+                  />
+                </TouchableOpacity>
+
+                {/* Training Mode */}
+                <TouchableOpacity
+                  onPress={() => {
+                    setMode("training");
+                    setInitialRadioState(false);
+                  }}
+                  style={styles.radioOption}
+                >
+                  <Ionicons
+                    name={
+                      mode === "training"
+                        ? "radio-button-on"
+                        : "radio-button-off"
+                    }
+                    size={20}
+                    color="#cbbb9c"
+                  />
+                  <Text style={styles.radioLabel}>
+                    {language === "pl" ? "Tryb treningowy" : "Training mode"}
+                  </Text>
+                  <TouchableOpacity
+                    ref={trainingRef}
+                    onPress={() => setShowTrainingTip(true)}
+                  >
+                    <View style={styles.iconWrapper}>
+                      <Ionicons name="help-circle" size={20} color="#cbbb9c" />
+                    </View>
+                  </TouchableOpacity>
+                  <HelpPopover
+                    isVisible={showTrainingTip}
+                    from={trainingRef}
+                    onRequestClose={() => setShowTrainingTip(false)}
+                    text={
+                      language === "pl"
+                        ? "Idealny do nauki podstaw blackjacka."
+                        : "Perfect for learning blackjack basics."
+                    }
+                  />
+                </TouchableOpacity>
+              </Animatable.View>
+              {mode === "tracking" && (
+                <Animatable.View
+                  style={{ width: "100%", alignItems: "center" }}
+                  animation="fadeIn"
+                  duration={1000}
+                  delay={300}
+                >
+                  <View style={styles.titleRow}>
+                    <Text style={styles.title}>
+                      {language === "pl" ? "Gracze" : "Players"}
+                    </Text>
+                  </View>
+                  <TextInput
+                    style={styles.input}
+                    value={playersAmount}
+                    onChangeText={(text) => {
+                      const numeric = text.replace(/\D/g, "");
+                      if (numeric === "") return setPlayersAmount("");
+                      const number = Math.max(
+                        1,
+                        Math.min(parseInt(numeric, 10), 7)
+                      );
+                      setPlayersAmount(number.toString());
+                    }}
+                    keyboardType="numeric"
+                    placeholder="(1-7)"
+                    placeholderTextColor="#888"
+                    maxLength={1}
+                  />
+                </Animatable.View>
+              )}
+              {/* Conditional options */}
+              {mode === "training" && (
+                <>
+                  <Animatable.View
+                    style={styles.switchRow}
+                    animation="fadeIn"
+                    duration={1000}
+                    delay={initialRadioState ? 400 : 0}
+                  >
+                    <View
+                      style={{ flexDirection: "row", alignItems: "center" }}
+                    >
+                      <Text style={styles.title}>
+                        {language === "pl"
+                          ? "Zezwól na Insurance"
+                          : "Allow insurance"}
+                      </Text>
+                      <TouchableOpacity
+                        ref={insuranceRef}
+                        onPress={() => setShowInsuranceTip(true)}
+                      >
+                        <View style={styles.iconWrapper}>
+                          <Ionicons
+                            name="help-circle"
+                            size={20}
+                            color="#cbbb9c"
+                          />
+                        </View>
+                      </TouchableOpacity>
+                      <HelpPopover
+                        isVisible={showInsuranceTip}
+                        from={insuranceRef}
+                        onRequestClose={() => setShowInsuranceTip(false)}
+                        text={
+                          language === "pl"
+                            ? "Zakład poboczny chroniący przed blackjackiem krupiera."
+                            : "Side bet protecting against dealer's blackjack."
+                        }
+                      />
+                    </View>
+                    <Switch
+                      value={allowInsurance}
+                      onValueChange={setAllowInsurance}
+                    />
+                  </Animatable.View>
+
+                  <Animatable.View
+                    style={styles.switchRow}
+                    animation="fadeIn"
+                    duration={1000}
+                    delay={initialRadioState ? 500 : 0}
+                  >
+                    <View
+                      style={{ flexDirection: "row", alignItems: "center" }}
+                    >
+                      <Text style={styles.title}>
+                        {language === "pl"
+                          ? "Zezwól na Double"
+                          : "Allow double"}
+                      </Text>
+                      <TouchableOpacity
+                        ref={doubleRef}
+                        onPress={() => setShowDoubleTip(true)}
+                      >
+                        <View style={styles.iconWrapper}>
+                          <Ionicons
+                            name="help-circle"
+                            size={20}
+                            color="#cbbb9c"
+                          />
+                        </View>
+                      </TouchableOpacity>
+                      <HelpPopover
+                        isVisible={showDoubleTip}
+                        from={doubleRef}
+                        onRequestClose={() => setShowDoubleTip(false)}
+                        text={
+                          language === "pl"
+                            ? "Podwój swoją początkową stawkę i otrzymaj jedną ostateczną kartę."
+                            : "Double your initial bet and receive one final card."
+                        }
+                      ></HelpPopover>
+                    </View>
+                    <Switch
+                      value={allowDouble}
+                      onValueChange={setAllowDouble}
+                    />
+                  </Animatable.View>
+
+                  <Animatable.View
+                    style={styles.switchRow}
+                    animation="fadeIn"
+                    duration={1000}
+                    delay={initialRadioState ? 600 : 0}
+                  >
+                    <View
+                      style={{ flexDirection: "row", alignItems: "center" }}
+                    >
+                      <Text style={styles.title}>{`Auto-hit ${
+                        language === "pl" ? "przy" : "on"
+                      } 17`}</Text>
+                      <TouchableOpacity
+                        ref={autoHitRef}
+                        onPress={() => setShowAutoHitTip(true)}
+                      >
+                        <View style={styles.iconWrapper}>
+                          <Ionicons
+                            name="help-circle"
+                            size={20}
+                            color="#cbbb9c"
+                          />
+                        </View>
+                      </TouchableOpacity>
+                      <HelpPopover
+                        isVisible={showAutoHitTip}
+                        from={autoHitRef}
+                        onRequestClose={() => setShowAutoHitTip(false)}
+                        text={
+                          language === "pl"
+                            ? "Krupier automatycznie dobierze kartę przy soft 17."
+                            : "Dealer will automatically draw cards to soft 17."
+                        }
+                      />
+                    </View>
+                    <Switch
+                      value={autoHitOn17}
+                      onValueChange={setAutoHitOn17}
+                    />
+                  </Animatable.View>
+                </>
+              )}
+
+              {/* START BUTTON */}
               <Animatable.View
                 style={{ width: "100%", alignItems: "center" }}
                 animation="fadeIn"
                 duration={1000}
                 delay={300}
               >
-                <View style={styles.titleRow}>
-                  <Text style={styles.title}>
-                    {language === "pl" ? "Gracze" : "Players"}
+                <TouchableOpacity onPress={handleStart} style={styles.button}>
+                  <Text style={styles.buttonText}>
+                    {language === "pl" ? "Rozpocznij grę" : "Start Game"}
                   </Text>
-                </View>
-                <TextInput
-                  style={styles.input}
-                  value={playersAmount}
-                  onChangeText={(text) => {
-                    const numeric = text.replace(/\D/g, "");
-                    if (numeric === "") return setPlayersAmount("");
-                    const number = Math.max(
-                      1,
-                      Math.min(parseInt(numeric, 10), 7)
-                    );
-                    setPlayersAmount(number.toString());
-                  }}
-                  keyboardType="numeric"
-                  placeholder="(1-7)"
-                  placeholderTextColor="#888"
-                  maxLength={1}
-                />
+                </TouchableOpacity>
               </Animatable.View>
-            )}
-            {/* Conditional options */}
-            {mode === "training" && (
-              <>
-                <Animatable.View
-                  style={styles.switchRow}
-                  animation="fadeIn"
-                  duration={1000}
-                  delay={initialRadioState ? 400 : 0}
-                >
-                  <View style={{ flexDirection: "row", alignItems: "center" }}>
-                    <Text style={styles.title}>
-                      {language === "pl"
-                        ? "Zezwól na Insurance"
-                        : "Allow insurance"}
-                    </Text>
-                    <TouchableOpacity
-                      ref={insuranceRef}
-                      onPress={() => setShowInsuranceTip(true)}
-                    >
-                      <View style={styles.iconWrapper}>
-                        <Ionicons name="help-circle" size={20} color="#cbbb9c" />
-                      </View>
-                    </TouchableOpacity>
-                    <HelpPopover
-                      isVisible={showInsuranceTip}
-                      from={insuranceRef}
-                      onRequestClose={() => setShowInsuranceTip(false)}
-                      text={
-                        language === "pl"
-                          ? "Zakład poboczny chroniący przed blackjackiem krupiera."
-                          : "Side bet protecting against dealer's blackjack."
-                      }
-                    />
-                  </View>
-                  <Switch
-                    value={allowInsurance}
-                    onValueChange={setAllowInsurance}
-                  />
-                </Animatable.View>
+            </View>
 
-                <Animatable.View
-                  style={styles.switchRow}
-                  animation="fadeIn"
-                  duration={1000}
-                  delay={initialRadioState ? 500 : 0}
-                >
-                  <View style={{ flexDirection: "row", alignItems: "center" }}>
-                    <Text style={styles.title}>
-                      {language === "pl" ? "Zezwól na Double" : "Allow double"}
-                    </Text>
-                    <TouchableOpacity
-                      ref={doubleRef}
-                      onPress={() => setShowDoubleTip(true)}
-                    >
-                      <View style={styles.iconWrapper}>
-                        <Ionicons name="help-circle" size={20} color="#cbbb9c" />
-                      </View>
-                    </TouchableOpacity>
-                    <HelpPopover
-                      isVisible={showDoubleTip}
-                      from={doubleRef}
-                      onRequestClose={() => setShowDoubleTip(false)}
-                      text={
-                        language === "pl"
-                          ? "Podwój swoją początkową stawkę i otrzymaj jedną ostateczną kartę."
-                          : "Double your initial bet and receive one final card."
-                      }
-                    ></HelpPopover>
-                  </View>
-                  <Switch value={allowDouble} onValueChange={setAllowDouble} />
-                </Animatable.View>
-
-                <Animatable.View
-                  style={styles.switchRow}
-                  animation="fadeIn"
-                  duration={1000}
-                  delay={initialRadioState ? 600 : 0}
-                >
-                  <View style={{ flexDirection: "row", alignItems: "center" }}>
-                    <Text style={styles.title}>{`Auto-hit ${
-                      language === "pl" ? "przy" : "on"
-                    } 17`}</Text>
-                    <TouchableOpacity
-                      ref={autoHitRef}
-                      onPress={() => setShowAutoHitTip(true)}
-                    >
-                      <View style={styles.iconWrapper}>
-                        <Ionicons name="help-circle" size={20} color="#cbbb9c" />
-                      </View>
-                    </TouchableOpacity>
-                    <HelpPopover
-                      isVisible={showAutoHitTip}
-                      from={autoHitRef}
-                      onRequestClose={() => setShowAutoHitTip(false)}
-                      text={
-                        language === "pl"
-                          ? "Krupier automatycznie dobierze kartę przy soft 17."
-                          : "Dealer will automatically draw cards to soft 17."
-                      }
-                    />
-                  </View>
-                  <Switch value={autoHitOn17} onValueChange={setAutoHitOn17} />
-                </Animatable.View>
-              </>
-            )}
-
-            {/* START BUTTON */}
-            <Animatable.View
-              style={{ width: "100%", alignItems: "center" }}
-              animation="fadeIn"
-              duration={1000}
-              delay={300}
-            >
-              <TouchableOpacity onPress={handleStart} style={styles.button}>
-                <Text style={styles.buttonText}>
-                  {language === "pl" ? "Rozpocznij grę" : "Start Game"}
-                </Text>
-              </TouchableOpacity>
-            </Animatable.View>
-          </View>
-
-          {/* FOOTER */}
-          <View style={styles.footer}>
-            <Text style={styles.footerText}>2025 Stacked.</Text>
-          </View>
-        </SafeAreaView>
-        <Toast config={toastConfig} />
-      </SafeAreaProvider>
-    </TouchableWithoutFeedback>
+            {/* FOOTER */}
+            <View style={styles.footer}>
+              <Text style={styles.footerText}>2025 Stacked.</Text>
+            </View>
+          </SafeAreaView>
+          <Toast config={toastConfig} />
+        </SafeAreaProvider>
+      </Pressable>
+    </KeyboardAvoidingView>
   );
 };
 
