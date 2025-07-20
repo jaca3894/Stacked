@@ -22,9 +22,9 @@ const BetInput: React.FC<BetInputProps> = ({ min, max, onConfirm }) => {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const startHolding = (fn: () => void) => {
-    let delay = 300; // początkowe opóźnienie
-    const minDelay = 30; // minimalne opóźnienie
-    const acceleration = 0.85; // współczynnik przyspieszenia
+    let delay = 200; // Mniejszy początkowy opóźnienie = szybszy start
+    const minDelay = 10; // Niższy minimalny = pozwala na szybsze naliczanie
+    const acceleration = 0.75; // Szybsze przyspieszenie
 
     const run = () => {
       fn();
@@ -44,8 +44,6 @@ const BetInput: React.FC<BetInputProps> = ({ min, max, onConfirm }) => {
   };
   const increase = () => setValue((v) => Math.min(max, v + 1));
   const decrease = () => setValue((v) => Math.max(min ?? 0, v - 1));
-
-  
 
   return (
     <View style={styles.container}>
