@@ -251,6 +251,17 @@ const BlackjackTraining = () => {
   };
 
   const handleDouble = async () => {
+    if (player.current.balance < player.current.currentBet) {
+      Toast.show({
+        type: "error",
+        text1: language === "pl" ? "Przepraszamy! 😭" : "Sorry! 😭",
+        text2:
+          language === "pl"
+            ? "Zbyt mało żetonów na podwojenie."
+            : "Not enough chips to double.",
+      });
+      return;
+    }
     setIsDoubled(true);
 
     const bet = player.current.currentBet - player.current.insuranceBet;

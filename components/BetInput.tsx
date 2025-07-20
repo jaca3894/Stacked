@@ -16,9 +16,11 @@ interface BetInputProps {
 
 const BetInput: React.FC<BetInputProps> = ({ min, max, onConfirm }) => {
   const { language } = useLanguage();
-  const [value, setValue] = useState(() =>
-    Math.max(min ?? 1, Math.min(10, max))
-  );
+  const [value, setValue] = useState(() => {
+    if (max <= 0) return 0;
+    return Math.max(min ?? 1, Math.min(10, max));
+  });
+
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const startHolding = (fn: () => void) => {
