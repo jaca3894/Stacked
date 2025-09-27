@@ -15,22 +15,18 @@
     },
     "ios": {
       "supportsTablet": true,
-      "icon": {
-        "light": "./assets/icons/ios-light.png",
-        "dark": "./assets/icons/ios-dark.png",
-        "tinted": "./assets/icons/ios-tinted.png"
-      }
+      "icon": "./assets/icons/final-logo.png"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/icons/adaptive-icon.png",
+        "foregroundImage": "./assets/icons/final-logo.png",
         "backgroundColor": "#121212"
       },
       "edgeToEdgeEnabled": true,
       "package": "com.qczer.Stacked"
     },
     "web": {
-      "favicon": "./assets/icons/logo.png"
+      "favicon": "./assets/icons/final-logo.png"
     },
     "runtimeVersion": {
       "policy": "appVersion"
