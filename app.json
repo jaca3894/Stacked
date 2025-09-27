@@ -5,7 +5,7 @@
     "owner": "stackedapp",
     "version": "1.0.0",
     "orientation": "default",
-    "icon": "./assets/icons/logo.png",
+    "icon": "./assets/icons/final-logo.png",
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "splash": {
